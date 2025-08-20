@@ -68,6 +68,28 @@ body {
   @apply bg-primary dark:bg-dark transition-colors duration-300 ease-in-out;
 }
 
+.grain {
+  height: 100%;
+  left: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 9999;
+}
+.grain:after {
+  animation: grain 10s steps(10) infinite;
+  background-image: url(../grain.webp);
+  content: "";
+  height: 400vh;
+  left: -200vw;
+  position: fixed;
+  top: -200vh;
+  width: 400vw;
+  opacity: 0.4;
+}
+
 /* Theme transition overlay animation */
 .theme-transition-overlay {
   position: fixed;
@@ -107,10 +129,9 @@ body {
 
 .line-menu {
   width: 100%;
-  height: 2.5px;
-  @apply bg-dark group-hover/button:bg-dark;
+  @apply bg-900 group-hover/button:bg-dark !h-0.5;
   @apply dark:bg-primary dark:group-hover/button:bg-primary;
-  @apply transition-colors duration-400 rounded-full;
+  @apply transition-colors duration-300 !rounded-full;
 }
 
 .line-menu.third {
@@ -142,7 +163,7 @@ body {
 .open .line-menu {
   @apply bg-light group-hover/button:bg-dark;
   @apply dark:bg-dark group-hover/button:dark:bg-accent;
-  @apply transition-colors duration-400;
+  @apply transition-colors duration-300;
 }
 
 @utility font-var {

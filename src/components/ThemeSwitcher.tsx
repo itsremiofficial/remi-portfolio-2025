@@ -14,7 +14,7 @@ const ThemeSwitcher = () => {
 
   return (
     <div className="flex items-center gap-4">
-      <div className="flex gap-2">
+      {/* <div className="flex gap-2">
         {colorSchemes.map((scheme) => (
           <button
             key={scheme}
@@ -30,7 +30,7 @@ const ThemeSwitcher = () => {
             aria-label={`Switch to ${scheme} theme`}
           />
         ))}
-      </div>
+      </div> */}
 
       <button
         onClick={toggleThemeMode}

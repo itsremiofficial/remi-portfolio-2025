@@ -1,10 +1,16 @@
 import { useCallback, useRef, useState } from "react";
-import MagneticButton from "../components/MagneticButton";
 import { cn } from "../utils";
 import { useClickOutside } from "../hooks/outsideClick";
 import AnimatedText from "../components/AnimatedText";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import { useScrollTo } from "../hooks/useLenis";
+import { CustomEase } from "gsap/all";
+import { useActiveSection } from "../hooks/useActiveSection";
+import ThemeSwitcher from "../components/ThemeSwitcher";
+import { useTheme } from "../hooks/useTheme";
+
+gsap.registerPlugin(CustomEase);
 
 const MENU_ITEMS = [
   { text: "HOME", href: "#home" },
@@ -13,14 +19,18 @@ const MENU_ITEMS = [
   { text: "CONTACT", href: "#contact" },
 ];
 
-interface SiteHeaderProps {
-  handleScroll: (sectionId: string) => void;
-}
-
-const Header: React.FC<SiteHeaderProps> = ({ handleScroll }) => {
+const Header = () => {
+  const { scrollToElement } = useScrollTo();
+  const { isDark } = useTheme();
   const [isExpanded, setIsExpanded] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
   const menuContainerRef = useRef<HTMLDivElement>(null);
+
+  const ease = CustomEase.create("custom", "0.7, 0, 0.2, 1");
+
+  // Track active section
+  const sectionIds = MENU_ITEMS.map((item) => item.href.replace("#", ""));
+  const activeSection = useActiveSection(sectionIds);
 
   const toggleMenu = useCallback(() => {
     setIsExpanded((prev) => !prev);
@@ -40,9 +50,9 @@ const Header: React.FC<SiteHeaderProps> = ({ handleScroll }) => {
         height: 576,
         opacity: 1,
         borderRadius: 36,
-        backgroundColor: "white",
+        backgroundColor: isDark ? "#000" : "var(--color-100)",
         duration: 0.8,
-        ease: "0.7, 0, 0.2, 1",
+        ease: "powerin.out",
       });
 
       // Then animate the menu items
@@ -52,7 +62,7 @@ const Header: React.FC<SiteHeaderProps> = ({ handleScroll }) => {
           y: 0,
           opacity: 1,
           stagger: 0.1,
-          duration: 0.5,
+          duration: 0.3,
           ease: "0.7, 0, 0.2, 1",
         },
         "-=0.2" // Slight overlap for smoother transition
@@ -64,7 +74,7 @@ const Header: React.FC<SiteHeaderProps> = ({ handleScroll }) => {
         opacity: 0,
         stagger: 0.05,
         duration: 0.3,
-        ease: "0.7, 0, 0.2, 1",
+        ease: "0.8, 0, 0.3, 1",
       });
 
       tl.to(
@@ -75,7 +85,7 @@ const Header: React.FC<SiteHeaderProps> = ({ handleScroll }) => {
           borderRadius: 32,
           backgroundColor: "transparent",
           duration: 0.6,
-          ease: "0.7, 0, 0.2, 1",
+          ease: "0.8, 0, 0.3, 1",
         },
         "-=0.1"
       );
@@ -91,7 +101,11 @@ const Header: React.FC<SiteHeaderProps> = ({ handleScroll }) => {
       >
         <div
           ref={menuContainerRef}
-          className="absolute top-0 right-0 p-5 border-900/40 border bg-primary w-24 h-16 rounded-4xl z-[-1] overflow-hidden origin-top-right"
+          className={cn(
+            "absolute top-0 right-0 p-5 border w-24 h-16 rounded-4xl z-[-1] overflow-hidden origin-top-right",
+            "border-900/40 bg-primary",
+            "dark:border-900/40 dark:bg-dark"
+          )}
         >
           <div className={cn("menu_button justify-self-center")}>
             <div
@@ -100,35 +114,46 @@ const Header: React.FC<SiteHeaderProps> = ({ handleScroll }) => {
               }`}
               onClick={toggleMenu}
             >
-              <div className="line-menu h-1 !w-1/2 start"></div>
-              <div className="line-menu h-1 !w-full center"></div>
-              <div className="line-menu h-1 !w-1/2 end"></div>
+              <div className="line-menu !w-1/2 start"></div>
+              <div className="line-menu !w-full center"></div>
+              <div className="line-menu !w-1/2 end"></div>
             </div>
           </div>
 
           <div className="menu_links_container flex flex-col gap-2 pt-10 px-4">
             {MENU_ITEMS.map((item, index) => {
+              const isActive = activeSection === item.href.replace("#", "");
               return (
                 <div
-                  className="link flex items-center gap-3 text-7xl font-extrabold opacity-0 cursor-pointer font-robo font-var"
+                  className={cn(
+                    "link flex items-center gap-3 text-7xl font-extrabold opacity-0 cursor-pointer font-robo !font-var group/link transition-colors duration-400",
+                    isActive
+                      ? "text-dark dark:text-100"
+                      : "text-900 hover:text-dark dark:hover:text-100 dark:text-1100"
+                  )}
                   key={item.href}
+                  onClick={() => {
+                    const elementId = item.href.replace("#", "");
+                    scrollToElement(elementId, {
+                      // offset: -100,
+                      duration: 2.5,
+                      easing: (t: number): number => ease(t),
+                    });
+                    setIsExpanded(false);
+                  }}
                 >
-                  <div className={cn("text-light")}>{index + 1}.</div>
-                  <div
-                    className="leading-0 cursor-pointer"
-                    onClick={() => handleScroll(item.href)}
-                  >
+                  <div className={cn("")}>{index + 1}.</div>
+                  <div className="leading-0 cursor-pointer overflow-hidden">
                     <AnimatedText
                       linkText1={item.text}
                       linkText2={item.text}
-                      className={cn(
-                        "link_text tracking-normal leading-0 text-light"
-                      )}
+                      className={cn("link_text tracking-normal leading-0")}
                     />
                   </div>
                 </div>
               );
             })}
+            <ThemeSwitcher />
           </div>
         </div>
       </div>
