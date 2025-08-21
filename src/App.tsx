@@ -21,8 +21,8 @@ const App = () => {
         className="lenis-smooth"
       >
         <div className="grain"></div>
-        <main className="overflow-x-hidden">
           <Header />
+        <main className="overflow-x-hidden">
           <section
             className="w-full min-h-screen flex items-center justify-center"
             id="home"

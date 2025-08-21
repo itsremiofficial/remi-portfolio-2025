@@ -9,6 +9,8 @@ import { CustomEase } from "gsap/all";
 import { useActiveSection } from "../hooks/useActiveSection";
 import ThemeSwitcher from "../components/ThemeSwitcher";
 import { useTheme } from "../hooks/useTheme";
+import AnimatedTooltip from "../components/AnimatedTooltip";
+import IconInstagram from "../components/icons/Instagram";
 
 gsap.registerPlugin(CustomEase);
 
@@ -50,14 +52,14 @@ const Header = () => {
         height: 576,
         opacity: 1,
         borderRadius: 36,
-        backgroundColor: isDark ? "#000" : "var(--color-100)",
+        backgroundColor: isDark ? "#0a0a09" : "#fff",
         duration: 0.8,
         ease: "powerin.out",
       });
 
       // Then animate the menu items
       tl.to(
-        ".menu_links_container .link",
+        ".nav-links-container .link",
         {
           y: 0,
           opacity: 1,
@@ -69,8 +71,8 @@ const Header = () => {
       );
     } else {
       // Collapse animation - reverse order
-      tl.to(".menu_links_container .link", {
-        y: -30,
+      tl.to(".nav-links-container .link", {
+        y: 20,
         opacity: 0,
         stagger: 0.05,
         duration: 0.3,
@@ -83,7 +85,7 @@ const Header = () => {
           width: 96,
           height: 64,
           borderRadius: 32,
-          backgroundColor: "transparent",
+          backgroundColor: "#fff",
           duration: 0.6,
           ease: "0.8, 0, 0.3, 1",
         },
@@ -103,57 +105,111 @@ const Header = () => {
           ref={menuContainerRef}
           className={cn(
             "absolute top-0 right-0 p-5 border w-24 h-16 rounded-4xl z-[-1] overflow-hidden origin-top-right",
-            "border-900/40 bg-primary",
+            "border-black/20 bg-white",
             "dark:border-900/40 dark:bg-dark"
           )}
         >
           <div className={cn("menu_button justify-self-center")}>
             <div
-              className={`wrapper-menu h-full w-full  ${
+              className={`nav-wrapper h-full w-full  ${
                 isExpanded ? "open" : ""
               }`}
               onClick={toggleMenu}
             >
-              <div className="line-menu !w-1/2 start"></div>
-              <div className="line-menu !w-full center"></div>
-              <div className="line-menu !w-1/2 end"></div>
+              <div className="line-menu !w-1/2"></div>
+              <div className="line-menu !w-full"></div>
+              <div className="line-menu !w-1/2"></div>
             </div>
           </div>
 
-          <div className="menu_links_container flex flex-col gap-2 pt-10 px-4">
-            {MENU_ITEMS.map((item, index) => {
-              const isActive = activeSection === item.href.replace("#", "");
-              return (
-                <div
-                  className={cn(
-                    "link flex items-center gap-3 text-7xl font-extrabold opacity-0 cursor-pointer font-robo !font-var group/link transition-colors duration-400",
-                    isActive
-                      ? "text-dark dark:text-100"
-                      : "text-900 hover:text-dark dark:hover:text-100 dark:text-1100"
-                  )}
-                  key={item.href}
-                  onClick={() => {
-                    const elementId = item.href.replace("#", "");
-                    scrollToElement(elementId, {
-                      // offset: -100,
-                      duration: 2.5,
-                      easing: (t: number): number => ease(t),
-                    });
-                    setIsExpanded(false);
-                  }}
-                >
-                  <div className={cn("")}>{index + 1}.</div>
-                  <div className="leading-0 cursor-pointer overflow-hidden">
-                    <AnimatedText
-                      linkText1={item.text}
-                      linkText2={item.text}
-                      className={cn("link_text tracking-normal leading-0")}
-                    />
+          <div className="nav-links-container flex flex-col h-full justify-between gap-2 py-10 px-4">
+            <div>
+              <h4
+                className={cn(
+                  "select-none",
+                  "font-nippo font-medium tracking-[3px]",
+                  "dark:text-white text-black/30",
+                  "sm:text-base text-xs"
+                )}
+              >
+                MENU
+              </h4>
+              {MENU_ITEMS.map((item, index) => {
+                const isActive = activeSection === item.href.replace("#", "");
+                return (
+                  <div
+                    className={cn(
+                      "link flex items-center gap-3 text-7xl font-extrabold opacity-0 cursor-pointer font-robo !font-var group/link transition-colors duration-400",
+                      isActive
+                        ? "text-accent dark:text-100"
+                        : "text-black/30 hover:text-black dark:hover:text-100 dark:text-1100"
+                    )}
+                    key={item.href}
+                    onClick={() => {
+                      const elementId = item.href.replace("#", "");
+                      scrollToElement(elementId, {
+                        offset: -100,
+                        duration: 2.5,
+                        easing: (t: number): number => ease(t),
+                      });
+                      setIsExpanded(false);
+                    }}
+                  >
+                    <div>{index + 1}.</div>
+                    <div className="leading-0 cursor-pointer overflow-hidden">
+                      <AnimatedText
+                        linkText1={item.text}
+                        linkText2={item.text}
+                        className={cn("link_text tracking-normal leading-0")}
+                      />
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-            <ThemeSwitcher />
+                );
+              })}
+            </div>
+            <div className="space-y-3">
+              <h4
+                className={cn(
+                  "select-none",
+                  "font-nippo font-medium tracking-[3px]",
+                  "dark:text-white text-black/30",
+                  "sm:text-base text-xs"
+                )}
+              >
+                SOCIALS
+              </h4>
+              <div className="social_icons flex items-center gap-6">
+                {[
+                  {
+                    social: "Instagram",
+                    href: "https://fronus.com",
+                    icon: IconInstagram,
+                  },
+                  {
+                    social: "Linked In",
+                    href: "https://discord.com",
+                    icon: IconInstagram,
+                  },
+                ].map((platform, index) => (
+                  <a key={index} href={platform.href} className="size-16">
+                    <AnimatedTooltip
+                      id={index + 1}
+                      className={cn(
+                        "w-12 h-12 p-3 sm:w-16 sm:h-16 sm:p-4.5 mask mask-squircle !aspect-square",
+                        "bg-black/15 hover:bg-black/20",
+                        "text-black md:text-black hover:text-black",
+                        "dark:bg-1000 dark:hover:bg-1100",
+                        "dark:text-500 dark:hover:text-700",
+                        "transition-colors duration-400"
+                      )}
+                      mains={platform.social}
+                      Children={<platform.icon className="size-full" fill />}
+                    />
+                  </a>
+                ))}
+              </div>
+            </div>
+            {/* <ThemeSwitcher /> */}
           </div>
         </div>
       </div>

@@ -8,29 +8,98 @@
   font-optical-sizing: auto;
 }
 
+@font-face {
+  font-family: "Syne";
+  src: url("/fonts/syne.ttf") format("truetype");
+  font-display: swap;
+  font-style: normal;
+  font-optical-sizing: auto;
+}
+
+@font-face {
+  font-family: "Nippo";
+  src: url("/fonts/nippo-demibold.ttf") format("truetype");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 500;
+  font-optical-sizing: auto;
+}
+@font-face {
+  font-family: "Nippo";
+  src: url("/fonts/nippo-extrabold.ttf") format("truetype");
+  font-display: swap;
+  font-style: normal;
+  font-optical-sizing: auto;
+  font-weight: 800;
+}
+@font-face {
+  font-family: "Nippo";
+  src: url("/fonts/nippo-regular.ttf") format("truetype");
+  font-display: swap;
+  font-style: normal;
+  font-optical-sizing: auto;
+}
+@font-face {
+  font-family: "Nippo";
+  src: url("/fonts/nippo-light.ttf") format("truetype");
+  font-display: swap;
+  font-style: normal;
+  font-optical-sizing: auto;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Theme Variables */
+/* THEME VARIABLES */
 :root {
-  --bg-light: #f3f4f6;
-  --text-light: #111827;
+  --background: oklch(93.414% 0.011 89.725);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(23.075% 0 89.876);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --accent: oklch(60.661% 0.21 33.781);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+
+  /* NAVIGATION */
+  --nav-background: oklch(0.985 0 0);
+  --nav-foreground: oklch(0.145 0 0);
+  --nav-primary: oklch(0.205 0 0);
+  --nav-primary-foreground: oklch(0.985 0 0);
+  --nav-accent: oklch(0.97 0 0);
+  --nav-accent-foreground: oklch(0.205 0 0);
+  --nav-border: oklch(0.922 0 0);
 }
 
 .dark {
-  --bg-dark: #1f2937;
-  --text-dark: #f9fafb;
-}
+  --background: oklch(23.075% 0 89.876);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --accent: oklch(60.661% 0.21 33.781);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
 
-[data-color-scheme="green"] {
-  --color-primary: #10b981;
-}
-
-[data-color-scheme="purple"] {
-  --color-primary: #a78bfa;
-}
-
-[data-color-scheme="blue"] {
-  --color-primary: #38bdf8;
+  /* NAVIGATION */
+  --nav-background: oklch(0.205 0 0);
+  --nav-foreground: oklch(0.985 0 0);
+  --nav-primary: oklch(0.488 0.243 264.376);
+  --nav-primary-foreground: oklch(0.985 0 0);
+  --nav-accent: oklch(0.269 0 0);
+  --nav-accent-foreground: oklch(0.985 0 0);
+  --nav-border: oklch(1 0 0 / 10%);
 }
 
 @theme inline {
@@ -42,6 +111,7 @@
   --font-nippo: "Nippo", "sans-serif";
   --font-robo: "Robo", "sans-serif";
 
+  --color-background: var(--background);
   --color-primary: #ece9e1;
   --color-accent: #e43c13;
   --color-dark: #181818;
@@ -61,11 +131,19 @@
   --color-1100: oklch(28.351% 0.005 95.162);
   --color-1200: oklch(14.462% 0.003 91.511);
 
+  --color-nav-background: var(--nav-background);
+  --color-nav-foreground: var(--nav-foreground);
+  --color-nav-primary: var(--nav-primary);
+  --color-nav-primary-foreground: var(--nav-primary-foreground);
+  --color-nav-accent: var(--nav-accent);
+  --color-nav-accent-foreground: var(--nav-accent-foreground);
+  --color-nav-border: var(--nav-border);
+
   --ease-fluid: cubic-bezier(0.7, 0, 0.2, 1);
 }
 
 body {
-  @apply bg-primary dark:bg-dark transition-colors duration-300 ease-in-out;
+  @apply bg-background transition-colors duration-300 ease-in-out;
 }
 
 .grain {
@@ -113,7 +191,7 @@ body {
 }
 
 /* MENU BUTTON */
-.wrapper-menu {
+.nav-wrapper {
   width: 20px;
   height: 20px;
   display: flex;
@@ -123,41 +201,34 @@ body {
   transition: transform 0.4s ease-out;
 }
 
-.wrapper-menu.open {
+.nav-wrapper.open {
   transform: rotate(-45deg);
 }
 
 .line-menu {
   width: 100%;
-  @apply bg-900 group-hover/button:bg-dark !h-0.5;
+  @apply bg-900 group-hover/button:bg-dark !h-1;
   @apply dark:bg-primary dark:group-hover/button:bg-primary;
   @apply transition-colors duration-300 !rounded-full;
 }
 
-.line-menu.third {
-  transform-origin: center;
-  align-self: center;
-}
-.line-menu.start {
+.line-menu:nth-child(1) {
   transition: transform 800ms cubic-bezier(0.43, 0.43, 0.46, 0.81);
   transform-origin: right;
 }
-.line-menu.end {
+.line-menu:nth-child(3) {
   align-self: flex-end;
   transition: transform 800ms cubic-bezier(0.43, 0.43, 0.46, 0.81);
   transform-origin: left;
 }
 
-.open .line-menu.start {
+.open .line-menu:nth-child(1) {
   transform: rotate(-90deg) translateX(2px);
   transition: transform 800ms cubic-bezier(0.54, -0.81, 0.57, 0.57);
 }
-.open .line-menu.end {
+.open .line-menu:nth-child(3) {
   transform: rotate(-90deg) translateX(-2px);
   transition: transform 800ms cubic-bezier(0.54, -0.81, 0.57, 0.57);
-}
-.open .line-menu.third {
-  width: 100% !important;
 }
 
 .open .line-menu {
@@ -169,4 +240,13 @@ body {
 @utility font-var {
   font-variation-settings: "wght" 740, "wdth" 30.5, "opsz" 114.9, "XOPQ" 88,
     "YOPQ" 77, "XTRA" 504;
+}
+
+.mask {
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
+.mask-squircle {
+  mask-image: url("data:image/svg+xml,%3csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M100 0C20 0 0 20 0 100s20 100 100 100 100-20 100-100S180 0 100 0Z'/%3e%3c/svg%3e");
 }
