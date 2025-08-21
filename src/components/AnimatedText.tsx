@@ -20,6 +20,7 @@ interface AnimatedTextProps {
   className?: string;
   Icon?: ReactNode;
   iconProps?: IconProps;
+  fontsLoaded?: boolean;
 }
 
 const AnimatedText: React.FC<AnimatedTextProps> = ({
@@ -28,24 +29,9 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
   linkText2,
   className,
   Icon,
+  fontsLoaded,
 }) => {
   const linkRef = useRef<HTMLButtonElement | null>(null);
-  const [fontsLoaded, setFontsLoaded] = useState(false);
-
-  // First effect to check if fonts are loaded
-  useEffect(() => {
-    // Check if the browser supports the document.fonts API
-    if ("fonts" in document) {
-      document.fonts.ready.then(() => {
-        setFontsLoaded(true);
-      });
-    } else {
-      // Fallback for browsers without font loading API - wait a moment
-      setTimeout(() => {
-        setFontsLoaded(true);
-      }, 500);
-    }
-  }, []);
 
   // Second effect that runs after fonts are loaded
   useEffect(() => {

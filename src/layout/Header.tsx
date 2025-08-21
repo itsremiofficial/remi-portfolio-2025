@@ -7,7 +7,6 @@ import gsap from "gsap";
 import { useScrollTo } from "../hooks/useLenis";
 import { CustomEase } from "gsap/all";
 import { useActiveSection } from "../hooks/useActiveSection";
-import ThemeSwitcher from "../components/ThemeSwitcher";
 import { useTheme } from "../hooks/useTheme";
 import AnimatedTooltip from "../components/AnimatedTooltip";
 import IconInstagram from "../components/icons/Instagram";
@@ -21,7 +20,7 @@ const MENU_ITEMS = [
   { text: "CONTACT", href: "#contact" },
 ];
 
-const Header = () => {
+const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
   const { scrollToElement } = useScrollTo();
   const { isDark } = useTheme();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -46,7 +45,7 @@ const Header = () => {
     const tl = gsap.timeline();
 
     if (isExpanded) {
-      // First animate the container
+      // MENU CONTAINER START
       tl.to(menuContainerRef.current, {
         width: 420,
         height: 576,
@@ -54,31 +53,87 @@ const Header = () => {
         borderRadius: 36,
         backgroundColor: isDark ? "#0a0a09" : "#fff",
         duration: 0.8,
-        ease: "powerin.out",
+        ease: "0.7, 0, 0.2, 1",
       });
 
-      // Then animate the menu items
+      tl.to(
+        ".nav-links-heading",
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.4,
+          ease: "0.7, 0, 0.2, 1",
+        },
+        "-=0.2"
+      );
+      // MENU LINKS START
       tl.to(
         ".nav-links-container .link",
         {
-          y: 0,
+          ease: "0.7, 0, 0.2, 1",
           opacity: 1,
           stagger: 0.1,
-          duration: 0.3,
+          rotationX: 0,
+          z: 0,
+        },
+        "-=0.2"
+      );
+
+      // MENU SOCIAL ICONS START
+      tl.to(
+        ".social_icon",
+        {
+          opacity: 1,
+          xPercent: 0,
+          scale: 1,
+          duration: 0.8,
+          stagger: 0.2,
           ease: "0.7, 0, 0.2, 1",
         },
-        "-=0.2" // Slight overlap for smoother transition
+        "-=0.5"
       );
     } else {
-      // Collapse animation - reverse order
-      tl.to(".nav-links-container .link", {
-        y: 20,
-        opacity: 0,
-        stagger: 0.05,
-        duration: 0.3,
-        ease: "0.8, 0, 0.3, 1",
-      });
+      // MENU SOCIAL ICONS END
+      tl.to(
+        ".social_icon",
+        {
+          opacity: 0,
+          scale: 0.85,
+          xPercent: -10,
+          duration: 0.4,
+          stagger: -0.2,
+          ease: "0.8, 0, 0.3, 1",
+        },
+        "-=0.2"
+      );
 
+      tl.to(
+        ".nav-links-heading",
+        {
+          opacity: 0,
+          y: -10,
+          duration: 0.4,
+          ease: "0.7, 0, 0.2, 1",
+        },
+        "-=0.3"
+      );
+      // MENU LINKS END
+      tl.to(
+        ".nav-links-container .link",
+        {
+          "will-change": "opacity, transform",
+          transformOrigin: "50% 0%",
+          opacity: 0,
+          rotationX: -90,
+          z: -200,
+          stagger: 0.1,
+          duration: 0.3,
+          ease: "0.8, 0, 0.3, 1",
+        },
+        "-=0.3"
+      );
+
+      // MENU CONTAINER END
       tl.to(
         menuContainerRef.current,
         {
@@ -89,7 +144,7 @@ const Header = () => {
           duration: 0.6,
           ease: "0.8, 0, 0.3, 1",
         },
-        "-=0.1"
+        "-=0.5"
       );
     }
   }, [isExpanded]);
@@ -112,7 +167,7 @@ const Header = () => {
           <div className={cn("menu_button justify-self-center")}>
             <div
               className={`nav-wrapper h-full w-full  ${
-                isExpanded ? "open" : ""
+                isExpanded ? "open" : " cursor-pointer"
               }`}
               onClick={toggleMenu}
             >
@@ -122,11 +177,11 @@ const Header = () => {
             </div>
           </div>
 
-          <div className="nav-links-container flex flex-col h-full justify-between gap-2 py-10 px-4">
+          <div className="nav-links-container flex flex-col gap-6 pt-6 px-4 pb-6">
             <div>
               <h4
                 className={cn(
-                  "select-none",
+                  "nav-links-heading select-none",
                   "font-nippo font-medium tracking-[3px]",
                   "dark:text-white text-black/30",
                   "sm:text-base text-xs"
@@ -140,8 +195,9 @@ const Header = () => {
                   <div
                     className={cn(
                       "link flex items-center gap-3 text-7xl font-extrabold opacity-0 cursor-pointer font-robo !font-var group/link transition-colors duration-400",
+                      "perspective-distant",
                       isActive
-                        ? "text-accent dark:text-100"
+                        ? "text-foreground dark:text-100"
                         : "text-black/30 hover:text-black dark:hover:text-100 dark:text-1100"
                     )}
                     key={item.href}
@@ -161,6 +217,7 @@ const Header = () => {
                         linkText1={item.text}
                         linkText2={item.text}
                         className={cn("link_text tracking-normal leading-0")}
+                        fontsLoaded={fontsLoaded}
                       />
                     </div>
                   </div>
@@ -170,7 +227,7 @@ const Header = () => {
             <div className="space-y-3">
               <h4
                 className={cn(
-                  "select-none",
+                  "nav-links-heading select-none",
                   "font-nippo font-medium tracking-[3px]",
                   "dark:text-white text-black/30",
                   "sm:text-base text-xs"
@@ -178,7 +235,7 @@ const Header = () => {
               >
                 SOCIALS
               </h4>
-              <div className="social_icons flex items-center gap-6">
+              <div className="social_icons flex items-center gap-6 relative">
                 {[
                   {
                     social: "Instagram",
@@ -191,7 +248,11 @@ const Header = () => {
                     icon: IconInstagram,
                   },
                 ].map((platform, index) => (
-                  <a key={index} href={platform.href} className="size-16">
+                  <a
+                    key={index}
+                    href={platform.href}
+                    className="size-16 relative rounded-2xl social_icon"
+                  >
                     <AnimatedTooltip
                       id={index + 1}
                       className={cn(
@@ -210,6 +271,9 @@ const Header = () => {
               </div>
             </div>
             {/* <ThemeSwitcher /> */}
+          </div>
+          <div className="font-nippo nav-links-heading px-4 mt-4 font-medium text-xs text-black/30 dark:text-white">
+            REMI &copy; {new Date().getFullYear()}
           </div>
         </div>
       </div>

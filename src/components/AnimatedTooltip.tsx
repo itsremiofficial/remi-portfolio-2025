@@ -75,7 +75,7 @@ const AnimatedTooltip: React.FC<AnimatedTooltipProps> = ({
 
   return (
     <div
-      className={`-mr-4 relative group`}
+      // className={`-mr-4 relative group`}
       onMouseEnter={() => setHoveredIndex(id)}
       onMouseLeave={() => setHoveredIndex(null)}
     >
@@ -89,7 +89,7 @@ const AnimatedTooltip: React.FC<AnimatedTooltipProps> = ({
             left: "50%",
             transform: "translateX(-50%)",
           }}
-          className="absolute inset-0 h-max w-[calc(100%_+_1rem)] flex text-xs flex-col items-center justify-center rounded-xl bg-500 border border-nav-border z-50 shadow-xl px-4 py-2 overflow-hidden"
+          className="absolute inset-0 h-max w-[calc(100%_+_2rem)] flex text-xs flex-col items-center justify-center rounded-xl bg-500 border border-nav-border z-50 shadow-xl px-4 py-2 overflow-hidden"
         >
           <div className="absolute inset-x-5 z-30 w-[50%] -bottom-1 bg-gradient-to-r from-transparent via-900 dark:via-black to-transparent h-2 blur-xs rounded-[100%]" />
           <div className="absolute left-5 w-[50%] z-30 bottom-0 bg-gradient-to-r from-transparent via-900 dark:via-black to-transparent h-px" />
