@@ -95,7 +95,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
       }}
     >
       {children}
-      {isTransitioning && <div className="theme-transition-overlay" />}
+      {/* {isTransitioning && <div className="theme-transition-overlay" />} */}
     </ThemeContext.Provider>
   );
 };

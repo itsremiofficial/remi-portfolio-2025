@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { LenisProvider } from "./context/LenisContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import Header from "./layout/Header";
-import SplitTitle from "./components/TextFromLeft";
 
 const App = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);

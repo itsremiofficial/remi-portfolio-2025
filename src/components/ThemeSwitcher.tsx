@@ -1,7 +1,7 @@
 import type { ColorScheme } from "../context/ThemeContextValue";
 import { useTheme } from "../hooks/useTheme";
 
-const ThemeSwitcher = () => {
+const ThemeSwitcher = ({ className }: { className?: string }) => {
   const {
     colorScheme,
     themeMode,
@@ -35,7 +35,7 @@ const ThemeSwitcher = () => {
       <button
         onClick={toggleThemeMode}
         disabled={isTransitioning}
-        className="p-2 rounded-md bg-primary text-primary-foreground"
+        className={className}
         aria-label={`Switch to ${
           themeMode === "light" ? "dark" : "light"
         } mode`}
@@ -47,3 +47,4 @@ const ThemeSwitcher = () => {
 };
 
 export default ThemeSwitcher;
+
