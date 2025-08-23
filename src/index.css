@@ -217,8 +217,8 @@ body {
 
 /* MENU BUTTON */
 .nav-wrapper {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -232,8 +232,7 @@ body {
 
 .line-menu {
   @apply rounded-full w-full !h-1;
-  @apply bg-foreground/60 group-hover/button:bg-dark;
-  @apply dark:bg-background/60 dark:group-hover/button:bg-background;
+  @apply bg-foreground dark:bg-background;
   transition: transform 800ms cubic-bezier(0.43, 0.43, 0.46, 0.81),
     background-color 800ms cubic-bezier(0.54, -0.81, 0.57, 0.57);
 }
@@ -283,4 +282,9 @@ body {
   position: relative;
   overflow: hidden;
   line-height: 0.8;
+}
+
+/* HERO SECTION */
+.hero-heading {
+  font-size: clamp(1.8rem, calc(100vw + 1rem), 5rem);
 }

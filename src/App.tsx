@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { LenisProvider } from "./context/LenisContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import Header from "./layout/Header";
+import Hero from "./sections/Hero";
 
 const App = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -41,17 +42,8 @@ const App = () => {
         <div className="grain"></div>
         <Header fontsLoaded={fontsLoaded} />
 
-        {/* <div className="font-var font-nippo font-black uppercase text-9xl">
-          <SplitTitle text="WORK" fontsLoaded={fontsLoaded} />
-        </div> */}
-
-        <main className="overflow-x-hidden">
-          <section
-            className="w-full min-h-screen flex items-center justify-center"
-            id="home"
-          >
-            Home
-          </section>
+        <main className="overflow-x-hidden text-9xl font-var font-robo uppercase text-black dark:text-white">
+          <Hero />
           <section
             className="w-full min-h-screen flex items-center justify-center"
             id="work"
