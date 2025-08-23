@@ -286,5 +286,5 @@ body {
 
 /* HERO SECTION */
 .hero-heading {
-  font-size: clamp(1.8rem, calc(100vw + 1rem), 5rem);
+  font-size: clamp(1.8rem, calc(1vw + 1rem), 5rem);
 }
