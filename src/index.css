@@ -288,3 +288,59 @@ body {
 .hero-heading {
   font-size: clamp(1.8rem, calc(1vw + 1rem), 5rem);
 }
+
+/* AESTERICK SYMBOL */
+
+.asterisk-container {
+  position: relative;
+}
+
+.asterisk-line {
+  position: absolute;
+  width: 10%;
+  height: 50%;
+  top: 50%;
+  left: 50%;
+  transform-origin: center bottom;
+}
+
+/* Each line rotated by 360/13 = 27.69 degrees */
+.asterisk-line:nth-child(1) {
+  transform: translate(-50%, -100%) rotate(0deg);
+}
+.asterisk-line:nth-child(2) {
+  transform: translate(-50%, -100%) rotate(27.69deg);
+}
+.asterisk-line:nth-child(3) {
+  transform: translate(-50%, -100%) rotate(55.38deg);
+}
+.asterisk-line:nth-child(4) {
+  transform: translate(-50%, -100%) rotate(83.07deg);
+}
+.asterisk-line:nth-child(5) {
+  transform: translate(-50%, -100%) rotate(110.76deg);
+}
+.asterisk-line:nth-child(6) {
+  transform: translate(-50%, -100%) rotate(138.45deg);
+}
+.asterisk-line:nth-child(7) {
+  transform: translate(-50%, -100%) rotate(166.14deg);
+}
+.asterisk-line:nth-child(8) {
+  transform: translate(-50%, -100%) rotate(193.83deg);
+}
+.asterisk-line:nth-child(9) {
+  transform: translate(-50%, -100%) rotate(221.52deg);
+}
+.asterisk-line:nth-child(10) {
+  transform: translate(-50%, -100%) rotate(249.21deg);
+}
+.asterisk-line:nth-child(11) {
+  transform: translate(-50%, -100%) rotate(276.9deg);
+}
+.asterisk-line:nth-child(12) {
+  transform: translate(-50%, -100%) rotate(304.59deg);
+}
+.asterisk-line:nth-child(13) {
+  transform: translate(-50%, -100%) rotate(332.28deg);
+}
