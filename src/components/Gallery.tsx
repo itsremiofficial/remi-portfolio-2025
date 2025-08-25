@@ -133,20 +133,16 @@ const Gallery: React.FC<{ className?: string }> = ({ className }) => {
   }, [activeIndex]);
 
   return (
-    <div
-      ref={galleryRef}
-      className={className}
-      //   className="gallery relative w-full py-20 flex items-center justify-center overflow-hidden"
-    >
+    <div ref={galleryRef} className={className}>
       <ul
         ref={cardsRef}
-        className="cards relative w-full h-full flex items-center justify-center"
+        className="cards relative w-full h-full flex !justify-center !items-center"
       >
         {videos.map(({ src, title }, index) => (
           <li
             key={index}
             className={cn(
-              "list-none p-0 m-0 w-[7.5vw] h-[4.5vw] absolute flex items-center justify-center rounded-2xl overflow-hidden",
+              "list-none p-0 m-0 w-40 h-24 absolute flex items-center justify-center rounded-2xl overflow-hidden",
               index === activeIndex
                 ? "shadow-[0_30px_50px_rgba(0,0,0,0.9)]"
                 : ""

@@ -141,41 +141,57 @@ const Hero = () => {
             className="flex items-center gap-8 absolute whitespace-nowrap w-full "
           >
             <div className="marquee-item px-8 py-4 rounded-xl text-foreground dark:text-background w-1/4">
-              <div className="flex flex-wrap items-center gap-2">
-                {[
-                  "Design",
-                  "Development",
-                  "Animation",
-                  "User Interface",
-                  "GSAP",
-                ].map((item, index) => (
-                  <>
-                    <span
-                      key={index}
-                      className={`pill${
-                        index + 1
-                      } text-sm px-5 py-1.5 border border-foreground/20 dark:border-background/20 rounded-full leading-snug pointer-events-none select-none`}
-                    >
-                      {item}
-                    </span>
-                  </>
-                ))}
-                <span className="pill5 text-sm px-5 py-1.5 border border-foreground/20 dark:border-background/20 rounded-full leading-snug transition-all duration-300 cursor-pointer select-none group/arrow relative overflow-hidden hover:border-accent">
-                  <span className="relative z-10 inline-flex items-center gap-[0.4vw] group-hover/arrow:gap-[1vw] transition-all duration-300">
-                    More <IconArrowRight className="w-4 h-4" duotone={false} />
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`pill1 text-sm px-5 py-1.5 border border-foreground/20 dark:border-background/20 rounded-full leading-snug pointer-events-none select-none`}
+                  >
+                    Design
                   </span>
-                  <div className="absolute inset-0 w-0 opacity-0 group-hover/arrow:opacity-100 group-hover/arrow:w-full h-full z-[0] group-hover/arrow:bg-accent transition-all duration-300 rounded-full"></div>
-                </span>
+
+                  <span
+                    className={`pill1 text-sm px-5 py-1.5 border border-foreground/20 dark:border-background/20 rounded-full leading-snug pointer-events-none select-none`}
+                  >
+                    Development
+                  </span>
+
+                  <span
+                    className={`pill1 text-sm px-5 py-1.5 border border-foreground/20 dark:border-background/20 rounded-full leading-snug pointer-events-none select-none`}
+                  >
+                    Animation
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`pill1 text-sm px-5 py-1.5 border border-foreground/20 dark:border-background/20 rounded-full leading-snug pointer-events-none select-none`}
+                  >
+                    User Interface
+                  </span>
+
+                  <span
+                    className={`pill1 text-sm px-5 py-1.5 border border-foreground/20 dark:border-background/20 rounded-full leading-snug pointer-events-none select-none`}
+                  >
+                    GSAP
+                  </span>
+
+                  <span className="pill5 text-sm px-5 py-1.5 border border-foreground/20 dark:border-background/20 rounded-full leading-snug transition-all duration-300 cursor-pointer select-none group/arrow relative overflow-hidden hover:border-accent min-w-max">
+                    <span className="relative z-10 inline-flex items-center gap-[0.4vw] group-hover/arrow:gap-[1vw] transition-all duration-300">
+                      More{" "}
+                      <IconArrowRight className="w-4 h-4" duotone={false} />
+                    </span>
+                    <div className="absolute inset-0 w-0 opacity-0 group-hover/arrow:opacity-100 group-hover/arrow:w-full h-full z-[0] group-hover/arrow:bg-accent transition-all duration-300 rounded-full"></div>
+                  </span>
+                </div>
               </div>
             </div>
             <div className="marquee-item px-8 py-4">
               <div className="inline-flex gap-8 items-center">
-                <div className="rounded-4xl bg-foreground overflow-hidden h-[6vw] w-[14vw]">
+                <div className="rounded-4xl bg-foreground overflow-hidden h-32 w-86 flex justify-center">
                   <div
                     ref={videoMarqueeRef}
-                    className="flex gap-2 w-[10vw] h-[6vw]"
+                    className="flex !justify-center !items-center w-96 h-32"
                   >
-                    <Gallery className="w-full h-full" />
+                    <Gallery className="w-full h-full flex !justify-center !items-center" />
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -190,8 +206,8 @@ const Hero = () => {
                     href=""
                     className="mt-3 flex items-center gap-2 text-sm font-medium text-background transition-colors cursor-pointer w-34 h-8 relative group/cta"
                   >
-                    <span className="rounded-full w-full p-1 absolute z-10 group-hover/cta:translate-x-3/4 transition-all duration-300">
-                      <IconArrowRight className="w-5 h-5" />
+                    <span className="rounded-full w-full p-1 ml-0.5 absolute z-10 group-hover/cta:-ml-1.5 group-hover/cta:translate-x-3/4 transition-all duration-300">
+                      <IconArrowRight className="w-5 h-5" duotone={false} />
                     </span>
                     <div className="relative ml-12 z-10 group-hover/cta:ml-4 transition-all duration-300">
                       Learn more
