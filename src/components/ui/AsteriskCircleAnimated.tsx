@@ -67,7 +67,7 @@ const AsteriskCircleAnimated = () => {
       <div ref={asteriskRef} className="size-full">
         <Asterisk
           id="hero-asterisk"
-          lineClass="bg-accent group-hover/circle:bg-background transition-colors duration-500"
+          lineClass="bg-accent  group-hover/circle:bg-foreground dark:group-hover/circle:bg-background transition-colors duration-500"
         />
       </div>
       <div ref={circleTextRef} className="absolute inset-0 opacity-0">

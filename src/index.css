@@ -168,7 +168,7 @@ body {
 }
 
 body {
-  @apply bg-background dark:bg-foreground transition-colors duration-300 ease-in-out;
+  @apply bg-background dark:bg-foreground transition-colors duration-300 ease-in-out font-robo;
 }
 
 .grain {
@@ -343,4 +343,9 @@ body {
 }
 .asterisk-line:nth-child(13) {
   transform: translate(-50%, -100%) rotate(332.28deg);
+}
+
+.marquee-item {
+  display: inline-block;
+  margin-right: 100px;
 }

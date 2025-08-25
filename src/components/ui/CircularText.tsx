@@ -1,29 +1,3 @@
-// const CircularText = ({
-//   className,
-//   size,
-// }: {
-//   className?: string;
-//   size: number | string;
-// }) => {
-//   return (
-//     <svg className={className} viewBox={`0 0 ${size} ${size}`}>
-//       <defs>
-//         <path
-//           id="circle-path"
-//           d="M 100, 100 m -75, 0 a 75,75 0 1,1 150,0 a 75,75 0 1,1 -150,0"
-//         />
-//       </defs>
-//       <text>
-//         <textPath href="#circle-path" startOffset="0%">
-//           SVG PATH CIRCULAR TEXT EXAMPLE
-//         </textPath>
-//       </text>
-//     </svg>
-//   );
-// };
-
-// export default CircularText;
-
 import React from "react";
 
 interface CircularTextProps {
@@ -62,7 +36,7 @@ const CircularText: React.FC<CircularTextProps> = ({
   id = "circle-path",
 }) => {
   // Generate unique ID to avoid conflicts when multiple components are used
-  const uniqueId = `${id}-${Math.random().toString(36).substr(2, 9)}`;
+  const uniqueId = `${id}-${Math.random().toString(36).substring(2, 9)}`;
 
   // Calculate center and adjust radius based on size
   const center = typeof size === "number" ? size / 2 : 100;

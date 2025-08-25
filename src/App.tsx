@@ -42,7 +42,7 @@ const App = () => {
         <div className="grain"></div>
         <Header fontsLoaded={fontsLoaded} />
 
-        <main className="overflow-x-hidden text-9xl font-robo uppercase text-black dark:text-white">
+        <main className="overflow-x-hidden text-black dark:text-white">
           <Hero />
           <section
             className="w-full min-h-screen flex items-center justify-center"
