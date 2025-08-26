@@ -242,8 +242,6 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
     <header
       ref={headerRef}
       className="sticky right-0 top-0 p-4 z-[99] h-24"
-      // onMouseEnter={handleLogoMouseEnter}
-      // onMouseLeave={handleLogoMouseLeave}
     >
       <div
         ref={drawerRef}

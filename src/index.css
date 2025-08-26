@@ -347,9 +347,9 @@ body {
 
 .marquee-item {
   display: inline-block;
-  margin-right: 100px;
 }
 
+/* GALLERY */
 .div-block-100 {
   aspect-ratio: 1;
   border-radius: var(--radius--round);
@@ -468,7 +468,7 @@ body {
 .link_cta {
   font-family: Metropolis, sans-serif;
   font-weight: 500;
-  @apply text-white;
+  @apply text-foreground dark:text-background;
 }
 
 .link_underline {

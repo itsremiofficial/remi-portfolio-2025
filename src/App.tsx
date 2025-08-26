@@ -3,6 +3,8 @@ import { LenisProvider } from "./context/LenisContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import Header from "./layout/Header";
 import Hero from "./sections/Hero";
+import Skills from "./sections/Skills";
+import WelcomeMarquee from "./sections/WelcomeMarquee";
 
 const App = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -44,6 +46,8 @@ const App = () => {
 
         <main className="overflow-x-hidden text-black dark:text-white">
           <Hero />
+          <WelcomeMarquee />
+          <Skills />
           <section
             className="w-full min-h-screen flex items-center justify-center"
             id="work"
