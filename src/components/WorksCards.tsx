@@ -1,58 +1,3 @@
-// /* eslint-disable @typescript-eslint/no-explicit-any */
-// import { useRef } from "react";
-// import WORKS from "../constants/WORKS";
-// import { useGSAP } from "@gsap/react";
-// import horizontalLoop from "../utils/horizontalLoop";
-// import { Draggable, Observer } from "gsap/all";
-// import gsap from "gsap";
-
-// gsap.registerPlugin(Observer);
-
-// const WorksCards = () => {
-//   const worksRef = useRef<HTMLDivElement>(null);
-
-//   useGSAP();
-//   return (
-//     <div ref={worksRef} className="flex items-center justify-center">
-//       {WORKS.map(({ title, imageUrl }, index) => (
-//         <div key={index} className="m-4 marquee-works-card">
-//           <div className="relative ml-20">
-//             <div className="absolute right-0 top-2 flex items-center justify-center rounded-full w-14 h-1/3 bg-foreground">
-//               <div className="flex items-center gap-2 rotate-270 text-background dark:text-foreground text-xl leading-none font-robo font-extrabold whitespace-nowrap">
-//                 <div className="rotate-180">
-//                   <span>❮</span>
-//                   <span className="relative -left-1">❮</span>
-//                   <span className="relative -left-2">❮</span>
-//                 </div>
-//                 <div>© 2023</div>
-//               </div>
-//             </div>
-//             <div className="box-inverted relative flex items-center justify-center">
-//               <img
-//                 src={imageUrl}
-//                 alt={title}
-//                 className="size-full object-cover"
-//               />
-//             </div>
-//             <div className="absolute left-0 bottom-2 flex items-center h-[100px] bg-foreground w-[440px] inverted-card-bottom">
-//               <div className="text-3xl leading-none flex items-center pl-8">
-//                 <div className="font-nippo font-medium text-accent tracking-wide mr-4">
-//                   [{index + 1}]
-//                 </div>
-//                 <div className="font-extrabold text-background font-robo">
-//                   {title}
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       ))}
-//     </div>
-//   );
-// };
-
-// export default WorksCards;
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useRef, useEffect, useCallback } from "react";
 import WORKS from "../constants/WORKS";
@@ -245,7 +190,7 @@ const WorksCards = () => {
       className="menu flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing select-none"
       style={{ touchAction: "none" }} // Prevent default touch behaviors
     >
-      <div className="menu--wrapper flex">
+      <div className="menu--wrapper flex justify-start">
         {WORKS.map(({ title, imageUrl }, index) => (
           <div
             key={index}
@@ -254,10 +199,10 @@ const WorksCards = () => {
             }}
             className="menu--item m-4 marquee-works-card flex-shrink-0"
           >
-            <div className="relative ml-20">
-              <div className="absolute right-0 top-2 flex items-center justify-center rounded-full w-14 h-1/3 bg-foreground">
-                <div className="flex items-center gap-2 rotate-270 text-background dark:text-foreground text-xl leading-none font-robo font-extrabold whitespace-nowrap">
-                  <div className="rotate-180">
+            <div className="relative space-x-20">
+              <div className="absolute right-0 top-2 flex items-center justify-center rounded-full w-14 h-1/3">
+                <div className="flex items-center gap-2 rotate-270 text-foreground dark:text-foreground text-3xl leading-none font-robo font-extrabold whitespace-nowrap">
+                  <div className="rotate-180 text-accent">
                     <span>❮</span>
                     <span className="relative -left-1">❮</span>
                     <span className="relative -left-2">❮</span>
@@ -272,15 +217,11 @@ const WorksCards = () => {
                   className="size-full object-cover"
                 />
               </div>
-              <div className="absolute left-0 bottom-2 flex items-center h-[100px] bg-foreground w-[440px] inverted-card-bottom">
-                <div className="text-3xl leading-none flex items-center pl-8">
-                  <div className="font-nippo font-medium text-accent tracking-wide mr-4">
-                    [{index + 1}]
-                  </div>
-                  <div className="font-extrabold text-background font-robo">
-                    {title}
-                  </div>
-                </div>
+              <div className="absolute text-4xl left-0 bottom-0 flex inverted-card-bottom font-robo uppercase font-black">
+                {title}
+              </div>
+              <div className="absolute left-0 top-0 size-[70px] flex items-center justify-center text-foreground text-7xl font-nippo font-extrabold">
+                {index + 1}
               </div>
             </div>
           </div>

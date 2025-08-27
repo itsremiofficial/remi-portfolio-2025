@@ -105,7 +105,7 @@ const TestimonialItem = memo(
   }) => (
     <a
       href={href}
-      className={`testimonial_hero ${name} w-inline-block bg-background dark:bg-foreground rounded-full border border-foreground/10 dark:border-background/10`}
+      className={`testimonial_hero ${name} w-inline-block bg-background/10 dark:bg-foreground/70 rounded-full border border-foreground/10 dark:border-background/10 backdrop-blur-md`}
       ref={forwardedRef}
     >
       <div className={`div-block-100 ${name}`}></div>
