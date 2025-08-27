@@ -239,10 +239,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
   }, [isExpanded, isDark]);
 
   return (
-    <header
-      ref={headerRef}
-      className="sticky right-0 top-0 p-4 z-[99] h-24"
-    >
+    <header ref={headerRef} className="sticky right-0 top-0 p-4 z-[99] h-24">
       <div
         ref={drawerRef}
         className={cn(
@@ -254,7 +251,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
           className={cn(
             "absolute top-0 border w-full h-16 rounded-2xl z-[100] overflow-hidden origin-top-right space-y-3 backdrop-blur-lg",
             "bg-nav-background/10 dark:bg-nav-foreground/70",
-            "border-black/20 dark:border-900/40"
+            "border-black/10 dark:border-background/12"
           )}
         >
           <div
