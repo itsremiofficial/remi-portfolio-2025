@@ -5,6 +5,7 @@ import Header from "./layout/Header";
 import Hero from "./sections/Hero";
 import Skills from "./sections/Skills";
 import WelcomeMarquee from "./sections/WelcomeMarquee";
+import Works from "./sections/Works";
 
 const App = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -44,9 +45,10 @@ const App = () => {
         <div className="grain"></div>
         <Header fontsLoaded={fontsLoaded} />
 
-        <main className="overflow-x-hidden text-black dark:text-white">
+        <main className="overflow-x-hidden text-black dark:text-white relative">
           <Hero />
           <WelcomeMarquee />
+          <Works />
           <Skills />
           <section
             className="w-full min-h-screen flex items-center justify-center bg-background"

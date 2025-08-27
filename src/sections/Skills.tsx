@@ -64,7 +64,7 @@ const Skills = () => {
         >
           SKILLS
         </div>
-        <div className="cards w-full">
+        <div className="cards w-full [&>.card]:max-w-7xl">
           <div className="card-wrapper w-full">
             <div className="card one"></div>
           </div>
