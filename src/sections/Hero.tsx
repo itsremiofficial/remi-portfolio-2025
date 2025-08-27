@@ -635,7 +635,7 @@ const ContactIconItem = memo(() => {
 
   return (
     <div className="marquee-item px-8 py-4 rounded-xl text-foreground dark:text-background !min-w-[450px] flex items-center justify-center">
-      <div className="size-40 uppercase justify-self-center-safe relative group/contact rounded-full bg-foreground dark:bg-background text-background dark:text-foreground p-2">
+      <div className="size-40 uppercase justify-self-center-safe relative group/contact rounded-full bg-foreground dark:bg-background text-background dark:text-foreground p-3">
         <CircularText
           id="marquee-scroll-text"
           text="GET IN TOUCH • GET IN TOUCH • GET IN TOUCH • "
