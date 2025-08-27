@@ -49,7 +49,7 @@ const App = () => {
           <WelcomeMarquee />
           <Skills />
           <section
-            className="w-full min-h-screen flex items-center justify-center"
+            className="w-full min-h-screen flex items-center justify-center bg-background"
             id="work"
           >
             Work

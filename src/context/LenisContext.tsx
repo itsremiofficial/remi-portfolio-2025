@@ -43,17 +43,13 @@ export interface LenisContextValue {
 // LenisProvider.tsx
 import React, {
   createContext,
-  useContext,
+  // useContext,
   useEffect,
   useRef,
   useState,
   type ReactNode,
 } from "react";
 import Lenis from "lenis";
-
-// GSAP imports (optional - will be loaded if available)
-let gsap: any;
-let ScrollTrigger: any;
 
 const LenisContext = createContext<LenisContextValue | null>(null);
 
@@ -146,7 +142,7 @@ export const LenisProvider: React.FC<LenisProviderProps> = ({
     // Set ready state after a small delay to ensure everything is initialized
     const readyTimeout = setTimeout(() => {
       setIsReady(true);
-    //   console.log("Lenis is ready");
+      //   console.log("Lenis is ready");
     }, 100);
 
     // Auto RAF setup with ScrollTrigger integration

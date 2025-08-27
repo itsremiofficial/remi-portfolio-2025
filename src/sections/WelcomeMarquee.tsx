@@ -39,15 +39,26 @@ const WelcomeMarquee = () => {
   return (
     <div
       ref={welcomeRef}
-      className="flex items-center justify-center text-[7vw] font-extrabold bg-foreground text-background dark:bg-background dark:text-foreground py-4 align-self-start place-self-start "
+      className="flex items-center justify-center text-[9vw] font-extrabold bg-foreground text-background dark:bg-background dark:text-foreground py-4 align-self-start place-self-start "
     >
-      <div className="leading-none marquee-welcome mt-2 mr-20">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 mr-20">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 mr-20">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 mr-20">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 mr-20">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 mr-20">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 mr-20">WELCOME</div>
+      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
+      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
+      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
+      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
+      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
+      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
+      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
+      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
+      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
+      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
+      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
+      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
+      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
+      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
+      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
+      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
+      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
+      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
     </div>
   );
 };

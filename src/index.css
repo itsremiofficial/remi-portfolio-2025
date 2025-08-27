@@ -9,6 +9,14 @@
 }
 
 @font-face {
+  font-family: "Ev-regular";
+  src: url("/fonts/a2g.e16406e.woff2") format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-optical-sizing: auto;
+}
+
+@font-face {
   font-family: "Syne";
   src: url("/fonts/syne.ttf") format("truetype");
   font-display: swap;
@@ -110,6 +118,7 @@
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", serif;
   --font-nippo: "Nippo", "sans-serif";
   --font-robo: "Robo", "sans-serif";
+  --font-ev: "Ev-regular", "sans-serif";
 
   --color-primary: #ece9e1;
   --color-accent: #e43c13;
@@ -490,3 +499,75 @@ body {
   transition: width 300ms var(--ease-fluid), color 300ms var(--ease-fluid);
   @apply text-accent;
 }
+
+/* STACKING CARDS */
+
+.wrapper {
+  /* padding-top: 100px;
+  padding-bottom: 50px; */
+  border-top: dashed 2px var(--color-surface50);
+  border-bottom: dashed 2px var(--color-surface50);
+}
+.card-wrapper {
+  width: 100%;
+  perspective: 900px;
+  margin-bottom: 50px;
+}
+.card-wrapper:last-child {
+  margin-bottom: 0;
+}
+
+.cards {
+  width: 100%;
+  /* max-width: 750px; */
+  /* margin: 0 auto; */
+  padding: 0 20px;
+}
+
+.card {
+  width: 100%;
+  height: 750px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* font-size: 30px; */
+  border-radius: 50px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: top center;
+}
+
+.card {
+  border-radius: 50px;
+  width: 100%;
+  background-image: url("https://assets.codepen.io/16327/portrait-pattern-1.jpg");
+}
+
+.card.two {
+  width: 100%;
+  background-image: url("https://assets.codepen.io/16327/portrait-pattern-2.jpg");
+}
+
+.card.three {
+  width: 100%;
+  background-image: url("https://assets.codepen.io/16327/portrait-pattern-3.jpg");
+}
+
+.card.four {
+  width: 100%;
+  background-image: url("https://assets.codepen.io/16327/portrait-pattern-4.jpg");
+}
+/* 
+@media (min-width: 768px) {
+  .cards {
+    width: 80%;
+    padding: 0 30px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cards {
+    width: 70%;
+    padding: 0 50px;
+  }
+} */

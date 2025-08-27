@@ -9,7 +9,7 @@ const ThemeInfo: React.FC = () => {
           return <div>Theme context not available</div>;
         }
 
-        const { themeMode, isDark, colorScheme } = context;
+        const { isDark, colorScheme } = context;
 
         return (
           <div className="p-4 border rounded-md">

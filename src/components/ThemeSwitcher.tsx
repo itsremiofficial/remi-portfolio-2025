@@ -1,16 +1,16 @@
-import type { ColorScheme } from "../context/ThemeContextValue";
+// import type { ColorScheme } from "../context/ThemeContextValue";
 import { useTheme } from "../hooks/useTheme";
 
 const ThemeSwitcher = ({ className }: { className?: string }) => {
   const {
-    colorScheme,
+    // colorScheme,
     themeMode,
-    setColorScheme,
+    // setColorScheme,
     toggleThemeMode,
     isTransitioning,
   } = useTheme();
 
-  const colorSchemes: ColorScheme[] = ["default", "purple", "blue", "green"];
+  // const colorSchemes: ColorScheme[] = ["default", "purple", "blue", "green"];
 
   return (
     <div className="flex items-center gap-4">
@@ -47,4 +47,3 @@ const ThemeSwitcher = ({ className }: { className?: string }) => {
 };
 
 export default ThemeSwitcher;
-

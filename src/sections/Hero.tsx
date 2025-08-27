@@ -404,7 +404,7 @@ const PillsMarqueeItem = memo(() => (
       <div className="flex items-center gap-2">
         <Pill text="User Interface" />
         <Pill text="GSAP" />
-        <span className="pill5 text-sm px-5 py-1.5 border border-foreground/20 dark:border-background/20 rounded-full leading-snug transition-all duration-300 cursor-pointer select-none group/arrow relative overflow-hidden hover:border-accent hover:bg-accent min-w-max">
+        <span className="pill5 text-sm px-5 py-1.5 border border-foreground/20 dark:border-background/20 rounded-full leading-snug transition-all duration-300 cursor-pointer select-none group/arrow relative overflow-hidden hover:border-accent hover:bg-accent hover:text-background min-w-max">
           <span className="relative z-10 inline-flex items-center gap-[0.4vw] group-hover/arrow:gap-[1vw] transition-all duration-300">
             More <IconArrowRight className="w-4 h-4" duotone={false} />
           </span>
