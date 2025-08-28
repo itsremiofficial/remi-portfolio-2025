@@ -6,6 +6,8 @@ import Hero from "./sections/Hero";
 import Skills from "./sections/Skills";
 import WelcomeMarquee from "./sections/WelcomeMarquee";
 import Works from "./sections/Works";
+import About from "./sections/About";
+import Squircle from "./components/ui/Squircle";
 
 const App = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -48,13 +50,18 @@ const App = () => {
         <main className="overflow-x-hidden text-black dark:text-white relative">
           <Hero />
           <WelcomeMarquee />
+          <About />
           <Works />
           <Skills />
           <section
             className="w-full min-h-screen flex items-center justify-center bg-background"
             id="work"
           >
-            Work
+            <Squircle height={350} width={650} roundness={0.2} color="#ff5722">
+              <div className="flex items-center justify-center w-full h-full text-white font-bold">
+                Hello
+              </div>
+            </Squircle>
           </section>
           <section
             className="w-full min-h-screen flex items-center justify-center"

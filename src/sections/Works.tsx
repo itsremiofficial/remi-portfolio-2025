@@ -1,9 +1,8 @@
-import Squircle from "../components/ui/Squircle";
 import WorksCards from "../components/WorksCards";
 
 const Works = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="min-h-screen flex items-center justify-center">
       {/* <Squircle width={250} height={350} roundness={0.2} color="#ff5722">
         <div className="flex items-center justify-center w-full h-full text-white font-bold">
           Hello

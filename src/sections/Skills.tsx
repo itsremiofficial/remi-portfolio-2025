@@ -60,7 +60,7 @@ const Skills = () => {
       <div className="wrapper w-full px-60 pb-60">
         <div
           ref={titleRef}
-          className="text-[10vw] -z-10 left-0 top-16 text-center font-robo font-extrabold dark:text-background text-foreground"
+          className="text-[20vw] -z-10 left-0 top-16 text-center font-robo font-extrabold dark:text-background text-foreground"
         >
           SKILLS
         </div>
