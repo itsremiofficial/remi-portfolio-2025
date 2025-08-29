@@ -492,7 +492,9 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
           )}
         >
           <div className="menu_button flex justify-between items-center py-[17.20px] px-8 !m-0 will-change-[padding]">
-            <Logo ref={logoRef} />
+            <a href="/">
+              <Logo ref={logoRef} />
+            </a>
 
             <div
               className={`nav-wrapper h-full w-full ${

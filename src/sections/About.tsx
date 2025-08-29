@@ -2,10 +2,12 @@ import ModernArrow from "../components/ModernArrow";
 import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger, SplitText } from "gsap/all";
+import { useTheme } from "../hooks/useTheme";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
 const About = () => {
+  const { isDark } = useTheme();
   const titleRef = useRef<HTMLHeadingElement | null>(null);
 
   useLayoutEffect(() => {
@@ -28,9 +30,13 @@ const About = () => {
     const highlightSpans = Array.from(
       titleEl.querySelectorAll(".about-highlight")
     ) as HTMLElement[];
-    if (arrowEl) highlightSpans.push(arrowEl);
 
-    const accentColor = "var(--color-foreground)";
+    const insertIndex = Math.max(0, highlightSpans.length - 1);
+    if (arrowEl) highlightSpans.splice(insertIndex, 0, arrowEl);
+
+    const accentColor = isDark
+      ? "var(--color-background)"
+      : "var(--color-foreground)";
 
     // Tunables for smoother unpin
     const SCROLL_DISTANCE = 400; // total scroll distance percentage
@@ -90,12 +96,12 @@ const About = () => {
       .to(
         titleEl,
         {
-          yPercent: -50,
+          // yPercent: -50,
           autoAlpha: 0,
           ease: "power2.inOut",
           duration: 2,
         },
-        `>+=${EXIT_OFFSET}`
+        `-=${EXIT_OFFSET}`
       );
 
     return () => {
@@ -103,16 +109,16 @@ const About = () => {
       entranceTl.kill();
       split.revert();
     };
-  }, []);
+  }, [isDark]);
 
   return (
     <section
-      className="w-full h-max flex items-center justify-center overflow-hidden"
+      className="w-full flex items-center justify-center overflow-hidden"
       id="about"
     >
       <h2
         ref={titleRef}
-        className="content__title font-extrabold font-robo uppercase text-[6vw] leading-none text-center max-w-[80%] px-4 select-none text-900"
+        className="content__title font-extrabold font-robo uppercase text-[6vw] leading-none text-center max-w-[80%] px-4 select-none opacity text-foreground dark:text-background "
       >
         Visual <span className="about-highlight">Designer</span> & Web{" "}
         <span className="about-highlight">Developer</span> dedicated to the{" "}

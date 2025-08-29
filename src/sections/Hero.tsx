@@ -1,15 +1,15 @@
 import { useGSAP } from "@gsap/react";
 import ModernArrow from "../components/ModernArrow";
-import AsteriskCircleAnimated from "../components/ui/AsteriskCircleAnimated";
 import gsap from "gsap";
 import { useRef, useCallback, memo, useEffect, useState } from "react";
 import IconArrowRight from "../components/icons/ArrowRight";
 import Gallery from "../components/Gallery";
 import horizontalLoop from "../utils/horizontalLoop";
+import AsteriskCircleAnimated from "../components/ui/AsteriskCircleAnimated";
 import CircularText from "../components/ui/CircularText";
-import { DrawSVGPlugin, MorphSVGPlugin } from "gsap/all";
+import { DrawSVGPlugin } from "gsap/all";
 
-gsap.registerPlugin(DrawSVGPlugin, MorphSVGPlugin);
+gsap.registerPlugin(DrawSVGPlugin);
 
 // Extracted reusable pill component for better rendering
 const Pill = memo(({ text }: { text: string }) => (
@@ -710,25 +710,42 @@ const ContactIconItem = memo(() => {
   );
 });
 
-// Memoized Hero Title Component
-const HeroTitle = memo(() => (
-  <h1 className="mt-4 text-[10vw] text-wrap font-medium leading-none tracking-wide">
-    I <span className="text-foreground dark:text-background">Turn</span>{" "}
-    Imaginations
-    <br />
-    <div className="flex items-center justify-center gap-[4vw] w-full">
-      Into
-      <AsteriskCircleAnimated />
-      <span className="text-foreground dark:text-background">Interactive</span>
-    </div>
-    <span className="text-foreground dark:text-background">Digital</span>{" "}
-    Experiences
-  </h1>
-));
+// Update HeroTitle to accept controlled active + handlers
+const HeroTitle = memo(
+  ({
+    active,
+    onEnter,
+    onLeave,
+  }: {
+    active: boolean;
+    onEnter: () => void;
+    onLeave: () => void;
+  }) => (
+    <h1
+      className="mt-4 text-[10vw] text-wrap font-medium leading-none tracking-wide group/hero"
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
+    >
+      I <span className="text-foreground dark:text-background">Turn</span>{" "}
+      Imaginations
+      <br />
+      <div className="flex items-center justify-center gap-[4vw] w-full">
+        Into
+        <AsteriskCircleAnimated active={active} />
+        <span className="text-foreground dark:text-background">
+          Interactive
+        </span>
+      </div>
+      <span className="text-foreground dark:text-background">Digital</span>{" "}
+      Experiences
+    </h1>
+  )
+);
 
 // Main Hero component - now much simpler with self-contained subcomponents
 const Hero = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const uiContainerRef = useRef<HTMLDivElement>(null);
+  const [asteriskActive, setAsteriskActive] = useState(false); // NEW
 
   useGSAP(
     () => {
@@ -739,9 +756,7 @@ const Hero = () => {
         });
       });
     },
-    {
-      scope: containerRef,
-    }
+    { scope: uiContainerRef }
   );
 
   return (
@@ -750,17 +765,21 @@ const Hero = () => {
       id="home"
     >
       <div className="flex items-center justify-center grow">
-        <div className="flex flex-col justify-center text-center space-y-3 pb-24 font-var tracking-wide text-foreground/40 dark:text-background/40 uppercase font-robo">
+        <div className="flex flex-col justify-center text-center space-y-3 font-var tracking-wide text-foreground/40 dark:text-background/40 uppercase font-robo">
           <div className="text-[2.5vw] font-nippo flex items-center justify-center gap-[4vw] font-medium">
             Designer <AnimatedArrow /> Developer
           </div>
-          <HeroTitle />
+          <HeroTitle
+            active={asteriskActive}
+            onEnter={() => setAsteriskActive(true)}
+            onLeave={() => setAsteriskActive(false)}
+          />
         </div>
       </div>
 
-      <div className="h-50 flex items-center w-full justify-center bg-background dark:bg-foreground border-t-2 border-foreground/10 dark:border-background/10">
+      <div className="h-50 flex items-center w-full justify-center bg-background dark:bg-foreground border-t-2 border-foreground/5 dark:border-background/5">
         <div
-          ref={containerRef}
+          ref={uiContainerRef}
           className="relative flex items-center min-h-full overflow-hidden"
         >
           <PillsMarqueeItem />

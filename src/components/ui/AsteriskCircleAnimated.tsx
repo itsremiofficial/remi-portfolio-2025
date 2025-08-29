@@ -1,43 +1,87 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { useRef, useCallback, memo } from "react";
+import { useRef, useCallback, memo, useEffect } from "react";
 import Asterisk from "./Asterisk";
 import CircularText from "./CircularText";
 
-const AsteriskCircleAnimated = () => {
+interface AsteriskCircleAnimatedProps {
+  active?: boolean; // NEW (controlled mode if defined)
+}
+
+const AsteriskCircleAnimated = ({ active }: AsteriskCircleAnimatedProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const asteriskRef = useRef<HTMLDivElement>(null);
   const circleTextRef = useRef<HTMLDivElement>(null);
+  const enterTlRef = useRef<gsap.core.Timeline | null>(null); // CHANGED (was Tween)
+  const leaveTlRef = useRef<gsap.core.Timeline | null>(null); // CHANGED (was Tween)
 
-  const handleMouseEnterAsterisk = useCallback(() => {
+  const playEnter = useCallback(() => {
     if (!asteriskRef.current || !circleTextRef.current) return;
-
-    gsap.to(asteriskRef.current, {
-      scale: 0.55,
-      duration: 0.3,
-      ease: "power1.out",
-    });
-    gsap.to(circleTextRef.current, {
-      opacity: 1,
-      duration: 0.3,
-      ease: "power1.out",
-    });
+    leaveTlRef.current?.kill();
+    enterTlRef.current = gsap
+      .timeline()
+      .to(
+        asteriskRef.current,
+        {
+          scale: 0.55,
+          duration: 0.3,
+          ease: "power1.out",
+        },
+        0
+      )
+      .to(
+        circleTextRef.current,
+        {
+          opacity: 1,
+          duration: 0.3,
+          ease: "power1.out",
+        },
+        0
+      );
   }, []);
+
+  const playLeave = useCallback(() => {
+    if (!asteriskRef.current || !circleTextRef.current) return;
+    enterTlRef.current?.kill();
+    leaveTlRef.current = gsap
+      .timeline()
+      .to(
+        asteriskRef.current,
+        {
+          scale: 1,
+          duration: 0.3,
+          ease: "power1.out",
+        },
+        0
+      )
+      .to(
+        circleTextRef.current,
+        {
+          opacity: 0,
+          duration: 0.3,
+          ease: "power1.out",
+        },
+        0
+      );
+  }, []);
+
+  // Previous hover handlers (used only in uncontrolled mode)
+  const handleMouseEnterAsterisk = useCallback(() => {
+    if (active !== undefined) return; // ignore if controlled
+    playEnter();
+  }, [active, playEnter]);
 
   const handleMouseLeaveAsterisk = useCallback(() => {
-    if (!asteriskRef.current || !circleTextRef.current) return;
+    if (active !== undefined) return; // ignore if controlled
+    playLeave();
+  }, [active, playLeave]);
 
-    gsap.to(asteriskRef.current, {
-      scale: 1,
-      duration: 0.3,
-      ease: "power1.out",
-    });
-    gsap.to(circleTextRef.current, {
-      opacity: 0,
-      duration: 0.3,
-      ease: "power1.out",
-    });
-  }, []);
+  // Controlled mode effect
+  useEffect(() => {
+    if (active === undefined) return;
+    if (active) playEnter();
+    else playLeave();
+  }, [active, playEnter, playLeave]);
 
   // Create and manage GSAP animations with proper cleanup
   useGSAP(() => {
@@ -54,23 +98,29 @@ const AsteriskCircleAnimated = () => {
     // Return cleanup function
     return () => {
       rotationAnimation.kill();
+      enterTlRef.current?.kill();
+      leaveTlRef.current?.kill();
     };
   }, []);
 
   return (
     <div
       ref={containerRef}
-      onMouseEnter={handleMouseEnterAsterisk}
-      onMouseLeave={handleMouseLeaveAsterisk}
+      // bind hover only if uncontrolled
+      onMouseEnter={active === undefined ? handleMouseEnterAsterisk : undefined}
+      onMouseLeave={active === undefined ? handleMouseLeaveAsterisk : undefined}
       className="relative size-[8vw] group/circle"
     >
       <div ref={asteriskRef} className="size-full">
         <Asterisk
           id="hero-asterisk"
-          lineClass="bg-accent  group-hover/circle:bg-foreground dark:group-hover/circle:bg-background transition-colors duration-500"
+          lineClass="bg-accent group-hover/hero:bg-foreground dark:group-hover/hero:bg-background transition-colors duration-500"
         />
       </div>
-      <div ref={circleTextRef} className="absolute inset-0 opacity-0">
+      <div
+        ref={circleTextRef}
+        className="absolute inset-0 opacity-0 pointer-events-none"
+      >
         <CircularText
           id="hero-scroll-text"
           text="SCROLL DOWN FOR REMI STUFF ✦"
