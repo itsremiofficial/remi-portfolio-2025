@@ -92,11 +92,11 @@ const AnimatedTooltip: React.FC<AnimatedTooltipProps> = ({
           }}
           className={cn(
             "absolute inset-0 h-max w-[calc(100%_+_2rem)] flex text-xs flex-col items-center justify-center rounded-xl z-50 shadow-xl px-4 py-2 overflow-hidden",
-            "bg-white dark:bg-foreground border border-foreground/30 dark:border-border/10"
+            "bg-white dark:bg-foreground border border-foreground/20 dark:border-border/10"
           )}
         >
-          <div className="absolute inset-x-5 z-30 w-[50%] -bottom-1 bg-gradient-to-r from-transparent via-900 dark:via-background/25 to-transparent h-2 blur-xs rounded-[100%]" />
-          <div className="absolute left-5 w-[50%] z-30 bottom-0 bg-gradient-to-r from-transparent via-900 dark:via-background/25 to-transparent h-px" />
+          <div className="absolute inset-x-5 z-30 w-[50%] -bottom-1 bg-gradient-to-r from-transparent via-foreground/40 dark:via-background/25 to-transparent h-2 blur-xs rounded-[100%]" />
+          <div className="absolute left-5 w-[50%] z-30 bottom-0 bg-gradient-to-r from-transparent via-foreground/50 dark:via-background/25 to-transparent h-px" />
           <div className="font-medium text-foreground dark:text-background relative z-30 text-base flex items-center">
             {mains}
             {subs && (

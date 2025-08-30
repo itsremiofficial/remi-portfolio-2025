@@ -96,7 +96,7 @@ const NavItem = memo(
   }) => (
     <div
       className={cn(
-        "link flex items-center gap-3 text-7xl font-extrabold opacity-0 cursor-pointer font-robo !font-var group/link transition-colors duration-400",
+        "link flex items-center gap-3 text-5xl lg:text-7xl font-extrabold opacity-0 cursor-pointer font-robo !font-var group/link transition-colors duration-400",
         "perspective-distant will-change-transform",
         isActive
           ? "text-foreground dark:text-100"
@@ -109,7 +109,9 @@ const NavItem = memo(
         <AnimatedText
           linkText1={item.text}
           linkText2={item.text}
-          className={cn("link_text tracking-normal leading-0")}
+          className={cn(
+            "link_text tracking-wide lg:tracking-normal leading-0 whitespace-nowrap"
+          )}
           fontsLoaded={fontsLoaded}
         />
       </div>
@@ -134,9 +136,9 @@ const SocialIcon = memo(
       <AnimatedTooltip
         id={index + 1}
         className={cn(
-          "w-12 h-12 p-3 sm:w-16 sm:h-16 sm:p-4.5 mask mask-squircle !aspect-square",
-          "bg-black/15 hover:bg-black/20",
-          "text-black md:text-black hover:text-black",
+          "size-14 lg:size-16 p-3 lg:p-4 mask mask-squircle !aspect-square",
+          "bg-foreground/15 hover:bg-foreground/20",
+          "text-foreground md:text-foreground hover:text-foreground",
           "dark:bg-foreground dark:hover:bg-1100",
           "dark:text-500 dark:hover:text-700",
           "transition-colors duration-400"
@@ -185,264 +187,315 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
     let animationState: "small" | "full" =
       window.scrollY >= 150 ? "small" : "full";
 
-    // Apply initial state instantly (no animation flash)
-    const applyImmediateState = (state: "small" | "full") => {
-      if (!menuContainerRef.current) return;
-      if (state === "small") {
-        gsap.set(menuContainerRef.current, { width: 420 });
-        gsap.set("#r_letter", { morphSVG: "#full-rounded-square" });
-        gsap.set("#e_letter", { morphSVG: "#triangle" });
-        gsap.set("#m_letter", { morphSVG: "#parallelogram" });
-        gsap.set("#i_letter", { morphSVG: "#half-rounded-square" });
-      } else {
-        gsap.set(menuContainerRef.current, { width: "100%" });
-        gsap.set("#r_letter", { morphSVG: "#r_letter" });
-        gsap.set("#e_letter", { morphSVG: "#e_letter" });
-        gsap.set("#m_letter", { morphSVG: "#m_letter" });
-        gsap.set("#i_letter", { morphSVG: "#i_letter" });
-      }
-    };
+    const mm = gsap.matchMedia();
 
-    applyImmediateState(animationState);
+    mm.add(
+      {
+        xs: "(max-width: 639px)",
+        sm: "(min-width: 640px) and (max-width: 767px)",
+        md: "(min-width: 768px)",
+      },
+      (context) => {
+        const { xs, sm, md } = context.conditions as Record<string, boolean>;
+        // Responsive target widths for the compressed (small) state
+        const smallWidth = md ? 420 : "100%";
 
-    const handleScroll = () => {
-      lastKnownScrollY = window.scrollY;
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const newState: "small" | "full" =
-            lastKnownScrollY >= 150 ? "small" : "full";
-          if (newState !== animationState) {
-            animationState = newState;
-            if (morphTimelineRef.current) morphTimelineRef.current.kill();
-            const morphTl = gsap.timeline();
-            morphTimelineRef.current = morphTl;
-
-            if (animationState === "small" && menuContainerRef.current) {
-              morphTl
-                .to(menuContainerRef.current, {
-                  width: 420,
-                  duration: 1,
-                  ease: "power3.out",
-                })
-                .to(
-                  "#r_letter",
-                  {
-                    morphSVG: "#full-rounded-square",
-                    duration: 1.5,
-                    ease: "power2.out",
-                  },
-                  "<"
-                )
-                .to(
-                  "#e_letter",
-                  { morphSVG: "#triangle", duration: 1.5, ease: "power2.out" },
-                  "<0.05"
-                )
-                .to(
-                  "#m_letter",
-                  {
-                    morphSVG: "#parallelogram",
-                    duration: 1.5,
-                    ease: "power2.out",
-                  },
-                  "<0.05"
-                )
-                .to(
-                  "#i_letter",
-                  {
-                    morphSVG: "#half-rounded-square",
-                    duration: 1.5,
-                    ease: "power2.out",
-                  },
-                  "<0.05"
-                );
-            } else if (menuContainerRef.current) {
-              morphTl
-                .to(menuContainerRef.current, {
-                  width: "100%",
-                  duration: 1,
-                  ease: "power3.out",
-                })
-                .to(
-                  "#r_letter",
-                  { morphSVG: "#r_letter", duration: 1.5, ease: "power2.out" },
-                  "<"
-                )
-                .to(
-                  "#e_letter",
-                  { morphSVG: "#e_letter", duration: 1.5, ease: "power2.out" },
-                  "<0.05"
-                )
-                .to(
-                  "#m_letter",
-                  { morphSVG: "#m_letter", duration: 1.5, ease: "power2.out" },
-                  "<0.05"
-                )
-                .to(
-                  "#i_letter",
-                  { morphSVG: "#i_letter", duration: 1.5, ease: "power2.out" },
-                  "<0.05"
-                );
-            }
+        // Apply initial state instantly (no animation flash)
+        const applyImmediateState = (state: "small" | "full") => {
+          if (!menuContainerRef.current) return;
+          if (state === "small") {
+            gsap.set(menuContainerRef.current, { width: smallWidth });
+            gsap.set("#r_letter", { morphSVG: "#full-rounded-square" });
+            gsap.set("#e_letter", { morphSVG: "#triangle" });
+            gsap.set("#m_letter", { morphSVG: "#parallelogram" });
+            gsap.set("#i_letter", { morphSVG: "#half-rounded-square" });
+          } else {
+            gsap.set(menuContainerRef.current, { width: "100%" });
+            gsap.set("#r_letter", { morphSVG: "#r_letter" });
+            gsap.set("#e_letter", { morphSVG: "#e_letter" });
+            gsap.set("#m_letter", { morphSVG: "#m_letter" });
+            gsap.set("#i_letter", { morphSVG: "#i_letter" });
           }
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
+        };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+        applyImmediateState(animationState);
+
+        const handleScroll = () => {
+          lastKnownScrollY = window.scrollY;
+          if (!ticking) {
+            window.requestAnimationFrame(() => {
+              const newState: "small" | "full" =
+                lastKnownScrollY >= 150 ? "small" : "full";
+              if (newState !== animationState) {
+                animationState = newState;
+                if (morphTimelineRef.current) morphTimelineRef.current.kill();
+                const morphTl = gsap.timeline();
+                morphTimelineRef.current = morphTl;
+
+                if (animationState === "small" && menuContainerRef.current) {
+                  morphTl
+                    .to(menuContainerRef.current, {
+                      width: smallWidth,
+                      duration: 1,
+                      ease: "power3.out",
+                    })
+                    .to(
+                      "#r_letter",
+                      {
+                        morphSVG: "#full-rounded-square",
+                        duration: 1.5,
+                        ease: "power2.out",
+                      },
+                      "<"
+                    )
+                    .to(
+                      "#e_letter",
+                      {
+                        morphSVG: "#triangle",
+                        duration: 1.5,
+                        ease: "power2.out",
+                      },
+                      "<0.05"
+                    )
+                    .to(
+                      "#m_letter",
+                      {
+                        morphSVG: "#parallelogram",
+                        duration: 1.5,
+                        ease: "power2.out",
+                      },
+                      "<0.05"
+                    )
+                    .to(
+                      "#i_letter",
+                      {
+                        morphSVG: "#half-rounded-square",
+                        duration: 1.5,
+                        ease: "power2.out",
+                      },
+                      "<0.05"
+                    );
+                } else if (menuContainerRef.current) {
+                  morphTl
+                    .to(menuContainerRef.current, {
+                      width: "100%",
+                      duration: 1,
+                      ease: "power3.out",
+                    })
+                    .to(
+                      "#r_letter",
+                      {
+                        morphSVG: "#r_letter",
+                        duration: 1.5,
+                        ease: "power2.out",
+                      },
+                      "<"
+                    )
+                    .to(
+                      "#e_letter",
+                      {
+                        morphSVG: "#e_letter",
+                        duration: 1.5,
+                        ease: "power2.out",
+                      },
+                      "<0.05"
+                    )
+                    .to(
+                      "#m_letter",
+                      {
+                        morphSVG: "#m_letter",
+                        duration: 1.5,
+                        ease: "power2.out",
+                      },
+                      "<0.05"
+                    )
+                    .to(
+                      "#i_letter",
+                      {
+                        morphSVG: "#i_letter",
+                        duration: 1.5,
+                        ease: "power2.out",
+                      },
+                      "<0.05"
+                    );
+                }
+              }
+              ticking = false;
+            });
+            ticking = true;
+          }
+        };
+
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => {
+          window.removeEventListener("scroll", handleScroll);
+        };
+      }
+    );
+
     return () => {
-      window.removeEventListener("scroll", handleScroll);
       morphTimelineRef.current?.kill();
+      mm.kill();
     };
   }, []);
 
   // Menu animation with performance optimization
   useGSAP(() => {
-    // Use a single timeline for all animations
-    const tl = gsap.timeline({
-      paused: true,
-      immediateRender: false, // Improve initial render performance
-    });
+    const mm = gsap.matchMedia();
 
-    if (isExpanded) {
-      tl.addLabel("start")
-        // Menu container expansion
-        .to(menuContainerRef.current, {
-          height: 640,
-          opacity: 1,
-          backgroundColor: isDark ? "#0000009a" : "#ffffff8a",
-          duration: 0.8,
-          ease: CUSTOM_EASE,
-          force3D: true,
-        })
-        .to(
-          menuContainerRef.current,
-          {
-            borderRadius: 36,
-            duration: 0.5,
-            ease: "power1.in",
-          },
-          "<"
-        )
-        .to(
-          ".menu_button",
-          {
-            padding: "24px 32px",
-            duration: 0.4,
-          },
-          "<"
-        )
-        // Menu links fade in
-        .to(
-          ".nav-links-container .link",
-          {
-            ease: CUSTOM_EASE,
-            opacity: 1,
-            stagger: 0.1,
-            rotationX: 0,
-            z: 0,
-            force3D: true, // Force GPU acceleration
-          },
-          "-=0.1"
-        )
-        // Menu headings fade in
-        .to(
-          ".nav-links-heading",
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.4,
-            ease: CUSTOM_EASE,
-          },
-          "-=0.7"
-        )
-        // Social icons fade in
-        .to(
-          [".social_icon", ".theme_icon"],
-          {
-            opacity: 1,
-            xPercent: 0,
-            scale: 1,
-            duration: 0.8,
-            stagger: 0.2,
-            ease: CUSTOM_EASE,
-          },
-          "-=0.5"
-        );
-    } else {
-      tl.addLabel("start")
-        // Fade out social icons
-        .to(
-          [".social_icon", ".theme_icon"],
-          {
-            opacity: 0,
-            scale: 0.85,
-            xPercent: -10,
-            duration: 0.4,
-            stagger: -0.2,
-            ease: ANIMATION_EASE_IN,
-          },
-          "start"
-        )
-        // Fade out headings
-        .to(
-          ".nav-links-heading",
-          {
-            opacity: 0,
-            y: -10,
-            duration: 0.4,
-            ease: CUSTOM_EASE,
-          },
-          "-=0.3"
-        )
-        // Fade out links
-        .to(
-          ".nav-links-container .link",
-          {
-            willChange: "opacity, transform",
-            transformOrigin: "50% 0%",
-            opacity: 0,
-            rotationX: -90,
-            z: -200,
-            stagger: 0.1,
-            duration: 0.3,
-            ease: ANIMATION_EASE_IN,
-            force3D: true, // Force GPU acceleration
-          },
-          "-=0.3"
-        )
-        // Menu button animation
-        .to(
-          ".menu_button",
-          {
-            padding: "17.20px 32px",
-            duration: 0.4,
-          },
-          "<"
-        )
-        // Menu container collapse
-        .to(
-          menuContainerRef.current,
-          {
-            height: 64,
-            borderRadius: 20,
-            backgroundColor: isDark ? "#0000009a" : "#ffffff8a",
-            duration: 0.6,
-            ease: ANIMATION_EASE_IN,
-            force3D: true, // Force GPU acceleration
-          },
-          "<"
-        );
-    }
+    mm.add(
+      {
+        xs: "(max-width: 639px)",
+        sm: "(min-width: 640px) and (max-width: 767px)",
+        md: "(min-width: 768px) and (max-width: 991px)",
+        lg: "(min-width: 992px)",
+      },
+      (context) => {
+        const { xs, sm, md, lg } = context.conditions as Record<
+          string,
+          boolean
+        >;
 
-    // Play the timeline
-    tl.play();
+        // Heights per breakpoint (adjust as needed)
+        const openHeight = sm ? 500 : md ? 540 : lg ? 640 : 480;
+        const closedHeight = 64;
 
-    // Cleanup
+        // Build timeline per state
+        const tl = gsap.timeline({ paused: true, immediateRender: false });
+
+        if (isExpanded) {
+          tl.addLabel("start")
+            .to(
+              menuContainerRef.current,
+              {
+                height: openHeight,
+                opacity: 1,
+                backgroundColor: isDark ? "#0000009a" : "#ffffff8a",
+                duration: 0.8,
+                ease: CUSTOM_EASE,
+                force3D: true,
+              },
+              "start"
+            )
+            .to(
+              menuContainerRef.current,
+              {
+                borderRadius: 1.5,
+                duration: 0.5,
+                ease: "power1.in",
+              },
+              "<"
+            )
+            .to(
+              ".menu_button",
+              {
+                padding: "24px 32px",
+                duration: 0.4,
+              },
+              "<"
+            )
+            .to(
+              ".nav-links-container .link",
+              {
+                ease: CUSTOM_EASE,
+                opacity: 1,
+                stagger: 0.1,
+                rotationX: 0,
+                z: 0,
+                force3D: true,
+              },
+              "-=0.1"
+            )
+            .to(
+              ".nav-links-heading",
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.4,
+                ease: CUSTOM_EASE,
+              },
+              "-=0.7"
+            )
+            .to(
+              [".social_icon", ".theme_icon"],
+              {
+                opacity: 1,
+                xPercent: 0,
+                scale: 1,
+                duration: 0.8,
+                stagger: 0.2,
+                ease: CUSTOM_EASE,
+              },
+              "-=0.5"
+            );
+        } else {
+          tl.addLabel("start")
+            .to(
+              [".social_icon", ".theme_icon"],
+              {
+                opacity: 0,
+                scale: 0.85,
+                xPercent: -10,
+                duration: 0.4,
+                stagger: -0.2,
+                ease: ANIMATION_EASE_IN,
+              },
+              "start"
+            )
+            .to(
+              ".nav-links-heading",
+              {
+                opacity: 0,
+                y: -10,
+                duration: 0.4,
+                ease: CUSTOM_EASE,
+              },
+              "-=0.3"
+            )
+            .to(
+              ".nav-links-container .link",
+              {
+                willChange: "opacity, transform",
+                transformOrigin: "50% 0%",
+                opacity: 0,
+                rotationX: -90,
+                z: -200,
+                stagger: 0.1,
+                duration: 0.3,
+                ease: ANIMATION_EASE_IN,
+                force3D: true,
+              },
+              "-=0.3"
+            )
+            .to(
+              ".menu_button",
+              {
+                padding: "17.20px 32px",
+                duration: 0.4,
+              },
+              "<"
+            )
+            .to(
+              menuContainerRef.current,
+              {
+                height: closedHeight,
+                borderRadius: "1rem",
+                backgroundColor: isDark ? "#0000009a" : "#ffffff8a",
+                duration: 0.6,
+                ease: ANIMATION_EASE_IN,
+                force3D: true,
+              },
+              "<"
+            );
+        }
+
+        tl.play();
+        return () => tl.kill();
+      }
+    );
+
     return () => {
-      tl.kill();
+      mm.kill();
     };
   }, [isExpanded, isDark]);
 
@@ -488,7 +541,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
             "absolute top-0 border w-full h-16 rounded-2xl z-[100] overflow-hidden origin-top-right space-y-3 backdrop-blur-2xl",
             "bg-nav-background/10 dark:bg-nav-foreground/70",
             "border-black/10 dark:border-background/12",
-            "will-change-[width,height,borderRadius]" // Optimize property animations
+            "will-change-[width,height,borderRadius]"
           )}
         >
           <div className="menu_button flex justify-between items-center py-[17.20px] px-8 !m-0 will-change-[padding]">
@@ -507,7 +560,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               <div className="line-menu !w-1/2"></div>
             </div>
           </div>
-          <div className="space-y-8 px-8">
+          <div className="space-y-6 md:space-y-8 px-6 md:px-8">
             <div className="nav-links-container flex flex-col gap-2">
               <h4
                 className={cn(
@@ -515,7 +568,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
                   "font-nippo font-medium tracking-[3px]",
                   "text-foreground/30 dark:text-background/40",
                   "sm:text-base text-xs",
-                  "will-change-[opacity,transform]" // Optimize property animations
+                  "will-change-[opacity,transform]"
                 )}
               >
                 MENU
@@ -536,20 +589,20 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
                 );
               })}
             </div>
-            <div className="flex gap-20">
-              <div className="space-y-3">
+            <div className="flex gap-4 sm:gap-10 md:gap-14 lg:gap-20">
+              <div className="space-y-2 lg:space-y-3">
                 <h4
                   className={cn(
                     "nav-links-heading select-none",
                     "font-nippo font-medium tracking-[3px]",
                     "text-foreground/30 dark:text-background/40",
                     "sm:text-base text-xs",
-                    "will-change-[opacity,transform]" // Optimize property animations
+                    "will-change-[opacity,transform]"
                   )}
                 >
                   SOCIALS
                 </h4>
-                <div className="social_icons flex items-center gap-6 relative">
+                <div className="social_icons flex items-center lg:gap-6 relative">
                   {socialPlatforms.map((platform, index) => (
                     <SocialIcon
                       key={platform.social}
@@ -559,14 +612,14 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
                   ))}
                 </div>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-2 lg:space-y-3">
                 <h4
                   className={cn(
                     "nav-links-heading select-none",
                     "font-nippo font-medium tracking-[3px]",
                     "text-foreground/30 dark:text-background/40",
                     "sm:text-base text-xs",
-                    "will-change-[opacity,transform]" // Optimize property animations
+                    "will-change-[opacity,transform]"
                   )}
                 >
                   THEME
@@ -575,12 +628,12 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
                   <AnimatedTooltip
                     id={3}
                     className={cn(
-                      "w-12 h-12 p-3 sm:w-16 sm:h-16 sm:p-4.5 mask mask-squircle !aspect-square",
+                      "size-14 lg:size-16 p-3 lg:p-4 mask mask-squircle !aspect-square",
                       "bg-black/15 hover:bg-black/20",
                       "text-black md:text-black hover:text-black",
                       "dark:bg-foreground dark:hover:bg-1100",
                       "dark:text-500 dark:hover:text-700",
-                      "transition-colors duration-400 cursor-pointer"
+                      "transition-colors duration-400"
                     )}
                     mains={isDark ? "Dark Mode" : "Light Mode"}
                     Children={<ThemeIcon className="size-full" />}
@@ -588,7 +641,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
                 </div>
               </div>
             </div>
-            <div className="flex items-end justify-between font-mono font-medium text-foreground/70 dark:text-background/50 text-xs pt-4">
+            <div className="flex items-end justify-between font-mono font-medium text-foreground/70 dark:text-background/50 text-xs md:pt-4">
               <TimeDisplay
                 timeType="time"
                 className="nav-links-heading"

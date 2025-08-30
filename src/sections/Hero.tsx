@@ -8,12 +8,20 @@ import horizontalLoop from "../utils/horizontalLoop";
 import AsteriskCircleAnimated from "../components/ui/AsteriskCircleAnimated";
 import CircularText from "../components/ui/CircularText";
 import { DrawSVGPlugin } from "gsap/all";
+import { cn } from "../utils";
 
 gsap.registerPlugin(DrawSVGPlugin);
 
 // Extracted reusable pill component for better rendering
 const Pill = memo(({ text }: { text: string }) => (
-  <span className="text-sm px-5 py-1.5 border border-foreground/20 dark:border-background/20 rounded-full leading-snug pointer-events-none select-none whitespace-nowrap">
+  <span
+    className={cn(
+      "text-xs md:text-sm leading-snug whitespace-nowrap",
+      "px-3 md:px-5 py-0.5 md:py-1.5",
+      "border rounded-full border-foreground/20 dark:border-background/20",
+      "pointer-events-none select-none"
+    )}
+  >
     {text}
   </span>
 ));
@@ -21,72 +29,86 @@ const Pill = memo(({ text }: { text: string }) => (
 // Animated ModernArrow component that handles its own animation
 const AnimatedArrow = memo(() => {
   useGSAP(() => {
-    const xPercent = 120;
-    const animParams = {
-      duration: 1.2,
-      opacity: { from: 0, to: 1 },
-      xFrom: -xPercent,
-      xTo: xPercent,
-    };
+    const mm = gsap.matchMedia();
 
-    const arrowTl = gsap.timeline({
-      repeat: -1,
-      repeatDelay: 0.3,
-    });
-
-    // Right movement animation
-    arrowTl.fromTo(
-      ".hero-modern-arrow",
-      { x: animParams.xFrom, opacity: animParams.opacity.from },
+    mm.add(
       {
-        x: 0,
-        opacity: animParams.opacity.to,
-        duration: animParams.duration,
-        ease: "power2.out",
+        xs: "(max-width: 639px)",
+        sm: "(min-width: 640px) and (max-width: 767px)",
+        md: "(min-width: 768px) and (max-width: 990px)",
+        lg: "(min-width: 991px)",
+      },
+      (context) => {
+        // Determine travel distance per breakpoint (tweak as desired)
+        const { xs, sm, md, lg } = context.conditions as Record<
+          string,
+          boolean
+        >;
+        const xPercent = xs ? 30 : sm ? 40 : md ? 50 : lg ? 100 : 120;
+
+        // Build timeline for current breakpoint
+        const animParams = {
+          duration: 1.2,
+          opacity: { from: 0, to: 1 },
+          xFrom: -xPercent,
+          xTo: xPercent,
+        };
+
+        const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.3 });
+
+        tl.fromTo(
+          ".hero-modern-arrow",
+          { x: animParams.xFrom, opacity: animParams.opacity.from },
+          {
+            x: 0,
+            opacity: animParams.opacity.to,
+            duration: animParams.duration,
+            ease: "power2.out",
+          }
+        )
+          .to(".hero-modern-arrow", {
+            x: animParams.xTo,
+            opacity: animParams.opacity.from,
+            duration: animParams.duration,
+            ease: "power2.in",
+          })
+          .to(".hero-modern-arrow", {
+            rotate: 180,
+            duration: animParams.duration,
+            ease: "power2.in",
+          })
+          // return journey
+          .fromTo(
+            ".hero-modern-arrow",
+            { x: animParams.xTo, opacity: animParams.opacity.from },
+            {
+              x: 0,
+              opacity: animParams.opacity.to,
+              duration: animParams.duration,
+              ease: "power2.out",
+            }
+          )
+          .to(".hero-modern-arrow", {
+            x: animParams.xFrom,
+            opacity: animParams.opacity.from,
+            duration: animParams.duration,
+            ease: "power2.in",
+          })
+          .to(".hero-modern-arrow", {
+            rotate: 0,
+            duration: animParams.duration,
+            ease: "power2.in",
+          });
+
+        return () => tl.kill();
       }
     );
-    arrowTl.to(".hero-modern-arrow", {
-      x: animParams.xTo,
-      opacity: animParams.opacity.from,
-      duration: animParams.duration,
-      ease: "power2.in",
-    });
-    arrowTl.to(".hero-modern-arrow", {
-      rotate: 180,
-      duration: animParams.duration,
-      ease: "power2.in",
-    });
 
-    // Left movement animation
-    arrowTl.fromTo(
-      ".hero-modern-arrow",
-      { x: animParams.xTo, opacity: animParams.opacity.from },
-      {
-        x: 0,
-        opacity: animParams.opacity.to,
-        duration: animParams.duration,
-        ease: "power2.out",
-      }
-    );
-    arrowTl.to(".hero-modern-arrow", {
-      x: animParams.xFrom,
-      opacity: animParams.opacity.from,
-      duration: animParams.duration,
-      ease: "power2.in",
-    });
-    arrowTl.to(".hero-modern-arrow", {
-      rotate: 0,
-      duration: animParams.duration,
-      ease: "power2.in",
-    });
-
-    return () => {
-      arrowTl.kill();
-    };
+    return () => mm.kill();
   });
 
   return (
-    <ModernArrow className="hero-modern-arrow w-[3vw] h-max relative dark:text-background text-foreground" />
+    <ModernArrow className="hero-modern-arrow w-[5vw] sm:w-[4vw] md:w-[3vw] lg:w-[3vw] h-max relative dark:text-background text-foreground" />
   );
 });
 
@@ -105,18 +127,20 @@ const TestimonialItem = memo(
   }) => (
     <a
       href={href}
-      className={`testimonial_hero ${name} w-inline-block bg-background/10 dark:bg-foreground/70 rounded-full border border-foreground/10 dark:border-background/10 backdrop-blur-md`}
+      className={`testimonial_hero ${name} w-[270px] md:w-[363.781px] w-inline-block bg-background/10 dark:bg-foreground/70 rounded-full border border-foreground/10 dark:border-background/10 backdrop-blur-md group/learnmore`}
       ref={forwardedRef}
     >
       <div className={`div-block-100 ${name}`}></div>
-      <div className="div-block-101">
-        <p className="small_paragraph--tw1 text-balance">
+      <div className="flex flex-col items-start justify-center gap-2">
+        <p className="m-0 relative text-balance text-[0.6rem] md:text-[0.75rem]">
           <span className="quote_mark">"</span>
           {text}
         </p>
-        <div className="link_cta_container">
-          <div className="link_cta">Learn more</div>
-          <div className="link_underline"></div>
+        <div className="relative text-decoration-none leading-none text-[0.6rem] md:text-[0.75rem]">
+          <div className="font-medium group-hover/learnmore:text-accent transition-colors duration-300">
+            Learn more
+          </div>
+          <div className="w-0 h-[1px] left-0 absolute bg-accent group-hover/learnmore:w-full transition-all duration-300"></div>
         </div>
       </div>
     </a>
@@ -130,7 +154,6 @@ const TestimonialsMarqueeItem = memo(() => {
   const dennisRef = useRef<HTMLAnchorElement>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
 
-  // Memoize event handlers
   const handleMouseEnter = useCallback(() => tlRef.current?.pause(), []);
   const handleMouseLeave = useCallback(() => tlRef.current?.play(), []);
 
@@ -146,166 +169,177 @@ const TestimonialsMarqueeItem = memo(() => {
     const dennis = dennisRef.current;
     const testimonialContainer = testimonialContainerRef.current;
 
-    // Common animation parameters
-    const commonParams = {
-      duration: 0.7,
-      ease: {
-        in: "power3.in",
-        out: "power3.out",
-      },
-      positions: {
-        top: "-3.8em",
-        bottom: "-1.7em",
-        exit: "-5.8em",
-        enter: "0.1em",
-      },
-      scales: {
-        active: 1,
-        inactive: 0.9,
-        transition: 0.95,
-      },
-    };
+    const mm = gsap.matchMedia();
 
-    // Set initial states
-    gsap.set(ari, {
-      position: "absolute",
-      top: commonParams.positions.top,
-      zIndex: 1,
-      scale: commonParams.scales.active,
-    });
-    gsap.set(dennis, {
-      position: "absolute",
-      top: commonParams.positions.bottom,
-      zIndex: 0,
-      scale: commonParams.scales.inactive,
-    });
-
-    // Create timeline
-    const tl = gsap.timeline({ repeat: -1, paused: false });
-    tlRef.current = tl;
-
-    // First phase - hold for 4 seconds
-    tl.to({}, { duration: 4 });
-
-    // First transition - Ari exits top, Dennis enters from bottom
-    tl.to(
-      ari,
+    mm.add(
       {
-        top: commonParams.positions.exit,
-        scale: commonParams.scales.transition,
-        duration: commonParams.duration,
-        ease: commonParams.ease.in,
+        mobile: "(max-width: 767px)",
+        desktop: "(min-width: 768px)",
       },
-      "transizione1"
-    );
-    tl.to(
-      dennis,
-      {
-        top: commonParams.positions.enter,
-        scale: commonParams.scales.transition,
-        duration: commonParams.duration,
-        ease: commonParams.ease.in,
-      },
-      "transizione1"
+      (context) => {
+        const isMobile = !!context.conditions?.mobile;
+
+        // Kill any previous timeline before rebuilding on breakpoint change
+        tlRef.current?.kill();
+
+        const commonParams = {
+          duration: 0.7,
+          ease: {
+            in: "power3.in",
+            out: "power3.out",
+          },
+          positions: {
+            top: isMobile ? "-2.8em" : "-3.8em",
+            bottom: isMobile ? "-1.3em" : "-1.7em",
+            exit: "-5.8em",
+            enter: "0.1em",
+          },
+          scales: {
+            active: 1,
+            inactive: 0.9,
+            transition: 0.95,
+          },
+        };
+
+        // Set initial states
+        gsap.set(ari, {
+          position: "absolute",
+          top: commonParams.positions.top,
+          zIndex: 1,
+          scale: commonParams.scales.active,
+        });
+        gsap.set(dennis, {
+          position: "absolute",
+          top: commonParams.positions.bottom,
+          zIndex: 0,
+          scale: commonParams.scales.inactive,
+        });
+
+        // Create timeline
+        const tl = gsap.timeline({ repeat: -1, paused: false });
+        tlRef.current = tl;
+
+        // First phase - hold for 4 seconds
+        tl.to({}, { duration: 4 });
+
+        // First transition - Ari exits top, Dennis enters from bottom
+        tl.to(
+          ari,
+          {
+            top: commonParams.positions.exit,
+            scale: commonParams.scales.transition,
+            duration: commonParams.duration,
+            ease: commonParams.ease.in,
+          },
+          "trans1"
+        )
+          .to(
+            dennis,
+            {
+              top: commonParams.positions.enter,
+              scale: commonParams.scales.transition,
+              duration: commonParams.duration,
+              ease: commonParams.ease.in,
+            },
+            "trans1"
+          )
+          .add(() => {
+            gsap.set(ari, { zIndex: 0 });
+            gsap.set(dennis, { zIndex: 1 });
+          })
+          .to(
+            ari,
+            {
+              top: commonParams.positions.bottom,
+              scale: commonParams.scales.inactive,
+              duration: commonParams.duration,
+              ease: commonParams.ease.out,
+            },
+            "trans2"
+          )
+          .to(
+            dennis,
+            {
+              top: commonParams.positions.top,
+              scale: commonParams.scales.active,
+              duration: commonParams.duration,
+              ease: commonParams.ease.out,
+            },
+            "trans2"
+          )
+          .to({}, { duration: 4 })
+          .to(
+            ari,
+            {
+              top: commonParams.positions.enter,
+              scale: commonParams.scales.transition,
+              duration: commonParams.duration,
+              ease: commonParams.ease.in,
+            },
+            "trans3"
+          )
+          .to(
+            dennis,
+            {
+              top: commonParams.positions.exit,
+              scale: commonParams.scales.transition,
+              duration: commonParams.duration,
+              ease: commonParams.ease.in,
+            },
+            "trans3"
+          )
+          .add(() => {
+            gsap.set(ari, { zIndex: 1 });
+            gsap.set(dennis, { zIndex: 0 });
+          })
+          .to(
+            ari,
+            {
+              top: commonParams.positions.top,
+              scale: commonParams.scales.active,
+              duration: commonParams.duration,
+              ease: commonParams.ease.out,
+            },
+            "trans4"
+          )
+          .to(
+            dennis,
+            {
+              top: commonParams.positions.bottom,
+              scale: commonParams.scales.inactive,
+              duration: commonParams.duration,
+              ease: commonParams.ease.out,
+            },
+            "trans4"
+          );
+      }
     );
 
-    // Switch z-indices
-    tl.add(() => {
-      gsap.set(ari, { zIndex: 0 });
-      gsap.set(dennis, { zIndex: 1 });
-    });
-
-    // Continue transition
-    tl.to(
-      ari,
-      {
-        top: commonParams.positions.bottom,
-        scale: commonParams.scales.inactive,
-        duration: commonParams.duration,
-        ease: commonParams.ease.out,
-      },
-      "transizione2"
-    );
-    tl.to(
-      dennis,
-      {
-        top: commonParams.positions.top,
-        scale: commonParams.scales.active,
-        duration: commonParams.duration,
-        ease: commonParams.ease.out,
-      },
-      "transizione2"
-    );
-
-    // Second phase - hold for 4 seconds
-    tl.to({}, { duration: 4 });
-
-    // Third transition - Dennis exits top, Ari enters from bottom
-    tl.to(
-      ari,
-      {
-        top: commonParams.positions.enter,
-        scale: commonParams.scales.transition,
-        duration: commonParams.duration,
-        ease: commonParams.ease.in,
-      },
-      "transizione3"
-    );
-    tl.to(
-      dennis,
-      {
-        top: commonParams.positions.exit,
-        scale: commonParams.scales.transition,
-        duration: commonParams.duration,
-        ease: commonParams.ease.in,
-      },
-      "transizione3"
-    );
-
-    // Switch z-indices back
-    tl.add(() => {
-      gsap.set(ari, { zIndex: 1 });
-      gsap.set(dennis, { zIndex: 0 });
-    });
-
-    // Complete cycle
-    tl.to(
-      ari,
-      {
-        top: commonParams.positions.top,
-        scale: commonParams.scales.active,
-        duration: commonParams.duration,
-        ease: commonParams.ease.out,
-      },
-      "transizione4"
-    );
-    tl.to(
-      dennis,
-      {
-        top: commonParams.positions.bottom,
-        scale: commonParams.scales.inactive,
-        duration: commonParams.duration,
-        ease: commonParams.ease.out,
-      },
-      "transizione4"
-    );
-
-    // Event listeners for mouse interactions
     testimonialContainer.addEventListener("mouseenter", handleMouseEnter);
     testimonialContainer.addEventListener("mouseleave", handleMouseLeave);
 
-    // Clean up
     return () => {
       testimonialContainer.removeEventListener("mouseenter", handleMouseEnter);
       testimonialContainer.removeEventListener("mouseleave", handleMouseLeave);
       tlRef.current?.kill();
+      mm.kill();
     };
   }, [handleMouseEnter, handleMouseLeave]);
 
   return (
-    <div className="marquee-item !min-w-[450px] px-8 py-4 rounded-xl text-foreground dark:text-background relative flex items-center justify-center">
-      <div className="testimonials_highlights" ref={testimonialContainerRef}>
-        <div className="div-block-103">
+    <div
+      className={cn(
+        "marquee-item rounded-xl",
+        "md:px-8 md:py-4",
+        "min-w-[350px] md:min-w-[450px]",
+        "text-foreground dark:text-background"
+      )}
+    >
+      <div
+        className="testimonials_highlights flex items-center justify-center w-80 md:w-90 h-28 md:h-28"
+        ref={testimonialContainerRef}
+      >
+        <div className="absolute flex items-center justify-center w-full h-0">
           <TestimonialItem
             name="ari"
             text="Mika is head and shoulders above the crowd, he took my rough design ideas..."
@@ -352,15 +386,22 @@ const EnhancedGalleryMarqueeItem = memo(() => {
   }, []);
 
   return (
-    <div className="marquee-item px-8 py-4 w-[450px]  flex items-center justify-center">
+    <div
+      className={cn(
+        "flex items-center justify-center marquee-item rounded-xl",
+        "md:px-8 md:py-4",
+        "min-w-[350px] md:min-w-[450px]",
+        "text-foreground dark:text-background"
+      )}
+    >
       <div className="inline-flex gap-4 items-center">
-        <div className="rounded-4xl dark:bg-background/10 bg-foreground/10 overflow-hidden h-32 w-80 flex justify-center">
+        <div className="rounded-3xl md:rounded-4xl dark:bg-background/10 bg-foreground/10 overflow-hidden h-24 md:h-32 w-40 md:w-52 inline-flex justify-center">
           <div
             ref={videoMarqueeRef}
-            className="flex !justify-center !items-center h-32"
+            className="flex !justify-center !items-center h-24 md:h-32"
           >
             <Gallery
-              className="w-full h-full flex !justify-center !items-center"
+              className="h-full flex !justify-center !items-center"
               autoPlay={userInteracted}
               muted={true}
               playsInline={true}
@@ -368,23 +409,27 @@ const EnhancedGalleryMarqueeItem = memo(() => {
           </div>
         </div>
         <div className="space-y-1">
-          <div className="text-xl font-medium text-foreground dark:text-background">
+          <h3 className="text-sm w-max md:text-xl font-medium text-foreground dark:text-background">
             Case Studies
-          </div>
-          <p className="text-balance text-foreground/70 dark:text-background/70 text-xs">
+          </h3>
+          <p className="text-balance w-48 text-foreground/70 dark:text-background/70 text-xs">
             Explore these three distinct case studies to see how I can help you.
           </p>
           <a
             href="#case-studies"
-            className="mt-3 flex items-center gap-2 text-sm font-medium text-foreground dark:text-background transition-colors cursor-pointer w-34 h-8 relative group/cta"
+            className={cn(
+              "mt-3 flex items-center gap-2 text-xs md:text-sm font-medium cursor-pointer relative",
+              "w-28 md:w-34 h-6 md:h-8 group/cta",
+              "text-foreground dark:text-background transition-colors duration-300"
+            )}
           >
-            <span className="rounded-full w-full p-1 ml-0.5 absolute z-10 group-hover/cta:-ml-1.5 group-hover/cta:translate-x-3/4 transition-all duration-300 text-background">
-              <IconArrowRight className="w-5 h-5" duotone={false} />
+            <span className="rounded-full w-full p-1 md:ml-0.5 absolute z-10 group-hover/cta:-ml-1.5 group-hover/cta:translate-x-3/4 transition-all duration-300 text-background">
+              <IconArrowRight className="size-4 md:size-5" duotone={false} />
             </span>
-            <div className="relative ml-12 z-10 group-hover/cta:ml-4 transition-all duration-300  group-hover/cta:text-background">
+            <div className="relative ml-8 md:ml-12 z-10 group-hover/cta:ml-4 transition-all duration-300  group-hover/cta:text-background">
               Learn more
             </div>
-            <div className="absolute left-0 h-full w-8 aspect-square bg-accent z-0 rounded-full group-hover/cta:w-full transition-[width] duration-300"></div>
+            <div className="absolute left-0 h-full w-6 md:w-8 aspect-square bg-accent z-0 rounded-full group-hover/cta:w-full transition-[width] duration-300"></div>
           </a>
         </div>
       </div>
@@ -394,7 +439,14 @@ const EnhancedGalleryMarqueeItem = memo(() => {
 
 // Skills Pills Marquee Item Component
 const PillsMarqueeItem = memo(() => (
-  <div className="marquee-item px-4 py-4 rounded-xl text-foreground dark:text-background !min-w-[450px] flex items-center">
+  <div
+    className={cn(
+      "flex items-center justify-center marquee-item rounded-xl",
+      "md:px-8 md:py-4",
+      "min-w-[350px] md:min-w-[450px]",
+      "text-foreground dark:text-background"
+    )}
+  >
     <div className="space-y-2">
       <div className="flex items-center gap-2">
         <Pill text="Design" />
@@ -404,9 +456,20 @@ const PillsMarqueeItem = memo(() => (
       <div className="flex items-center gap-2">
         <Pill text="User Interface" />
         <Pill text="GSAP" />
-        <span className="pill5 text-sm px-5 py-1.5 border border-foreground/20 dark:border-background/20 rounded-full leading-snug transition-all duration-300 cursor-pointer select-none group/arrow relative overflow-hidden hover:border-accent hover:bg-accent hover:text-background min-w-max">
+        <span
+          className={cn(
+            "text-xs md:text-sm leading-snug whitespace-nowrap relative",
+            "px-3 md:px-5 py-0.5 md:py-1.5",
+            "border rounded-full border-foreground/20 dark:border-background/20",
+            "select-none",
+            "hover:border-accent hover:bg-accent hover:text-background",
+            "pill5 group/arrow relative overflow-hidden min-w-max",
+            "transition-all duration-300 cursor-pointer group/arrow"
+          )}
+        >
           <span className="relative z-10 inline-flex items-center gap-[0.4vw] group-hover/arrow:gap-[1vw] transition-all duration-300">
-            More <IconArrowRight className="w-4 h-4" duotone={false} />
+            More{" "}
+            <IconArrowRight className="size-3.5 md:size-4" duotone={false} />
           </span>
         </span>
       </div>
@@ -417,7 +480,7 @@ const PillsMarqueeItem = memo(() => (
 const ContactIconItem = memo(() => {
   const contactIconRef = useRef<HTMLDivElement>(null);
   const iconId = useRef(
-    `contact-icon-${Math.random().toString(36).substr(2, 9)}`
+    `contact-icon-${Math.random().toString(36).substring(2, 9)}`
   );
 
   useGSAP(() => {
@@ -505,7 +568,6 @@ const ContactIconItem = memo(() => {
           );
         }
 
-        // Remaining animation code with null checks...
         if (openLine1) {
           iconOpenTl.to(
             openLine1,
@@ -634,8 +696,15 @@ const ContactIconItem = memo(() => {
   });
 
   return (
-    <div className="marquee-item px-8 py-4 rounded-xl text-foreground dark:text-background !min-w-[450px] flex items-center justify-center">
-      <div className="size-40 uppercase justify-self-center-safe relative group/contact rounded-full bg-foreground dark:bg-background text-background dark:text-foreground p-3">
+    <div
+      className={cn(
+        "flex items-center justify-center marquee-item rounded-xl",
+        "md:px-8 md:py-4",
+        "min-w-[350px] md:min-w-[450px]",
+        "text-foreground dark:text-background"
+      )}
+    >
+      <div className="size-32 lg:size-40 uppercase justify-self-center-safe relative group/contact rounded-full bg-foreground dark:bg-background text-background dark:text-foreground p-2 md:p-3">
         <CircularText
           id="marquee-scroll-text"
           text="GET IN TOUCH • GET IN TOUCH • GET IN TOUCH • "
@@ -653,7 +722,7 @@ const ContactIconItem = memo(() => {
           className="absolute inset-0 flex items-center justify-center size-full"
         >
           <svg
-            className="size-12"
+            className="size-8 md:size-12"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 128 128"
           >
@@ -722,21 +791,23 @@ const HeroTitle = memo(
     onLeave: () => void;
   }) => (
     <h1
-      className="mt-4 text-[10vw] text-wrap font-medium leading-none tracking-wide group/hero"
+      className="mt-4 text-[16vw] sm:text-[18vw] md:text-[13vw] lg:!text-[10vw] text-wrap font-medium leading-none tracking-wide group/hero"
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
     >
       I <span className="text-foreground dark:text-background">Turn</span>{" "}
+      <br className="block lg:hidden" />
       Imaginations
       <br />
-      <div className="flex items-center justify-center gap-[4vw] w-full">
-        Into
+      Into
+      <div className="inline-flex px-4 lg:px-10">
         <AsteriskCircleAnimated active={active} />
-        <span className="text-foreground dark:text-background">
-          Interactive
-        </span>
       </div>
+      <br className="block lg:hidden" />
+      <span className="text-foreground dark:text-background">Interactive</span>
+      <br />
       <span className="text-foreground dark:text-background">Digital</span>{" "}
+      <br className="block lg:hidden" />
       Experiences
     </h1>
   )
@@ -766,7 +837,7 @@ const Hero = () => {
     >
       <div className="flex items-center justify-center grow">
         <div className="flex flex-col justify-center text-center space-y-3 font-var tracking-wide text-foreground/40 dark:text-background/40 uppercase font-robo">
-          <div className="text-[2.5vw] font-nippo flex items-center justify-center gap-[4vw] font-medium">
+          <div className="text-[5vw] sm:text-[4vw] md:text-[3vw] lg:text-[2.5vw] font-nippo flex items-center justify-center gap-[4vw] font-medium">
             Designer <AnimatedArrow /> Developer
           </div>
           <HeroTitle
@@ -777,13 +848,13 @@ const Hero = () => {
         </div>
       </div>
 
-      <div className="h-50 flex items-center w-full justify-center bg-background dark:bg-foreground border-t-2 border-foreground/5 dark:border-background/5">
+      <div className="h-40 md:h-50 flex items-center w-full justify-center bg-background dark:bg-foreground border-t-2 border-foreground/5 dark:border-background/5">
         <div
           ref={uiContainerRef}
           className="relative flex items-center min-h-full overflow-hidden"
         >
-          <PillsMarqueeItem />
           <TestimonialsMarqueeItem />
+          <PillsMarqueeItem />
           <EnhancedGalleryMarqueeItem />
           <ContactIconItem />
           <PillsMarqueeItem />

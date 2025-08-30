@@ -118,7 +118,7 @@ const About = () => {
     >
       <h2
         ref={titleRef}
-        className="content__title font-extrabold font-robo uppercase text-[6vw] leading-none text-center max-w-[80%] px-4 select-none opacity text-foreground dark:text-background "
+        className="content__title font-extrabold font-robo uppercase text-[6vw] leading-none text-center max-w-[80%] px-4 select-none opacity text-foreground dark:text-background"
       >
         Visual <span className="about-highlight">Designer</span> & Web{" "}
         <span className="about-highlight">Developer</span> dedicated to the{" "}

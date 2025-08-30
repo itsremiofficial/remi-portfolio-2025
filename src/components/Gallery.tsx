@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { cn } from "../utils";
+import { useIsMobile } from "../hooks/useIsMobile";
 
 interface VideoItem {
   src: string;
@@ -20,11 +21,13 @@ const Gallery: React.FC<GalleryProps> = ({
   muted = true,
   playsInline = true,
 }) => {
+  const isMobile = useIsMobile();
   const galleryRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLUListElement>(null);
   const [activeIndex, setActiveIndex] = useState(2);
   const [userHasInteracted, setUserHasInteracted] = useState(false);
   const interactionListenerRef = useRef<boolean>(false);
+
   // Create unique ID for this gallery instance
   const galleryId = useRef(
     `gallery-${Math.random().toString(36).substring(2, 9)}`
@@ -138,7 +141,7 @@ const Gallery: React.FC<GalleryProps> = ({
           zIndex: 100 - Math.abs(distance),
           scale:
             distance === 0 ? 1 : distance === 1 || distance === -1 ? 0.75 : 0.5,
-          x: distance * 160, // Adjust spacing between videos
+          x: distance * (isMobile ? 110 : 150), // Adjust spacing between videos
           opacity: Math.abs(distance) > 2 ? 0.5 : 1,
           duration: 0.5,
           ease: "power2.out",
@@ -201,6 +204,7 @@ const Gallery: React.FC<GalleryProps> = ({
     muted,
     playsInline,
     userHasInteracted,
+    isMobile, // added to satisfy react-hooks/exhaustive-deps
   ]);
 
   // Add click handler to make cards interactive
@@ -218,7 +222,7 @@ const Gallery: React.FC<GalleryProps> = ({
           <li
             key={index}
             className={cn(
-              "list-none p-0 m-0 w-40 h-24 absolute flex items-center justify-center rounded-2xl overflow-hidden cursor-pointer",
+              "list-none p-0 m-0 w-28 h-16 md:w-40 md:h-24 absolute flex items-center justify-center rounded-xl md:rounded-2xl overflow-hidden cursor-pointer",
               index === activeIndex
                 ? "dark:shadow-[0_0_50px_rgba(0,0,0,0.9)] shadow-[0_0_15px_rgba(0,0,0,0.2)]"
                 : ""

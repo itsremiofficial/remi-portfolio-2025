@@ -367,10 +367,10 @@ const WorksCards = () => {
   return (
     <div
       // ref={worksContainerRef}
-      className="menu flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing select-none 2xl:scale-150"
+      className="menu flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing select-none"
     >
       <div
-        className="menu--wrapper flex justify-start"
+        className="menu--wrapper flex justify-start scale-50 2xl:scale-150"
         ref={worksContainerRef}
         style={{ touchAction: "none" }}
       >
@@ -384,7 +384,7 @@ const WorksCards = () => {
           >
             <div className="relative space-x-20">
               <div className="absolute right-0 top-2 flex items-center justify-center rounded-full w-14 h-1/3">
-                <div className="flex items-center gap-2 rotate-270 text-foreground dark:text-foreground text-3xl leading-none font-robo font-extrabold whitespace-nowrap">
+                <div className="flex items-center gap-2 rotate-270 text-foreground dark:text-background text-3xl leading-none font-robo font-extrabold whitespace-nowrap">
                   <div className="rotate-180 text-accent">
                     <span>❮</span>
                     <span className="relative -left-1">❮</span>
@@ -402,10 +402,10 @@ const WorksCards = () => {
                   className="size-full object-cover select-none pointer-events-none"
                 />
               </div>
-              <div className="absolute text-[1.5vw] left-10 bottom-0 flex inverted-card-bottom font-nippo uppercase font-extrabold text-foreground tracking-tight">
+              <div className="absolute lg:text-4xl left-10 bottom-0 flex inverted-card-bottom font-nippo uppercase font-extrabold text-foreground dark:text-background tracking-tight py-4">
                 {title}
               </div>
-              <div className="absolute left-0 top-0 size-[70px] flex items-center justify-center text-foreground text-7xl font-nippo font-extrabold">
+              <div className="absolute left-0 top-0 size-[70px] flex items-center justify-center text-foreground dark:text-background text-7xl font-nippo font-extrabold">
                 {index + 1}
               </div>
             </div>
