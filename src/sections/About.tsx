@@ -26,27 +26,43 @@ const About = () => {
       if (parent) gsap.set(parent, { perspective: 1000 });
     });
 
-    // include .about-arrow in highlight list
     const highlightSpans = Array.from(
       titleEl.querySelectorAll(".about-highlight")
     ) as HTMLElement[];
-
     const insertIndex = Math.max(0, highlightSpans.length - 1);
     if (arrowEl) highlightSpans.splice(insertIndex, 0, arrowEl);
 
-    const accentColor = isDark
-      ? "var(--color-background)"
-      : "var(--color-foreground)";
+    const highlightWords = words.filter((w) => w.closest(".about-highlight"));
+    const arrowWords = arrowEl ? words.filter((w) => arrowEl.contains(w)) : [];
 
-    // Tunables for smoother unpin
-    const SCROLL_DISTANCE = 400; // total scroll distance percentage
-    const EXIT_OFFSET = 0.15; // gap after color phase before exit starts
+    const SCROLL_DISTANCE = 400;
+    const EXIT_OFFSET = 0.15;
+
+    const fullOpacityTargets = Array.from(
+      new Set(
+        [
+          ...highlightWords,
+          ...arrowWords,
+          arrowEl as HTMLElement | undefined,
+        ].filter(Boolean)
+      )
+    ) as HTMLElement[];
+
+    // Place arrow container second last (if present)
+    if (arrowEl) {
+      const idx = fullOpacityTargets.indexOf(arrowEl);
+      if (idx > -1) {
+        fullOpacityTargets.splice(idx, 1); // remove current
+        const insertPos = Math.max(0, fullOpacityTargets.length - 1); // second last
+        fullOpacityTargets.splice(insertPos, 0, arrowEl);
+      }
+    }
 
     const entranceTl = gsap.timeline({
       scrollTrigger: {
         trigger: titleEl,
         start: "center center",
-        end: `+=${SCROLL_DISTANCE}%`, // extended to allow exit animation space
+        end: `+=${SCROLL_DISTANCE}%`,
         endTrigger: "#about",
         scrub: true,
         pin: true,
@@ -68,7 +84,9 @@ const About = () => {
           rotationY: () => gsap.utils.random(-25, 25),
         },
         {
-          opacity: 1,
+          // Per-element final opacity: arrow words = 1, others = 0.25
+          opacity: (_, el) =>
+            arrowWords.includes(el as HTMLElement) ? 1 : 0.25,
           rotationX: 0,
           rotationY: 0,
           xPercent: 0,
@@ -83,20 +101,18 @@ const About = () => {
         }
       )
       .to(
-        highlightSpans,
+        fullOpacityTargets,
         {
-          color: accentColor,
+          opacity: 1,
           duration: 0.6,
-          stagger: 0.1,
+          stagger: 0.08,
           ease: "power2.out",
         },
         ">0.15"
       )
-
       .to(
         titleEl,
         {
-          // yPercent: -50,
           autoAlpha: 0,
           ease: "power2.inOut",
           duration: 2,
@@ -118,7 +134,7 @@ const About = () => {
     >
       <h2
         ref={titleRef}
-        className="content__title font-extrabold font-robo uppercase text-[6vw] leading-none text-center max-w-[80%] px-4 select-none opacity text-foreground dark:text-background"
+        className="content__title font-extrabold font-robo uppercase text-[6vw] leading-none text-center max-w-[80%] px-4 select-none text-foreground dark:text-background"
       >
         Visual <span className="about-highlight">Designer</span> & Web{" "}
         <span className="about-highlight">Developer</span> dedicated to the{" "}

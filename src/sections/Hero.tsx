@@ -700,7 +700,7 @@ const ContactIconItem = memo(() => {
       className={cn(
         "flex items-center justify-center marquee-item rounded-xl",
         "md:px-8 md:py-4",
-        "min-w-[350px] md:min-w-[450px]",
+        "min-w-[350px] md:min-w-[300px]",
         "text-foreground dark:text-background"
       )}
     >
@@ -853,9 +853,9 @@ const Hero = () => {
           ref={uiContainerRef}
           className="relative flex items-center min-h-full overflow-hidden"
         >
-          <TestimonialsMarqueeItem />
           <PillsMarqueeItem />
           <EnhancedGalleryMarqueeItem />
+          <TestimonialsMarqueeItem />
           <ContactIconItem />
           <PillsMarqueeItem />
           <TestimonialsMarqueeItem />

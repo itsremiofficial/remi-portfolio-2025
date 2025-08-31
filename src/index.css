@@ -111,9 +111,7 @@
 }
 
 @theme inline {
-  
-  --breakpoint-lg: 991px;
-
+  --breakpoint-lg: 62rem;
 
   --color-dark: var(--bg-dark);
   --color-light: var(--bg-light);

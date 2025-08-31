@@ -109,7 +109,7 @@ const AsteriskCircleAnimated = ({ active }: AsteriskCircleAnimatedProps) => {
       // bind hover only if uncontrolled
       onMouseEnter={active === undefined ? handleMouseEnterAsterisk : undefined}
       onMouseLeave={active === undefined ? handleMouseLeaveAsterisk : undefined}
-      className="relative size-[12vw] sm:size-[13vw] md:size-[10vw] lg:size-[8vw] group/circle"
+      className="relative size-[12vw] sm:size-[13vw] md:size-[10vw] lg:size-[7vw] group/circle"
     >
       <div ref={asteriskRef} className="size-full">
         <Asterisk

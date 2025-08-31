@@ -52,7 +52,7 @@ const App = () => {
           <WelcomeMarquee />
           <About />
           <Works />
-          <Skills />
+          {/* <Skills /> */}
           <section
             className="w-full min-h-screen flex items-center justify-center bg-background"
             id="work"
