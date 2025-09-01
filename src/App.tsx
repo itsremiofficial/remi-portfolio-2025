@@ -8,6 +8,7 @@ import Works from "./sections/Works";
 import About from "./sections/About";
 import Squircle from "./components/ui/Squircle";
 import CursorFollower from "./components/ui/CursroFollower";
+import MatterCanvas from "./components/ui/PillsCanvas";
 
 const App = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -49,6 +50,7 @@ const App = () => {
 
         <main className="overflow-x-hidden text-black dark:text-white relative">
           <Hero />
+          <MatterCanvas />
           <WelcomeMarquee />
           <About />
           <Works />

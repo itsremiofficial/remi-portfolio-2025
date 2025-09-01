@@ -2,11 +2,9 @@ import { useGSAP } from "@gsap/react";
 import IconAltArrowLeft from "../components/icons/AltArrowLeft";
 import IconAltArrowRight from "../components/icons/AltArrowRight";
 import MagneticButton from "../components/MagneticButton";
-import ModernArrow from "../components/ModernArrow";
 import CursorFollower from "../components/ui/CursroFollower";
 import WorksCards from "../components/WorksCards";
 import gsap from "gsap";
-import IconArrowRight from "../components/icons/ArrowRight";
 
 const Works = () => {
   useGSAP(() => {
@@ -44,19 +42,19 @@ const Works = () => {
             Works
           </h2>
           <div className="space-y-6 pb-3">
-            <p className="w-max text-wrap text-2xl dark:text-background text-foreground font-syne font-medium leading-snug">
-              Explore my projects and <br /> witness how I elevate brands.
+            <p className="w-max text-wrap text-[1.5vw] dark:text-background text-foreground font-syne font-bold leading-snug">
+              Explore my <br /> projects and witness <br />
+              how I elevate brands.
             </p>
 
             <MagneticButton
-              className="bg-foreground dark:bg-background !w-max !h-max py-5 px-10 border-none cursor-pointer"
-              textClassName="text-accent dark:text-accent"
-              strengthText={0.12}
-              strengthButton={0.2}
+              className="bg-accent cursor-pointer py-5 px-14 group rounded-full"
+              fillClassName="dark:bg-background bg-foreground"
+              dataStrength={30}
+              dataStrengthText={20}
             >
-              <span className="inline-flex items-center gap-2 font-black font-syne uppercase text-lg">
-                Explore All{" "}
-                <ModernArrow className="size-5 -rotate-35" strokeWidth={1.4} />
+              <span className="inline-flex items-center gap-2 font-bold uppercase text-lg font-robo leading-none text-balance text-background dark:text-accent group-hover:text-background transition-colors duration-500">
+                Explore All
               </span>
             </MagneticButton>
           </div>
