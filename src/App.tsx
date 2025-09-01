@@ -3,11 +3,11 @@ import { LenisProvider } from "./context/LenisContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import Header from "./layout/Header";
 import Hero from "./sections/Hero";
-import Skills from "./sections/Skills";
 import WelcomeMarquee from "./sections/WelcomeMarquee";
 import Works from "./sections/Works";
 import About from "./sections/About";
 import Squircle from "./components/ui/Squircle";
+import CursorFollower from "./components/ui/CursroFollower";
 
 const App = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -54,14 +54,23 @@ const App = () => {
           <Works />
           {/* <Skills /> */}
           <section
-            className="w-full min-h-screen flex items-center justify-center bg-background"
+            className="w-full min-h-screen flex flex-col gap-10 items-center justify-center bg-background"
             id="work"
           >
-            <Squircle height={350} width={650} roundness={0.2} color="#ff5722">
-              <div className="flex items-center justify-center w-full h-full text-white font-bold">
-                Hello
-              </div>
-            </Squircle>
+            <CursorFollower
+              cursor={<div className="size-48 bg-foreground"></div>}
+            >
+              <Squircle
+                height={350}
+                width={650}
+                roundness={0.2}
+                color="#ff5722"
+              >
+                <div className="flex items-center justify-center w-full h-full text-white font-bold">
+                  Hello
+                </div>
+              </Squircle>
+            </CursorFollower>
           </section>
           <section
             className="w-full min-h-screen flex items-center justify-center"

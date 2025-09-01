@@ -367,10 +367,10 @@ const WorksCards = () => {
   return (
     <div
       // ref={worksContainerRef}
-      className="menu flex items-center justify-center cursor-grab active:cursor-grabbing select-none"
+      className="menu flex items-center justify-center cursor-pointer active:cursor-grabbing select-none my-28"
     >
       <div
-        className="menu--wrapper flex justify-start scale-80 2xl:scale-120"
+        className="menu--wrapper flex justify-start"
         ref={worksContainerRef}
         style={{ touchAction: "none" }}
       >

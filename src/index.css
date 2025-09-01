@@ -58,57 +58,6 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* THEME VARIABLES */
-:root {
-  --background: oklch(93.414% 0.011 89.725);
-  --foreground: oklch(23.075% 0 89.876);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(23.075% 0 89.876);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --accent: oklch(60.661% 0.21 33.781);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-
-  /* NAVIGATION */
-  --nav-background: oklch(0.985 0 0);
-  --nav-foreground: oklch(0.145 0 0);
-  --nav-primary: oklch(0.205 0 0);
-  --nav-primary-foreground: oklch(0.985 0 0);
-  --nav-accent: oklch(0.97 0 0);
-  --nav-accent-foreground: oklch(0.205 0 0);
-  --nav-border: oklch(0.922 0 0);
-}
-
-.dark {
-  --background: oklch(23.075% 0 89.876);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --accent: oklch(60.661% 0.21 33.781);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-
-  /* NAVIGATION */
-  --nav-background: oklch(0.205 0 0);
-  --nav-foreground: oklch(255 0 0);
-  --nav-primary: oklch(0.488 0.243 264.376);
-  --nav-primary-foreground: oklch(0.985 0 0);
-  --nav-accent: oklch(0.269 0 0);
-  --nav-accent-foreground: oklch(0.985 0 0);
-  --nav-border: oklch(1 0 0 / 10%);
-}
 
 @theme inline {
   --breakpoint-lg: 62rem;
@@ -121,11 +70,6 @@
   --font-nippo: "Nippo", "sans-serif";
   --font-robo: "Robo", "sans-serif";
   --font-ev: "Ev-regular", "sans-serif";
-
-  --color-primary: #ece9e1;
-  --color-accent: #e43c13;
-  --color-dark: #181818;
-  --color-light: oklch(82.915% 0.003 197.087);
 
   --color-100: oklch(99.5% 0 89.876);
   --color-200: oklch(99.457% 0 67.803);
@@ -267,7 +211,7 @@ body {
 
 .open .line-menu {
   @apply bg-dark;
-  @apply dark:bg-background;
+  @apply bg-foreground dark:bg-background;
 }
 
 @utility font-var {

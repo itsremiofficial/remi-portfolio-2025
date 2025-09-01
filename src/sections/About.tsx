@@ -125,7 +125,7 @@ const About = () => {
       entranceTl.kill();
       split.revert();
     };
-  }, [isDark]);
+  }, []);
 
   return (
     <section

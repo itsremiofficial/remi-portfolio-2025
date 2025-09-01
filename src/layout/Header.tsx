@@ -479,7 +479,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               menuContainerRef.current,
               {
                 height: closedHeight,
-                borderRadius: "1rem",
+                borderRadius: "1.5rem",
                 backgroundColor: isDark ? "#0000009a" : "#ffffff8a",
                 duration: 0.6,
                 ease: ANIMATION_EASE_IN,
@@ -538,7 +538,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
         <div
           ref={menuContainerRef}
           className={cn(
-            "absolute top-0 border w-full h-16 rounded-2xl z-[100] overflow-hidden origin-top-right space-y-3 backdrop-blur-2xl",
+            "absolute top-0 border w-full h-16 rounded-3xl z-[100] overflow-hidden origin-top-right space-y-3 backdrop-blur-2xl",
             "bg-nav-background/10 dark:bg-nav-foreground/70",
             "border-black/10 dark:border-background/12",
             "will-change-[width,height,borderRadius]"
