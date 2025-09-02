@@ -50,8 +50,8 @@ const App = () => {
 
         <main className="overflow-x-hidden text-black dark:text-white relative">
           <Hero />
-          <MatterCanvas />
           <WelcomeMarquee />
+          {/* <MatterCanvas /> */}
           <About />
           <Works />
           {/* <Skills /> */}

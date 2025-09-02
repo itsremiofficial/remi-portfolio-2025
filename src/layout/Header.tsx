@@ -380,7 +380,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
             .to(
               menuContainerRef.current,
               {
-                borderRadius: 1.5,
+                borderRadius: 2,
                 duration: 0.5,
                 ease: "power1.in",
               },

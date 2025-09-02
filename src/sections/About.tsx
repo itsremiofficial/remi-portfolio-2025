@@ -134,12 +134,12 @@ const About = () => {
     >
       <h2
         ref={titleRef}
-        className="content__title font-extrabold font-robo uppercase text-[6vw] leading-none text-center max-w-[80%] px-4 select-none text-foreground dark:text-background"
+        className="content__title font-extrabold font-robo uppercase text-[10vw] lg:text-[8vw] xl:text-[6vw] leading-none text-center max-w-[80%] px-4 select-none text-foreground dark:text-background"
       >
         Visual <span className="about-highlight">Designer</span> & Web{" "}
         <span className="about-highlight">Developer</span> dedicated to the{" "}
         craft of <span className="about-highlight">creating</span>{" "}
-        <span className="about-arrow inline-flex items-center justify-center">
+        <span className="about-arrow inline-flex items-center justify-center gap-2">
           0 <ModernArrow className="w-[6vw] h-max" /> 1
         </span>{" "}
         experiences till the last{" "}

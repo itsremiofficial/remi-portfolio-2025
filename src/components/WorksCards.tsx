@@ -383,8 +383,8 @@ const WorksCards = () => {
             className="menu--item m-4 marquee-works-card flex-shrink-0"
           >
             <div className="relative space-x-20">
-              <div className="absolute right-0 top-2 flex items-center justify-center rounded-full w-14 h-1/3">
-                <div className="flex items-center gap-2 rotate-270 text-foreground dark:text-background text-3xl leading-none font-robo font-extrabold whitespace-nowrap">
+              <div className="absolute right-0 top-2 flex items-center justify-center rounded-full w-6 md:w-8 lg:w-14 h-1/3">
+                <div className="flex items-center gap-2 rotate-270 text-foreground dark:text-background text-md md:text-lg lg:text-3xl leading-none font-robo font-extrabold whitespace-nowrap">
                   <div className="rotate-180 text-accent">
                     <span>❮</span>
                     <span className="relative -left-1">❮</span>
@@ -393,7 +393,7 @@ const WorksCards = () => {
                   <div>© 2023</div>
                 </div>
               </div>
-              <div className="box-inverted relative flex items-center justify-center">
+              <div className="relative box-inverted flex items-center justify-center !aspect-[16/10]">
                 <img
                   src={imageUrl}
                   alt={title}
@@ -402,10 +402,10 @@ const WorksCards = () => {
                   className="size-full object-cover select-none pointer-events-none"
                 />
               </div>
-              <div className="absolute lg:text-4xl left-10 bottom-0 flex inverted-card-bottom font-nippo uppercase font-extrabold text-foreground dark:text-background tracking-tight py-4">
+              <div className="absolute text-xl md:text-2xl lg:text-4xl left-[1.5vw] bottom-0 flex inverted-card-bottom font-nippo uppercase font-extrabold text-foreground dark:text-background tracking-tight lg:py-4">
                 {title}
               </div>
-              <div className="absolute left-0 top-0 size-[70px] flex items-center justify-center text-foreground dark:text-background text-7xl font-nippo font-extrabold">
+              <div className="absolute left-0 top-0 pl-2 pb-2 flex items-center justify-center text-foreground dark:text-background text-2xl md:text-4xl lg:text-7xl font-nippo font-extrabold">
                 {index + 1}
               </div>
             </div>

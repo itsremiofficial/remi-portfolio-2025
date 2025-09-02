@@ -32,28 +32,28 @@ const Works = () => {
     );
   });
   return (
-    <div className="min-h-screen space-y-8">
+    <div className="w-full space-y-8">
       <div className="px-6">
-        <h2 className="text-[20vw] font-extrabold text-foreground dark:text-background uppercase leading-[15vw] pt-2 font-robo">
+        <h2 className="text-[18vw] font-extrabold text-foreground dark:text-background uppercase leading-[13vw] pt-2 font-robo">
           Selected
         </h2>
-        <div className="inline-flex gap-10 items-end">
-          <h2 className="text-[20vw] font-extrabold uppercase font-robo leading-[15vw] text-accent pt-2">
+        <div className="inline-flex gap-[2vw] items-end">
+          <h2 className="text-[18vw] font-extrabold uppercase font-robo leading-[13vw] text-accent pt-2">
             Works
           </h2>
-          <div className="space-y-6 pb-3">
-            <p className="w-max text-wrap text-[1.5vw] dark:text-background text-foreground font-syne font-bold leading-snug">
-              Explore my <br /> projects and witness <br />
-              how I elevate brands.
+          <div className="space-y-[1vw] pb-3">
+            <p className="hidden md:block w-max text-wrap text-[1.5vw] dark:text-background/70 text-foreground/70 font-robo leading-snug">
+              Step inside my projects—where <br /> brands rise above the
+              ordinary.
             </p>
 
             <MagneticButton
-              className="bg-accent cursor-pointer py-5 px-14 group rounded-full"
+              className="bg-accent cursor-pointer py-[1.2vw] px-[4vw] group rounded-full"
               fillClassName="dark:bg-background bg-foreground"
               dataStrength={30}
               dataStrengthText={20}
             >
-              <span className="inline-flex items-center gap-2 font-bold uppercase text-lg font-robo leading-none text-balance text-background dark:text-accent group-hover:text-background transition-colors duration-500">
+              <span className="inline-flex items-center gap-2 font-bold uppercase text-sm lg:text-lg font-robo leading-none text-balance text-background group-hover:text-background dark:group-hover:text-foreground transition-colors duration-500 whitespace-nowrap">
                 Explore All
               </span>
             </MagneticButton>
@@ -64,10 +64,16 @@ const Works = () => {
       <CursorFollower
         cursorWrapperClassName="backdrop-blur-xl dark:bg-foreground/40 bg-background/40 rounded-full"
         cursor={
-          <div className="relative size-48 rounded-full border border-accent flex items-center justify-center gap-2 text-accent">
-            <IconAltArrowLeft width={2} className="size-6 wiggleleft" />
-            <div className="size-4 dark:bg-background bg-foreground rounded-full" />
-            <IconAltArrowRight width={2} className="size-6 wiggleright" />
+          <div className="relative size-30 lg:size-48 rounded-full border border-accent flex items-center justify-center gap-2 text-accent">
+            <IconAltArrowLeft
+              width={2}
+              className="size-4 lg:size-6 wiggleleft"
+            />
+            <div className="size-2 lg:size-4 dark:bg-background bg-foreground rounded-full" />
+            <IconAltArrowRight
+              width={2}
+              className="size-4 lg:size-6 wiggleright"
+            />
           </div>
         }
       >
