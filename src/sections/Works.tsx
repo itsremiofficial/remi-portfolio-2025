@@ -10,10 +10,10 @@ const Works = () => {
   useGSAP(() => {
     gsap.fromTo(
       ".wiggleleft",
-      { x: -5 },
+      { x: 0 },
       {
         x: 5,
-        duration: 1,
+        duration: 0.6,
         ease: "0.7, 0, 0.2, 1",
         yoyo: true,
         repeat: -1,
@@ -21,10 +21,10 @@ const Works = () => {
     );
     gsap.fromTo(
       ".wiggleright",
-      { x: 5 },
+      { x: 0 },
       {
         x: -5,
-        duration: 1,
+        duration: 0.6,
         ease: "0.7, 0, 0.2, 1",
         yoyo: true,
         repeat: -1,
@@ -64,12 +64,12 @@ const Works = () => {
       <CursorFollower
         cursorWrapperClassName="backdrop-blur-xl dark:bg-foreground/40 bg-background/40 rounded-full"
         cursor={
-          <div className="relative size-30 lg:size-48 rounded-full border border-accent flex items-center justify-center gap-2 text-accent">
+          <div className="relative size-30 lg:size-40 rounded-full border border-accent flex items-center justify-center gap-2 text-accent">
             <IconAltArrowLeft
               width={2}
               className="size-4 lg:size-6 wiggleleft"
             />
-            <div className="size-2 lg:size-4 dark:bg-background bg-foreground rounded-full" />
+            <span className="font-bold font-robo text-sm">DRAG</span>
             <IconAltArrowRight
               width={2}
               className="size-4 lg:size-6 wiggleright"

@@ -393,7 +393,7 @@ const WorksCards = () => {
                   <div>© 2023</div>
                 </div>
               </div>
-              <div className="relative box-inverted flex items-center justify-center !aspect-[16/10]">
+              <div className="relative works-card-clip flex items-center justify-center !aspect-[16/10]">
                 <img
                   src={imageUrl}
                   alt={title}
