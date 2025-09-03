@@ -547,7 +547,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
             </a>
 
             <div
-              className={`nav-wrapper h-full w-full ${
+              className={`nav-wrapper !h-6 !w-6 ${
                 isExpanded ? "open" : ""
               }`}
               onClick={toggleMenu}
