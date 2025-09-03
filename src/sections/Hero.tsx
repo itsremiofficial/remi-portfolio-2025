@@ -108,7 +108,7 @@ const AnimatedArrow = memo(() => {
   });
 
   return (
-    <ModernArrow className="hero-modern-arrow w-[5vw] sm:w-[4vw] md:w-[3vw] lg:w-[3vw] h-max relative dark:text-background text-foreground" />
+    <ModernArrow className="hero-modern-arrow w-[3vw] sm:w-[4vw] md:w-[3vw] lg:w-[2vw] h-max relative dark:text-background text-foreground" />
   );
 });
 
@@ -704,17 +704,14 @@ const ContactIconItem = memo(() => {
         "text-foreground dark:text-background"
       )}
     >
-      <div className="size-32 lg:size-40 uppercase justify-self-center-safe relative group/contact rounded-full bg-foreground dark:bg-background text-background dark:text-foreground p-2 md:p-3">
+      <div className="size-32 lg:size-40 uppercase justify-self-center-safe relative group/contact rounded-full bg-foreground dark:bg-background text-background dark:text-foreground p-2 md:p-3 ">
         <CircularText
           id="marquee-scroll-text"
           text="GET IN TOUCH • GET IN TOUCH • GET IN TOUCH • "
           animate
+          textClassName="text-[8.5px] tracking-[1.47px] font-bold"
           size={100}
-          fontSize={8.5}
           radius={87}
-          fontWeight={400}
-          letterSpacing="1.40px"
-          fontFamily="Inter"
           animationDuration="25s"
         />
         <div
@@ -791,24 +788,24 @@ const HeroTitle = memo(
     onLeave: () => void;
   }) => (
     <h1
-      className="mt-4 text-[16vw] sm:text-[18vw] md:text-[13vw] lg:!text-[10vw] text-wrap font-medium leading-none tracking-wide group/hero"
+      className="mt-4 text-[16vw] sm:text-[18vw] md:text-[13vw] lg:!text-[10vw] font-var text-wrap font-medium leading-none tracking-wide group/hero"
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
     >
-      I <span className="text-foreground dark:text-background">Turn</span>{" "}
-      <br className="block lg:hidden" />
-      Imaginations
+      I Turn <br className="block lg:hidden" />
+      <span className="text-foreground dark:text-background">
+        Imaginations
+      </span>{" "}
       <br />
-      Into
+      <span className="text-foreground dark:text-background">Into</span>
       <div className="inline-flex px-4 lg:px-10">
         <AsteriskCircleAnimated active={active} />
       </div>
       <br className="block lg:hidden" />
-      <span className="text-foreground dark:text-background">Interactive</span>
+      Interactive
       <br />
-      <span className="text-foreground dark:text-background">Digital</span>{" "}
-      <br className="block lg:hidden" />
-      Experiences
+      Digital <br className="block lg:hidden" />
+      <span className="text-foreground dark:text-background">Experiences</span>
     </h1>
   )
 );
@@ -832,12 +829,12 @@ const Hero = () => {
 
   return (
     <section
-      className="w-full min-h-[calc(100vh-6rem)] flex flex-col items-center justify-between"
+      className="w-full min-h-[calc(100lvh-6rem)] md:min-h-[calc(100vh-6rem)] flex flex-col items-center justify-between"
       id="home"
     >
       <div className="flex items-center justify-center grow">
-        <div className="flex flex-col justify-center text-center space-y-3 font-var tracking-wide text-foreground/40 dark:text-background/40 uppercase font-robo">
-          <div className="text-[5vw] sm:text-[4vw] md:text-[3vw] lg:text-[2.5vw] font-nippo flex items-center justify-center gap-[4vw] font-medium">
+        <div className="flex flex-col justify-center text-center space-y-3 tracking-wide text-foreground/40 dark:text-background/40 uppercase font-robo">
+          <div className="text-[3vw] sm:text-[4vw] md:text-[3vw] lg:text-[2vw] font-syne flex items-center justify-center gap-[4vw] font-medium">
             Designer <AnimatedArrow /> Developer
           </div>
           <HeroTitle

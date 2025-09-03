@@ -2,12 +2,10 @@ import ModernArrow from "../components/ModernArrow";
 import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger, SplitText } from "gsap/all";
-import { useTheme } from "../hooks/useTheme";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
 const About = () => {
-  const { isDark } = useTheme();
   const titleRef = useRef<HTMLHeadingElement | null>(null);
 
   useLayoutEffect(() => {
@@ -138,7 +136,7 @@ const About = () => {
       >
         Visual <span className="about-highlight">Designer</span> & Web{" "}
         <span className="about-highlight">Developer</span> dedicated to the{" "}
-        craft of <span className="about-highlight">creating</span>{" "}
+        <span className="about-highlight">craft</span> of creating{" "}
         <span className="about-arrow inline-flex items-center justify-center gap-2">
           0 <ModernArrow className="w-[6vw] h-max" /> 1
         </span>{" "}

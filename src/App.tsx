@@ -57,9 +57,9 @@ const App = () => {
         <main className="overflow-x-hidden text-black dark:text-white relative">
           <Hero />
           <WelcomeMarquee />
-          {/* <MatterCanvas /> */}
           <About />
           <Works />
+          {/* <MatterCanvas /> */}
           {/* <Skills /> */}
           <section
             className="w-full min-h-screen flex flex-col gap-10 items-center justify-center bg-background"

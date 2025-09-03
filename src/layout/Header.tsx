@@ -29,7 +29,7 @@ const CUSTOM_EASE = "0.7, 0, 0.2, 1";
 const ANIMATION_EASE_IN = "0.8, 0, 0.3, 1";
 // Change the Logo component to properly handle the ref type
 const Logo = memo(
-  React.forwardRef<SVGSVGElement>((props, ref) => (
+  React.forwardRef<SVGSVGElement>((_props, ref) => (
     <svg
       ref={ref}
       className="text-foreground dark:text-background h-7"
@@ -196,7 +196,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
         md: "(min-width: 768px)",
       },
       (context) => {
-        const { xs, sm, md } = context.conditions as Record<string, boolean>;
+        const { md } = context.conditions as Record<string, boolean>;
         // Responsive target widths for the compressed (small) state
         const smallWidth = md ? 420 : "100%";
 
@@ -351,10 +351,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
         lg: "(min-width: 992px)",
       },
       (context) => {
-        const { xs, sm, md, lg } = context.conditions as Record<
-          string,
-          boolean
-        >;
+        const { sm, md, lg } = context.conditions as Record<string, boolean>;
 
         // Heights per breakpoint (adjust as needed)
         const openHeight = sm ? 500 : md ? 540 : lg ? 640 : 480;
@@ -765,8 +762,6 @@ const ThemeIcon = memo(({ className }: { className?: string }) => {
         "<0.1"
       );
     }
-
-    // Cleanup function not needed as we handle timeline kills on next effect run
   }, [isDark]);
 
   return (

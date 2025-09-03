@@ -122,7 +122,7 @@ const MacCursorAuto: React.FC<MacCursorAutoProps> = ({
 export default MacCursorAuto;
 
 /*
-Removed appleCursors.css: this component now handles:
+Handles:
 - Base arrow (auto/default)
 - Pointer, text, move, grab, resizing, not-allowed
 To skip overriding the base arrow: <MacCursorAuto allowBaseCursorOverride={false} />

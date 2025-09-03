@@ -106,7 +106,6 @@ const AsteriskCircleAnimated = ({ active }: AsteriskCircleAnimatedProps) => {
   return (
     <div
       ref={containerRef}
-      // bind hover only if uncontrolled
       onMouseEnter={active === undefined ? handleMouseEnterAsterisk : undefined}
       onMouseLeave={active === undefined ? handleMouseLeaveAsterisk : undefined}
       className="relative size-[12vw] sm:size-[13vw] md:size-[10vw] lg:size-[7vw] group/circle"
@@ -125,11 +124,9 @@ const AsteriskCircleAnimated = ({ active }: AsteriskCircleAnimatedProps) => {
           id="hero-scroll-text"
           text="SCROLL DOWN FOR REMI STUFF ✦"
           animate
+          textClassName="text-[14px] md:text-[13.5px] tracking-[1.47px] font-bold"
           size={100}
-          fontSize={13.5}
           radius={87}
-          fontWeight={500}
-          letterSpacing="1.35px"
           fontFamily="Inter"
           animationDuration="25s"
         />

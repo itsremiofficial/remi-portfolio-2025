@@ -3,6 +3,7 @@ import React from "react";
 interface CircularTextProps {
   text: string;
   className?: string;
+  textClassName?: string;
   size?: number | string;
   radius?: number;
   fontSize?: number | string;
@@ -21,6 +22,7 @@ interface CircularTextProps {
 const CircularText: React.FC<CircularTextProps> = ({
   text,
   className = "",
+  textClassName = "",
   size = 200,
   radius = 75,
   fontSize = 16,
@@ -89,6 +91,7 @@ const CircularText: React.FC<CircularTextProps> = ({
           letterSpacing={letterSpacing}
           fontFamily={fontFamily}
           dominantBaseline="middle"
+          className={textClassName}
         >
           <textPath href={`#${uniqueId}`} startOffset={startOffset}>
             {processedText}

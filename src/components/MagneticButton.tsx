@@ -21,6 +21,7 @@ interface MagneticButtonProps {
   dataStrength?: number;
   dataStrengthText?: number;
   isZoomDetail?: boolean;
+  props?: React.ButtonHTMLAttributes<HTMLButtonElement>;
 }
 
 const MagneticButton: React.FC<MagneticButtonProps> = ({
@@ -31,6 +32,7 @@ const MagneticButton: React.FC<MagneticButtonProps> = ({
   dataStrength = 100,
   dataStrengthText = 50,
   isZoomDetail = false,
+  props,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const fillRef = useRef<HTMLDivElement>(null);
@@ -62,19 +64,6 @@ const MagneticButton: React.FC<MagneticButtonProps> = ({
     },
     [isZoomDetail]
   );
-
-  // Helper: animate fill
-  const animateFill = useCallback((toY: string, opts?: gsap.TweenVars) => {
-    const fill = fillRef.current;
-    if (!fill) return;
-    gsap.to(fill, {
-      duration: 0.5,
-      y: toY,
-      ease: "0.7, 0, 0.2, 1",
-      overwrite: "auto",
-      ...opts,
-    });
-  }, []);
 
   // Initialize / update fill when zoom mode changes
   useEffect(() => {
@@ -168,9 +157,9 @@ const MagneticButton: React.FC<MagneticButtonProps> = ({
         fill,
         { y: HIDDEN_Y },
         {
-          duration: 0.5,
+          duration: 0.8,
           y: "0%",
-          ease: "power2.out",
+          ease: "0.7, 0, 0.2, 1",
           overwrite: "auto",
         }
       );
@@ -198,7 +187,7 @@ const MagneticButton: React.FC<MagneticButtonProps> = ({
         gsap.to(fill, {
           duration: 0.5,
           y: ZOOM_HIDDEN_Y,
-          ease: "power2.inOut",
+          ease: "0.8, 0, 0.3, 1",
           overwrite: "auto",
         });
       }
@@ -230,11 +219,12 @@ const MagneticButton: React.FC<MagneticButtonProps> = ({
       onMouseLeave={handleMouseLeave}
       onPointerEnter={handlePointerEnter}
       onPointerLeave={handlePointerLeave}
+      {...props}
     >
       <div
         ref={fillRef}
         className={cn(
-          "btn-fill absolute left-0 top-[-50%] rounded-[50%] w-[110%] h-[200%] pointer-events-none",
+          "btn-fill absolute left-[-10%] top-[-50%] rounded-[50%] w-[120%] h-[200%] pointer-events-none",
           fillClassName
         )}
         style={{
