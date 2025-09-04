@@ -7,6 +7,27 @@ import WelcomeMarquee from "./sections/WelcomeMarquee";
 import Works from "./sections/Works";
 import About from "./sections/About";
 import Squircle from "./components/ui/Squircle";
+import MacCursorAuto from "./components/ui/MacCursorAuto";
+import {
+  CustomEase,
+  DrawSVGPlugin,
+  InertiaPlugin,
+  MorphSVGPlugin,
+  Observer,
+  ScrollTrigger,
+  SplitText,
+} from "gsap/all";
+import gsap from "gsap";
+
+gsap.registerPlugin(
+  ScrollTrigger,
+  SplitText,
+  Observer,
+  CustomEase,
+  MorphSVGPlugin,
+  DrawSVGPlugin,
+  InertiaPlugin
+);
 
 const App = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -36,6 +57,7 @@ const App = () => {
 
   return (
     <ThemeProvider>
+      <MacCursorAuto />
       <LenisProvider
         options={{
           duration: 3,

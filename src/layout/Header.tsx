@@ -14,7 +14,7 @@ import AnimatedText from "../components/AnimatedText";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useScrollTo } from "../hooks/useLenis";
-import { CustomEase, MorphSVGPlugin } from "gsap/all";
+import { CustomEase } from "gsap/all";
 import { useActiveSection } from "../hooks/useActiveSection";
 import { useTheme } from "../hooks/useTheme";
 import AnimatedTooltip from "../components/AnimatedTooltip";
@@ -22,8 +22,6 @@ import IconInstagram from "../components/icons/Instagram";
 import TimeDisplay from "../components/DualTime";
 import IconLinkedIn from "../components/icons/Linkedin";
 import { MENU_ITEMS } from "../constants/HERO";
-
-gsap.registerPlugin(CustomEase, MorphSVGPlugin);
 
 const CUSTOM_EASE = "0.7, 0, 0.2, 1";
 const ANIMATION_EASE_IN = "0.8, 0, 0.3, 1";
@@ -547,9 +545,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
             </a>
 
             <div
-              className={`nav-wrapper !h-6 !w-6 ${
-                isExpanded ? "open" : ""
-              }`}
+              className={`nav-wrapper !h-6 !w-6 ${isExpanded ? "open" : ""}`}
               onClick={toggleMenu}
             >
               <div className="line-menu !w-1/2"></div>

@@ -2,19 +2,18 @@ import React, { useEffect } from "react";
 
 // UPDATED: include base arrow mapping (previously only CSS handled this)
 const CURSOR_MAP: Record<string, string> = {
-  auto: 'url("/cursors/default.svg") 0 0, default',
-  default: 'url("/cursors/default.svg") 0 0, default',
-  pointer: 'url("/cursors/handpointing.svg") 4 2, pointer',
-  text: 'url("/cursors/textcursor.svg") 12 16, text',
-  "text-input": 'url("/cursors/textcursor.svg") 12 16, text',
-  move: 'url("/cursors/move.svg") 12 12, move',
-  grab: 'url("/cursors/handopen.svg") 12 12, grab',
-  grabbing: 'url("/cursors/handgrabbing.svg") 12 12, grabbing',
-  "not-allowed": 'url("/cursors/notallowed.svg") 12 12, not-allowed',
-  "ew-resize": 'url("/cursors/mac-ew-resize.png") 16 16, ew-resize',
-  "ns-resize": 'url("/cursors/mac-ns-resize.png") 16 16, ns-resize',
-  "nesw-resize": 'url("/cursors/mac-nesw-resize.png") 16 16, nesw-resize',
-  "nwse-resize": 'url("/cursors/mac-nwse-resize.png") 16 16, nwse-resize',
+  auto: 'url("/cursors/default.svg") 1 1, default',
+  default: 'url("/cursors/default.svg") 1 1, default',
+  pointer: 'url("/cursors/handpointing.svg") 8 4, pointer',
+  text: 'url("/cursors/textcursor.svg") 8 2, text',
+  move: 'url("/cursors/move.svg") 16 16, move',
+  grab: 'url("/cursors/handopen.svg") 6 4, grab',
+  grabbing: 'url("/cursors/handgrabbing.svg") 6 8, grabbing',
+  "not-allowed": 'url("/cursors/notallowed.svg") 16 16, not-allowed',
+  // "ew-resize": 'url("/cursors/mac-ew-resize.png") 16 16, ew-resize',
+  // "ns-resize": 'url("/cursors/mac-ns-resize.png") 16 16, ns-resize',
+  // "nesw-resize": 'url("/cursors/mac-nesw-resize.png") 16 16, nesw-resize',
+  // "nwse-resize": 'url("/cursors/mac-nwse-resize.png") 16 16, nwse-resize',
 };
 
 // Allow list only for values we still ignore

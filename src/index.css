@@ -535,3 +535,7 @@ body {
 .is-dragging {
   cursor: grabbing;
 }
+
+/* * {
+  outline: 1px solid rgba(255, 0, 0, 0.5);
+} */

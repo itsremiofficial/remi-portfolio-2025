@@ -4,7 +4,6 @@ import horizontalLoop from "../utils/horizontalLoop";
 
 import { gsap } from "gsap";
 import { Observer } from "gsap/Observer";
-gsap.registerPlugin(Observer);
 
 const WelcomeMarquee = () => {
   const welcomeRef = useRef<HTMLDivElement>(null);

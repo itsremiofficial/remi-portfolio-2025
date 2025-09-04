@@ -5,8 +5,6 @@ import MagneticButton from "../components/MagneticButton";
 import CursorFollower from "../components/ui/CursroFollower";
 import gsap from "gsap";
 import { lazy, Suspense, useMemo, useRef } from "react";
-import { InertiaPlugin, ScrollTrigger } from "gsap/all";
-gsap.registerPlugin(InertiaPlugin, ScrollTrigger);
 
 const WorksCards = lazy(() => import("../components/WorksCards"));
 
@@ -124,9 +122,11 @@ const Works = () => {
     // If you want semantic landmark: change to <section aria-labelledby="selected-works-heading">
     <div ref={mainContainerRef} className="w-full lg:space-y-8">
       <div className="px-4 md:px-6">
-        {/* Optionally uncomment for a single accessible heading:
-        <h2 id="selected-works-heading" className="sr-only">Selected Works</h2>
-        */}
+        {/* Optionally uncomment for a single accessible heading: */}
+        <h2 id="selected-works-heading" className="sr-only">
+          Selected Works
+        </h2>
+
         <h2
           ref={selectedHeadingRef}
           className="text-[18vw] font-extrabold text-foreground dark:text-background uppercase leading-[13vw] pt-2 font-robo"
@@ -156,9 +156,10 @@ const Works = () => {
               <MagneticButton
                 className="hidden md:inline-flex bg-accent cursor-pointer h-max py-[1.2vw] px-[4vw] group rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent/60 transition-colors"
                 fillClassName="dark:bg-background bg-foreground"
-                dataStrength={50}
-                dataStrengthText={40}
+                dataStrength={10}
+                dataStrengthText={30}
                 aria-label="Explore all works"
+                href="/works"
               >
                 <span className="inline-flex items-center gap-2 font-bold uppercase text-sm lg:text-lg font-robo leading-none text-background group-hover:text-background dark:group-hover:text-foreground transition-colors duration-500 whitespace-nowrap">
                   Explore All

@@ -7,10 +7,7 @@ import Gallery from "../components/Gallery";
 import horizontalLoop from "../utils/horizontalLoop";
 import AsteriskCircleAnimated from "../components/ui/AsteriskCircleAnimated";
 import CircularText from "../components/ui/CircularText";
-import { DrawSVGPlugin } from "gsap/all";
 import { cn } from "../utils";
-
-gsap.registerPlugin(DrawSVGPlugin);
 
 // Extracted reusable pill component for better rendering
 const Pill = memo(({ text }: { text: string }) => (

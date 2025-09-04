@@ -1,9 +1,7 @@
 import ModernArrow from "../components/ModernArrow";
 import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
-import { ScrollTrigger, SplitText } from "gsap/all";
-
-gsap.registerPlugin(ScrollTrigger, SplitText);
+import { SplitText } from "gsap/all";
 
 const About = () => {
   const titleRef = useRef<HTMLHeadingElement | null>(null);
@@ -136,7 +134,12 @@ const About = () => {
       >
         Visual <span className="about-highlight">Designer</span> & Web{" "}
         <span className="about-highlight">Developer</span> dedicated to the{" "}
-        <span className="about-highlight">craft</span> of creating{" "}
+        <span className="about-highlight lg:hidden">craft</span>
+        <span className="hidden lg:inline-block">craft</span> of{" "}
+        <span className="lg:hidden">creating</span>
+        <span className="about-highlight hidden lg:inline-block">
+          creating
+        </span>{" "}
         <span className="about-arrow inline-flex items-center justify-center gap-2">
           0 <ModernArrow className="w-[6vw] h-max" /> 1
         </span>{" "}
