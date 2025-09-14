@@ -59,7 +59,7 @@ const Works = () => {
             scrollTrigger: {
               trigger: wrapper,
               start: "top 85%",
-              end: "top 40%",
+              end: "top 10%",
               scrub: 0.6,
             },
             defaults: { ease: "power1.inOut" },
@@ -106,7 +106,7 @@ const Works = () => {
     { scope: mainContainerRef } // IMPORTANT: restores proper scoping & auto cleanup
   );
 
-  // Memoized cursor element (not strictly necessary, but avoids recreating JSX on rerender)
+  
   const dragCursor = useMemo(
     () => (
       <div className="relative size-30 lg:size-40 rounded-full border border-accent flex items-center justify-center gap-2 text-accent">
@@ -179,7 +179,7 @@ const Works = () => {
       </div>
 
       <CursorFollower
-        cursorWrapperClassName="backdrop-blur-xl dark:bg-foreground/40 bg-background/40 rounded-full"
+        cursorWrapperClassName="backdrop-blur-lg dark:bg-foreground/50 bg-background/40 rounded-full"
         cursor={dragCursor}
       >
         <Suspense

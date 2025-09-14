@@ -1,43 +1,33 @@
 const WORKS = [
   {
-    title: "Project One",
+    title: "Mivator Pro",
+    type: "Dashboard",
     imageUrl: "/videos/video01.jpg",
+    year: "2024",
   },
   {
     title: "Project Two",
+    type: "Website",
     imageUrl: "/videos/video02.jpg",
+    year: "2024",
   },
   {
     title: "Project Three",
+    type: "Website",
     imageUrl: "/videos/video03.jpg",
+    year: "2024",
   },
   {
     title: "Project Four",
+    type: "Website",
     imageUrl: "/videos/portfolio01.jpg",
+    year: "2024",
   },
   {
     title: "Project Two",
+    type: "Website",
     imageUrl: "/videos/video02.jpg",
-  },
-  {
-    title: "Project One",
-    imageUrl: "/videos/video01.jpg",
-  },
-  {
-    title: "Project Two",
-    imageUrl: "/videos/video02.jpg",
-  },
-  {
-    title: "Project Three",
-    imageUrl: "/videos/video03.jpg",
-  },
-  {
-    title: "Project Four",
-    imageUrl: "/videos/portfolio01.jpg",
-  },
-  {
-    title: "Project Two",
-    imageUrl: "/videos/video02.jpg",
+    year: "2024",
   },
 ];
 
