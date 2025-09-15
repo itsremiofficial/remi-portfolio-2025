@@ -84,7 +84,7 @@ const App = () => {
           {/* <MatterCanvas /> */}
           {/* <Skills /> */}
           <section
-            className="w-full min-h-screen flex flex-col gap-10 items-center justify-center bg-background"
+            className="w-full min-h-screen flex flex-col gap-10 items-center justify-center"
             id="work"
             data-cursor="accent"
             data-cursor-text="Explore"

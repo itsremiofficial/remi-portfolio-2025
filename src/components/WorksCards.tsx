@@ -548,7 +548,7 @@ const WorksCards = () => {
                   draggable={false}
                 />
               </div>
-              <div className="absolute text-xl md:text-2xl lg:text-5xl bottom-2 flex inverted-card-bottom font-inter font-black text-foreground dark:text-accent uppercase md:w-54">
+              <div className="absolute text-xl md:text-2xl lg:text-5xl bottom-2 flex inverted-card-bottom font-inter font-black text-foreground dark:text-accent uppercase md:w-54 lg:w-90">
                 {title}
               </div>
               <div className="absolute left-0 top-0 pb-2 flex items-center justify-center text-foreground dark:text-background text-xs md:text-sm lg:text-lg font-robo font-extrabold uppercase leading-none w-28 lg:w-36 pt-1 lg:pt-2.5">
