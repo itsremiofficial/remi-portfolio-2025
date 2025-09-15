@@ -59,7 +59,7 @@ const Works = () => {
             scrollTrigger: {
               trigger: wrapper,
               start: "top 85%",
-              end: "top 10%",
+              end: "top 20%",
               scrub: 0.6,
             },
             defaults: { ease: "power1.inOut" },
@@ -106,7 +106,6 @@ const Works = () => {
     { scope: mainContainerRef } // IMPORTANT: restores proper scoping & auto cleanup
   );
 
-  
   const dragCursor = useMemo(
     () => (
       <div className="relative size-30 lg:size-40 rounded-full border border-accent flex items-center justify-center gap-2 text-accent">
@@ -154,14 +153,14 @@ const Works = () => {
 
             <div className="place-self-end sm:justify-self-auto">
               <MagneticButton
-                className="hidden md:inline-flex bg-accent cursor-pointer h-max py-[1.2vw] px-[4vw] group rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent/60 transition-colors"
-                fillClassName="dark:bg-background bg-foreground"
+                className="hidden md:inline-flex dark:bg-background bg-foreground cursor-pointer h-max py-[1.2vw] px-[4vw] group rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent/60 transition-colors"
+                fillClassName="bg-accent"
                 dataStrength={10}
-                dataStrengthText={30}
+                dataStrengthText={35}
                 aria-label="Explore all works"
                 href="/works"
               >
-                <span className="inline-flex items-center gap-2 font-bold uppercase text-sm lg:text-lg font-robo leading-none text-background group-hover:text-background dark:group-hover:text-foreground transition-colors duration-500 whitespace-nowrap">
+                <span className="inline-flex items-center gap-2 font-bold uppercase text-sm lg:text-lg font-robo leading-none dark:text-foreground text-background group-hover:text-background dark:group-hover:text-background transition-colors duration-500 whitespace-nowrap">
                   Explore All
                 </span>
               </MagneticButton>

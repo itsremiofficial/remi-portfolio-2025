@@ -513,7 +513,7 @@ const WorksCards = () => {
     >
       <div
         ref={trackRef}
-        className="menu--wrapper flex justify-start cursor-grab active:cursor-grabbing"
+        className="menu--wrapper flex justify-start cursor-grab"
         style={{
           touchAction: isTouch ? "pan-y" : "none", // allow vertical scroll on mobile
           WebkitOverflowScrolling: "touch",
@@ -529,8 +529,8 @@ const WorksCards = () => {
           >
             <div className="relative space-x-20">
               <div className="absolute right-0 top-2 flex items-center justify-center rounded-full w-6 md:w-8 lg:w-14 h-1/3">
-                <div className="flex items-center gap-2 rotate-270 text-foreground dark:text-background/20 text-md md:text-lg lg:text-3xl leading-none font-robo font-extrabold whitespace-nowrap">
-                  <div className="rotate-180 text-accent/40">
+                <div className="flex items-center gap-2 rotate-270 text-foreground dark:text-background text-md md:text-lg lg:text-3xl leading-none font-robo font-extrabold whitespace-nowrap">
+                  <div className="rotate-180 text-accent">
                     <span>❮</span>
                     <span className="relative -left-1">❮</span>
                     <span className="relative -left-2">❮</span>
@@ -548,10 +548,10 @@ const WorksCards = () => {
                   draggable={false}
                 />
               </div>
-              <div className="absolute text-xl md:text-2xl lg:text-6xl left-[1vw] bottom-0 flex inverted-card-bottom font-robo font-var uppercase font-extrabold text-foreground dark:text-accent tracking-wide">
+              <div className="absolute text-xl md:text-2xl lg:text-5xl bottom-2 flex inverted-card-bottom font-inter font-black text-foreground dark:text-accent uppercase md:w-54">
                 {title}
               </div>
-              <div className="absolute left-0 top-0 pb-2 flex items-center justify-center text-foreground dark:text-background text-2xl md:text-4xl lg:text-2xl font-robo font-extrabold uppercase leading-none w-36 pt-2.5">
+              <div className="absolute left-0 top-0 pb-2 flex items-center justify-center text-foreground dark:text-background text-xs md:text-sm lg:text-lg font-robo font-extrabold uppercase leading-none w-28 lg:w-36 pt-1 lg:pt-2.5">
                 {type}
               </div>
             </div>

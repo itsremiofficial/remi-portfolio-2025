@@ -831,9 +831,9 @@ const Hero = () => {
     >
       <div className="flex items-center justify-center grow">
         <div className="flex flex-col justify-center text-center space-y-3 tracking-wide text-foreground/40 dark:text-background/40 uppercase font-robo">
-          <div className="text-[3vw] sm:text-[4vw] md:text-[3vw] lg:text-[2vw] font-syne flex items-center justify-center gap-[4vw] font-medium">
+          <h4 className="text-[3vw] sm:text-[4vw] md:text-[3vw] lg:text-[2vw] font-nippo flex items-center justify-center gap-[4vw] font-medium">
             Designer <AnimatedArrow /> Developer
-          </div>
+          </h4>
           <HeroTitle
             active={asteriskActive}
             onEnter={() => setAsteriskActive(true)}

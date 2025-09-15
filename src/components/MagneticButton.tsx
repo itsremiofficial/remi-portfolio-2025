@@ -3,8 +3,8 @@ import gsap from "gsap";
 import React, { useRef, useEffect, useCallback, forwardRef, memo } from "react";
 import { cn } from "../utils";
 
-const HIDDEN_Y = "76%";
-const ZOOM_HIDDEN_Y = "-76%";
+const HIDDEN_Y = "90%";
+const ZOOM_HIDDEN_Y = "-70%";
 const HOVER_DELAY = 50;
 
 declare global {
@@ -152,10 +152,10 @@ const MagneticButton = memo(
       });
 
       gsap.to(textRef.current, {
-        duration: 1.3,
         x: 0,
         y: 0,
-        ease: "elastic.out(1,0.6)",
+        duration: 2,
+        ease: "elastic.out(1,0.3)",
       });
     }, [disabled]);
 
@@ -173,7 +173,7 @@ const MagneticButton = memo(
         if (prevFill) {
           gsap.killTweensOf(prevFill);
           gsap.to(prevFill, {
-            duration: 0.5,
+            duration: 1,
             y: HIDDEN_Y,
             ease: "power2.inOut",
             overwrite: "auto",
@@ -191,12 +191,14 @@ const MagneticButton = memo(
           setFillHidden(fill);
           return;
         }
+        // FILL COMING IN
         gsap.fromTo(
           fill,
           { y: HIDDEN_Y },
           {
             duration: 0.7,
-            y: "0%",
+            height: "500%",
+            y: "-25%",
             ease: "cubic-bezier(0.7,0,0.2,1)",
             overwrite: "auto",
           }
@@ -225,12 +227,14 @@ const MagneticButton = memo(
         const fill = fillRef.current;
         gsap.killTweensOf(fill);
 
+        //
         if (isZoomDetail) {
           setFillHidden(fill);
         } else {
           gsap.to(fill, {
-            duration: 0.45,
+            duration: 0.8,
             y: ZOOM_HIDDEN_Y,
+            height: "200%",
             ease: "cubic-bezier(0.8,0,0.3,1)",
             overwrite: "auto",
           });
@@ -325,7 +329,7 @@ const MagneticButton = memo(
         <div
           ref={fillRef}
           className={cn(
-            "btn-fill absolute left-[-10%] top-[-50%] rounded-[50%] w-[120%] h-[200%] pointer-events-none will-change-transform",
+            "btn-fill absolute left-[-2%] top-[-70%] rounded-[50%] w-[105%] h-[200%] pointer-events-none will-change-transform",
             fillClassName
           )}
           style={{

@@ -97,8 +97,8 @@ const NavItem = memo(
         "link flex items-center gap-3 text-5xl lg:text-7xl font-extrabold opacity-0 cursor-pointer font-robo !font-var group/link transition-colors duration-400",
         "perspective-distant will-change-transform",
         isActive
-          ? "text-foreground dark:text-100"
-          : "text-black/30 hover:text-black dark:hover:text-100 dark:text-background/30"
+          ? "text-foreground dark:text-background"
+          : "text-foreground/40 hover:text-foreground dark:hover:text-background dark:text-background/30"
       )}
       onClick={onClick}
     >
@@ -134,11 +134,11 @@ const SocialIcon = memo(
       <AnimatedTooltip
         id={index + 1}
         className={cn(
-          "size-14 lg:size-16 p-3 lg:p-4 mask mask-squircle !aspect-square",
+          "size-14 lg:size-16 p-3 lg:p-4 mask mask-squircle !aspect-square cursor-pointer",
           "bg-foreground/15 hover:bg-foreground/20",
-          "text-foreground md:text-foreground hover:text-foreground",
+          "text-foreground md:text-foreground/85 hover:text-foreground",
           "dark:bg-foreground dark:hover:bg-1100",
-          "dark:text-500 dark:hover:text-700",
+          "dark:text-background/70 dark:hover:text-background",
           "transition-colors duration-400"
         )}
         mains={platform.social}
@@ -558,7 +558,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               <h4
                 className={cn(
                   "nav-links-heading select-none",
-                  "font-nippo font-medium tracking-[3px]",
+                  "font-nippo font-medium tracking-widest",
                   "text-foreground/30 dark:text-background/40",
                   "sm:text-base text-xs",
                   "will-change-[opacity,transform]"
@@ -587,7 +587,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
                 <h4
                   className={cn(
                     "nav-links-heading select-none",
-                    "font-nippo font-medium tracking-[3px]",
+                    "font-nippo font-medium tracking-widest",
                     "text-foreground/30 dark:text-background/40",
                     "sm:text-base text-xs",
                     "will-change-[opacity,transform]"
@@ -609,7 +609,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
                 <h4
                   className={cn(
                     "nav-links-heading select-none",
-                    "font-nippo font-medium tracking-[3px]",
+                    "font-nippo font-medium tracking-widest",
                     "text-foreground/30 dark:text-background/40",
                     "sm:text-base text-xs",
                     "will-change-[opacity,transform]"
@@ -621,15 +621,15 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
                   <AnimatedTooltip
                     id={3}
                     className={cn(
-                      "size-14 lg:size-16 p-3 lg:p-4 mask mask-squircle !aspect-square",
-                      "bg-black/15 hover:bg-black/20",
-                      "text-black md:text-black hover:text-black",
+                      "size-14 lg:size-16 p-3 lg:p-4 mask mask-squircle !aspect-square cursor-pointer",
+                      "bg-foreground/15 hover:bg-foreground/20",
+                      "text-foreground md:text-foreground/85 hover:text-foreground",
                       "dark:bg-foreground dark:hover:bg-1100",
-                      "dark:text-500 dark:hover:text-700",
+                      "dark:text-background/70 dark:hover:text-background",
                       "transition-colors duration-400"
                     )}
                     mains={isDark ? "Dark Mode" : "Light Mode"}
-                    Children={<ThemeIcon className="size-full" />}
+                    Children={<ThemeIcon className="size-full !text-inherit" />}
                   />
                 </div>
               </div>
@@ -762,7 +762,7 @@ const ThemeIcon = memo(({ className }: { className?: string }) => {
 
   return (
     <svg
-      className={cn("cursor-pointer text-black dark:text-white", className)}
+      className={cn("text-foreground dark:text-background", className)}
       onClick={toggleThemeMode}
       width="24"
       height="24"
