@@ -785,7 +785,7 @@ const HeroTitle = memo(
     onLeave: () => void;
   }) => (
     <h1
-      className="mt-4 text-[16vw] sm:text-[18vw] md:text-[13vw] lg:!text-[10vw] font-var text-wrap font-medium leading-none tracking-wide group/hero"
+      className="font-robo font-var mt-4 text-[16vw] sm:text-[18vw] md:text-[13vw] lg:!text-[10vw] text-wrap font-medium leading-none tracking-wide group/hero text-center text-foreground/40 dark:text-background/40 uppercase"
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
     >
@@ -830,8 +830,11 @@ const Hero = () => {
       id="home"
     >
       <div className="flex items-center justify-center grow">
-        <div className="flex flex-col justify-center text-center space-y-3 tracking-wide text-foreground/40 dark:text-background/40 uppercase font-robo">
-          <h4 className="text-[3vw] sm:text-[4vw] md:text-[3vw] lg:text-[2vw] font-nippo flex items-center justify-center gap-[4vw] font-medium">
+        <div className="flex flex-col justify-center space-y-3">
+          <h4
+            className="text-[3vw] sm:text-[4vw] md:text-[3vw] lg:text-[2vw] font-nippo flex items-center justify-center gap-[4vw] font-medium uppercase
+           text-center tracking-wide text-foreground/40 dark:text-background/40"
+          >
             Designer <AnimatedArrow /> Developer
           </h4>
           <HeroTitle
