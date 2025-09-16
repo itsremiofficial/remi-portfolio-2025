@@ -5,8 +5,6 @@ import gsap from "gsap";
 import { Observer } from "gsap/all";
 import horizontalLoop from "../utils/horizontalLoop";
 
-gsap.registerPlugin(Observer);
-
 const DRAG_SENSITIVITY = 0.012;
 const DRAG_LERP = 0.18;
 const INERTIA_LERP = 0.12;
@@ -65,6 +63,17 @@ const WorksCards = () => {
   const isTouch =
     typeof window !== "undefined" &&
     ("ontouchstart" in window || navigator.maxTouchPoints > 0);
+
+  // NEW: consider device mobile if touch-capable or UA hints at mobile/tablet
+  const isMobileDevice =
+    typeof window !== "undefined" &&
+    (isTouch ||
+      /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      ));
+
+  // NEW: single flag to disable animations on mobile or when reduced motion is set
+  const disableAnimations = reduceMotion || isMobileDevice;
 
   const dragThreshold = 5;
 
@@ -182,8 +191,8 @@ const WorksCards = () => {
       fallbackTimerRef.current = null;
     }
 
-    // Reduced motion: show static list only
-    if (reduceMotion) {
+    // NEW: Disable animations on mobile or if reduced motion is preferred
+    if (disableAnimations) {
       cardRefs.current.forEach((c) =>
         gsap.set(c, { transform: "none", clearProps: "all" })
       );
@@ -205,7 +214,7 @@ const WorksCards = () => {
     attachPointer();
 
     startRAF();
-  }, [reduceMotion, lerp, getOrderedCards]);
+  }, [disableAnimations, lerp, getOrderedCards]);
 
   // Rebuild loop on resize to keep spacing consistent after layout changes
   useEffect(() => {
@@ -548,7 +557,7 @@ const WorksCards = () => {
                   draggable={false}
                 />
               </div>
-              <div className="absolute text-xl md:text-2xl lg:text-5xl bottom-2 flex inverted-card-bottom font-inter font-black text-foreground dark:text-accent uppercase md:w-54 lg:w-90">
+              <div className="absolute text-xl md:text-2xl lg:text-4xl left-2 md:left-6 bottom-0 md:bottom-3 lg:bottom-5 flex inverted-card-bottom font-syne font-var font-black text-foreground dark:text-background uppercase">
                 {title}
               </div>
               <div className="absolute left-0 top-0 pb-2 flex items-center justify-center text-foreground dark:text-background text-xs md:text-sm lg:text-lg font-robo font-extrabold uppercase leading-none w-28 lg:w-36 pt-1 lg:pt-2.5">

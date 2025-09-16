@@ -1,6 +1,6 @@
 const WORKS = [
   {
-    title: "Mivator Pro",
+    title: "Mivator",
     type: "Dashboard",
     imageUrl: "/videos/video01.jpg",
     year: "2024",
@@ -12,7 +12,7 @@ const WORKS = [
     year: "2023",
   },
   {
-    title: "Mivator Pro",
+    title: "Mivator",
     type: "Website",
     imageUrl: "/videos/video03.jpg",
     year: "2024",
@@ -24,7 +24,7 @@ const WORKS = [
     year: "2024",
   },
   {
-    title: "Mivator Pro",
+    title: "Mivator",
     type: "Dashboard",
     imageUrl: "/videos/video01.jpg",
     year: "2024",
@@ -36,7 +36,7 @@ const WORKS = [
     year: "2023",
   },
   {
-    title: "Mivator Pro",
+    title: "Mivator",
     type: "Website",
     imageUrl: "/videos/video03.jpg",
     year: "2024",

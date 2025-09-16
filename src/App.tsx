@@ -6,7 +6,6 @@ import Hero from "./sections/Hero";
 import WelcomeMarquee from "./sections/WelcomeMarquee";
 import Works from "./sections/Works";
 import About from "./sections/About";
-import Squircle from "./components/ui/Squircle";
 import MacCursorAuto from "./components/ui/MacCursorAuto";
 import {
   CustomEase,
@@ -18,6 +17,7 @@ import {
   SplitText,
 } from "gsap/all";
 import gsap from "gsap";
+import Skills from "./sections/Skills";
 
 gsap.registerPlugin(
   ScrollTrigger,
@@ -47,14 +47,6 @@ const App = () => {
     }
   }, []);
 
-  useEffect(() => {
-    // Add mac style cursor class (remove if you want to toggle later)
-    document.documentElement.classList.add("apple-cursors");
-    return () => {
-      document.documentElement.classList.remove("apple-cursors");
-    };
-  }, []);
-
   return (
     <ThemeProvider>
       <MacCursorAuto />
@@ -82,23 +74,7 @@ const App = () => {
           <About />
           <Works />
           {/* <MatterCanvas /> */}
-          {/* <Skills /> */}
-          <section
-            className="w-full min-h-screen flex flex-col gap-10 items-center justify-center"
-            id="work"
-            data-cursor="accent"
-            data-cursor-text="Explore"
-          >
-            <Squircle height={350} width={650} roundness={0.2} color="#ff5722">
-              <div
-                className="flex items-center justify-center w-full h-full text-white font-bold"
-                data-cursor="link"
-                data-cursor-text="Open"
-              >
-                Hello
-              </div>
-            </Squircle>
-          </section>
+          <Skills />
           <section
             className="w-full min-h-screen flex items-center justify-center"
             id="services"

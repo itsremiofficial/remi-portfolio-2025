@@ -19,7 +19,7 @@ const CURSOR_MAP: Record<string, string> = {
 // Allow list only for values we still ignore
 const IGNORED_VALUES = new Set(["inherit", "initial", "unset"]);
 
-const isCustomAlready = (val: string) => /url\(/i.test(val);
+// const isCustomAlready = (val: string) => /url\(/i.test(val);
 
 interface MacCursorAutoProps {
   // If false, will not override the base auto/default cursors
