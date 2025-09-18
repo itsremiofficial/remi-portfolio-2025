@@ -38,26 +38,26 @@ const WelcomeMarquee = () => {
   return (
     <div
       ref={welcomeRef}
-      className="flex items-center justify-center text-[12vw] font-extrabold bg-foreground text-background dark:bg-background dark:text-foreground py-4 align-self-start place-self-start font-grandbold"
+      className="flex items-center justify-center text-[8vw] font-extrabold bg-foreground text-background dark:bg-background dark:text-foreground py-4 align-self-start place-self-start font-grandbold [&>*]:select-none [&>*]:pointer-events-none [&>*]:mb-1 [&>*]:pr-25 [&>*]:leading-none"
     >
-      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
-      <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
+      <div className="marquee-welcome">WELCOME</div>
+      <div className="marquee-welcome">WELCOME</div>
+      <div className="marquee-welcome">WELCOME</div>
+      <div className="marquee-welcome">WELCOME</div>
+      <div className="marquee-welcome">WELCOME</div>
+      <div className="marquee-welcome">WELCOME</div>
+      <div className="marquee-welcome">WELCOME</div>
+      <div className="marquee-welcome">WELCOME</div>
+      <div className="marquee-welcome">WELCOME</div>
+      <div className="marquee-welcome">WELCOME</div>
+      <div className="marquee-welcome">WELCOME</div>
+      <div className="marquee-welcome">WELCOME</div>
+      <div className="marquee-welcome">WELCOME</div>
+      <div className="marquee-welcome">WELCOME</div>
+      <div className="marquee-welcome">WELCOME</div>
+      <div className="marquee-welcome">WELCOME</div>
+      <div className="marquee-welcome">WELCOME</div>
+      <div className="marquee-welcome">WELCOME</div>
     </div>
   );
 };

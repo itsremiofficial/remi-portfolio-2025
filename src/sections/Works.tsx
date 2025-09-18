@@ -165,7 +165,7 @@ const Works = () => {
                 aria-label="Explore all works"
                 href="/works"
               >
-                <span className="inline-flex items-center gap-2 font-bold uppercase text-sm lg:text-lg font-robo leading-none dark:text-foreground text-background group-hover:text-background dark:group-hover:text-background transition-colors duration-500 whitespace-nowrap">
+                <span className="inline-flex items-center gap-2 font-bold uppercase text-sm lg:text-lg font-robo leading-none dark:text-foreground text-background group-hover:text-background dark:group-hover:text-background transition-colors duration-800 whitespace-nowrap">
                   Explore All
                 </span>
               </MagneticButton>

@@ -8,7 +8,7 @@ const Services = () => {
 
   return (
     <section
-      className="min-h-screen w-full relative py-40"
+      className="min-h-[150vh] md:min-h-screen w-full relative py-40"
       ref={mainContainerRef}
       id="services"
     >

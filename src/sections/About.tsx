@@ -89,7 +89,7 @@ const About = () => {
           {
             // Per-element final opacity: arrow words = 1, others = 0.25
             opacity: (_, el) =>
-              arrowWords.includes(el as HTMLElement) ? 1 : 0.5,
+              arrowWords.includes(el as HTMLElement) ? 1 : 0.25,
             rotationX: 0,
             rotationY: 0,
             xPercent: 0,
@@ -146,7 +146,7 @@ const About = () => {
         & Web <span className="about-highlight font-grandbold">Developer</span>{" "}
         dedicated to the{" "}
         <span className="about-highlight lg:hidden">craft</span>
-        <span className="hidden lg:inline-block">craft</span> of{" "}
+        <span className="hidden lg:inline-block font-grandbold lg:font-robo">craft</span> of{" "}
         <span className="lg:hidden">creating</span>
         <span className="about-highlight hidden lg:inline-block font-grandbold">
           creating
