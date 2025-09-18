@@ -124,7 +124,7 @@ const AsteriskCircleAnimated = ({ active }: AsteriskCircleAnimatedProps) => {
           id="hero-scroll-text"
           text="SCROLL DOWN FOR REMI STUFF ✦"
           animate
-          textClassName="text-[14px] md:text-[13.5px] tracking-[1.47px] font-bold"
+          textClassName="text-[14px] md:text-[13.5px] tracking-[1.6px] font-bold"
           size={100}
           radius={87}
           fontFamily="Inter"

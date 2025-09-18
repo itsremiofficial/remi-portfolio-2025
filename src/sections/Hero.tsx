@@ -129,11 +129,11 @@ const TestimonialItem = memo(
     >
       <div className={`div-block-100 ${name}`}></div>
       <div className="flex flex-col items-start justify-center gap-2">
-        <p className="m-0 relative text-balance text-[0.6rem] md:text-[0.75rem]">
+        <p className="m-0 relative text-balance text-xs">
           <span className="quote_mark">"</span>
           {text}
         </p>
-        <div className="relative text-decoration-none leading-none text-[0.6rem] md:text-[0.75rem]">
+        <div className="relative text-decoration-none leading-none text-xs">
           <div className="font-medium group-hover/learnmore:text-accent transition-colors duration-300">
             Learn more
           </div>
@@ -706,8 +706,8 @@ const ContactIconItem = memo(() => {
           id="marquee-scroll-text"
           text="GET IN TOUCH • GET IN TOUCH • GET IN TOUCH • "
           animate
-          textClassName="text-[8.5px] tracking-[1.47px] font-bold"
-          size={100}
+          textClassName="text-[12px] tracking-[1.47px] font-bold text-foreground"
+          size={128}
           radius={87}
           animationDuration="25s"
         />
@@ -817,7 +817,7 @@ const Hero = () => {
       document.fonts.ready.then(() => {
         horizontalLoop(".marquee-item", {
           repeat: -1,
-          speed: 0.5,
+          speed: 0.3,
         });
       });
     },
@@ -851,8 +851,8 @@ const Hero = () => {
           className="relative flex items-center min-h-full overflow-hidden"
         >
           <PillsMarqueeItem />
-          <EnhancedGalleryMarqueeItem />
           <TestimonialsMarqueeItem />
+          <EnhancedGalleryMarqueeItem />
           <ContactIconItem />
           <PillsMarqueeItem />
           <TestimonialsMarqueeItem />

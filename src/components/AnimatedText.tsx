@@ -59,14 +59,14 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
     if (text1Split && text2Split) {
       tl.to(text1Split.chars, {
         yPercent: -120,
-        duration: 0.3,
-        stagger: { amount: 0.2 },
+        duration: 0.6,
+        stagger: { amount: 0.1 },
       }).from(
         text2Split.chars,
         {
-          yPercent: 200,
-          duration: 0.3,
-          stagger: { amount: 0.2 },
+          yPercent: 140,
+          duration: 0.6,
+          stagger: { amount: 0.1 },
         },
         0
       );
@@ -94,11 +94,14 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
       name={linkText1}
       id={id}
     >
-      <div className="relative overflow-hidden z-[1] leading-none">
-        <div hoverstagger="text" className="relative inline-block">
+      <div className="relative overflow-hidden z-[1]">
+        <div
+          hoverstagger="text"
+          className="relative inline-block leading-[0.8]"
+        >
           {linkText1}
         </div>
-        <div hoverstagger="text" className="absolute inset-y-0">
+        <div hoverstagger="text" className="absolute inset-y-0 leading-[0.8]">
           {linkText2 ? linkText2 : linkText1}
         </div>
       </div>

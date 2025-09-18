@@ -129,11 +129,20 @@ const MagneticButton = memo(
           ease: "power4.out",
         });
 
+        // Bend text towards the pointer (only on mouse move)
+        // top (ny < 0) => rotateX positive; right (nx > 0) => rotateY positive
+        const TEXT_TILT_MAX = 20; // degrees
+        const rotX = -ny * (TEXT_TILT_MAX * 2);
+        const rotY = nx * (TEXT_TILT_MAX * 2);
+
         gsap.to(textRef.current, {
           duration: 1.2,
           x: textX,
           y: textY,
-          rotate: "0.001deg",
+          rotateX: rotX,
+          rotateY: rotY,
+          transformPerspective: 800,
+          transformOrigin: "50% 50%",
           ease: "power4.out",
         });
       },
@@ -145,7 +154,7 @@ const MagneticButton = memo(
         return;
 
       gsap.to(rootRef.current, {
-        duration: 1.3,
+        duration: 2.3,
         x: 0,
         y: 0,
         ease: "elastic.out(1,0.6)",
@@ -154,6 +163,8 @@ const MagneticButton = memo(
       gsap.to(textRef.current, {
         x: 0,
         y: 0,
+        rotateX: 0,
+        rotateY: 0,
         duration: 2,
         ease: "elastic.out(1,0.3)",
       });

@@ -3,7 +3,7 @@ import { LenisProvider } from "./context/LenisContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import Header from "./layout/Header";
 import Hero from "./sections/Hero";
-import WelcomeMarquee from "./sections/WelcomeMarquee";
+import WelcomeMarquee from "./components/WelcomeMarquee";
 import Works from "./sections/Works";
 import About from "./sections/About";
 import MacCursorAuto from "./components/ui/MacCursorAuto";
@@ -18,6 +18,8 @@ import {
 } from "gsap/all";
 import gsap from "gsap";
 import Skills from "./sections/Skills";
+import Services from "./sections/Services";
+import ServicesMarquee from "./components/ServicesMarquee";
 
 gsap.registerPlugin(
   ScrollTrigger,
@@ -73,8 +75,8 @@ const App = () => {
           <WelcomeMarquee />
           <About />
           <Works />
-          {/* <MatterCanvas /> */}
-          <Skills />
+          <Services />
+          <ServicesMarquee />
           <section
             className="w-full min-h-screen flex items-center justify-center"
             id="services"

@@ -10,11 +10,11 @@ const WelcomeMarquee = () => {
 
   useGSAP(
     () => {
-      const speed = 3;
+      const speed = 5;
       document.fonts.ready.then(() => {
         const loop = horizontalLoop(".marquee-welcome", {
           repeat: -1,
-          speed: 1.5,
+          speed: 0.2,
         });
         let tl: GSAPTimeline | null = null;
         Observer.create({
@@ -22,7 +22,7 @@ const WelcomeMarquee = () => {
           type: "wheel",
           onChangeY: (self) => {
             tl?.kill();
-            const factor = self.deltaY > 0 ? 1.5 : -1.5;
+            const factor = self.deltaY > 0 ? 2.5 : -2.5;
             tl = gsap
               .timeline()
               .to(loop, { timeScale: speed * factor, duration: 0.25 })
@@ -38,7 +38,7 @@ const WelcomeMarquee = () => {
   return (
     <div
       ref={welcomeRef}
-      className="flex items-center justify-center text-[9vw] font-extrabold bg-foreground text-background dark:bg-background dark:text-foreground py-4 align-self-start place-self-start "
+      className="flex items-center justify-center text-[12vw] font-extrabold bg-foreground text-background dark:bg-background dark:text-foreground py-4 align-self-start place-self-start font-grandbold"
     >
       <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>
       <div className="leading-none marquee-welcome mt-2 pr-25">WELCOME</div>

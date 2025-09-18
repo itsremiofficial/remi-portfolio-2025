@@ -7,7 +7,7 @@ import horizontalLoop from "../utils/horizontalLoop";
 
 const DRAG_SENSITIVITY = 0.012;
 const DRAG_LERP = 0.18;
-const INERTIA_LERP = 0.12;
+const INERTIA_LERP = 0.18;
 const VELOCITY_SMOOTH = 0.4;
 const INERTIA_FRICTION = 0.92;
 const INERTIA_MIN_V = 0.005;
@@ -15,7 +15,7 @@ const VELOCITY_EFFECT_MULT = 95;
 
 const WHEEL_SENSITIVITY = 0.004;
 const WHEEL_VELOCITY_MULT = 0.0018;
-const WHEEL_LERP = 0.14;
+const WHEEL_LERP = 0.18;
 const WHEEL_FRICTION = 0.9;
 const WHEEL_MIN_V = 0.0005;
 
@@ -55,6 +55,20 @@ const WorksCards = () => {
   const directionRef = useRef(1);
   const wheelActiveRef = useRef(false);
   const wheelVelocityRef = useRef(0);
+
+  const parallaxImgsRef = useRef<HTMLImageElement[]>([]);
+  const parallaxSettersRef = useRef<((v: number) => void)[]>([]);
+  const parallaxDepthsRef = useRef<number[]>([]);
+
+  // Position-based parallax targets
+  const parallaxTargetsRef = useRef<
+    {
+      img: HTMLImageElement;
+      host: HTMLElement;
+      depth: number;
+      setX: (v: number) => void;
+    }[]
+  >([]);
 
   const reduceMotion =
     typeof window !== "undefined" &&
@@ -204,6 +218,27 @@ const WorksCards = () => {
       repeat: -1,
       speed: 1.5,
     });
+
+    // Collect images marked for parallax and prepare setters (position-based)
+    if (trackRef.current) {
+      const imgs = Array.from(
+        trackRef.current.querySelectorAll<HTMLImageElement>(
+          'img[data-parallax="true"]'
+        )
+      );
+      parallaxTargetsRef.current = imgs.map((img) => {
+        const depthAttr = parseFloat(img.getAttribute("data-depth") || "0.25");
+        const depth = Number.isFinite(depthAttr) ? depthAttr : 0.25;
+        // host: the card or nearest container that moves with the loop
+        const host =
+          (img.closest(".menu--item") as HTMLElement) ||
+          (img.parentElement as HTMLElement) ||
+          img;
+        // quickSetter for immediate transform updates (perf)
+        const setX = gsap.quickSetter(img, "x", "px") as (v: number) => void;
+        return { img, host, depth, setX };
+      });
+    }
 
     loopRef.current.timeScale(directionRef.current).play();
     currentTimeRef.current = loopRef.current.time();
@@ -498,6 +533,31 @@ const WorksCards = () => {
           });
           resumeAutoplay();
         }
+      } else {
+        // Autoplay, keep prevTime in sync (no parallax calc needed here)
+        const t = loopRef.current.time();
+        prevTimeRef.current = t;
+      }
+
+      // Position-based parallax: offset by distance from viewport center
+      if (parallaxTargetsRef.current.length) {
+        const vpCenter = window.innerWidth / 2;
+        // Cap maximum px offset to avoid excessive motion
+        const MAX_OFFSET = 48;
+        const FACTOR = 0.15; // scale position delta to px
+
+        for (const { host, depth, setX } of parallaxTargetsRef.current) {
+          const rect = host.getBoundingClientRect();
+          const hostCenterX = rect.left + rect.width / 2;
+          const deltaFromCenter = hostCenterX - vpCenter; // >0 means item is to the right
+          // Move opposite to motion to create subtle depth
+          const offset = clamp(
+            -MAX_OFFSET,
+            MAX_OFFSET,
+            -deltaFromCenter * FACTOR * depth
+          );
+          setX(offset);
+        }
       }
     };
     render();
@@ -510,6 +570,13 @@ const WorksCards = () => {
       if (loopRef.current) {
         loopRef.current.kill();
         loopRef.current = null;
+      }
+      // Reset parallax translations
+      if (parallaxTargetsRef.current.length) {
+        gsap.set(
+          parallaxTargetsRef.current.map((t) => t.img),
+          { x: 0 }
+        );
       }
     },
     []
@@ -524,7 +591,7 @@ const WorksCards = () => {
         ref={trackRef}
         className="menu--wrapper flex justify-start cursor-grab"
         style={{
-          touchAction: isTouch ? "pan-y" : "none", // allow vertical scroll on mobile
+          touchAction: isTouch ? "pan-y" : "none",
           WebkitOverflowScrolling: "touch",
         }}
       >
@@ -547,17 +614,21 @@ const WorksCards = () => {
                   <div>© {year}</div>
                 </div>
               </div>
+
               <div className="relative works-card-clip flex items-center justify-center !aspect-[16/10] pointer-events-none select-none">
                 <img
                   src={imageUrl}
                   alt={title}
                   loading="lazy"
                   decoding="async"
-                  className="size-full object-cover select-none pointer-events-none"
+                  className="size-full scale-115 object-cover select-none pointer-events-none will-change-transform"
                   draggable={false}
+                  data-parallax="true"
+                  data-depth="0.5"
                 />
               </div>
-              <div className="absolute text-xl md:text-2xl lg:text-4xl left-2 md:left-6 bottom-0 md:bottom-3 lg:bottom-5 flex inverted-card-bottom font-syne font-var font-black text-foreground dark:text-background uppercase">
+
+              <div className="absolute text-xl md:text-2xl lg:text-4xl left-2 md:left-6 bottom-0 md:bottom-3 lg:bottom-5 flex inverted-card-bottom font-grandbold tracking-widest text-foreground dark:text-background uppercase">
                 {title}
               </div>
               <div className="absolute left-0 top-0 pb-2 flex items-center justify-center text-foreground dark:text-background text-xs md:text-sm lg:text-lg font-robo font-extrabold uppercase leading-none w-28 lg:w-36 pt-1 lg:pt-2.5">

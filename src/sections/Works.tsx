@@ -119,7 +119,12 @@ const Works = () => {
 
   return (
     // If you want semantic landmark: change to <section aria-labelledby="selected-works-heading">
-    <div ref={mainContainerRef} className="w-full lg:space-y-8">
+    <section
+      id="works"
+      ref={mainContainerRef}
+      className="w-full lg:space-y-8"
+      aria-labelledby="selected-works-heading"
+    >
       <div className="px-4 md:px-6">
         {/* Optionally uncomment for a single accessible heading: */}
         <h2 id="selected-works-heading" className="sr-only">
@@ -128,22 +133,22 @@ const Works = () => {
 
         <h2
           ref={selectedHeadingRef}
-          className="text-[18vw] font-extrabold text-foreground dark:text-background uppercase leading-[13vw] pt-2 font-robo"
+          className="section-heading text-foreground dark:text-background pt-2"
           style={{ transformStyle: "preserve-3d" }}
         >
           Selected
         </h2>
-        <div className="inline-flex items-start sm:items-end flex-col sm:flex-row gap-[2vw]">
+        <div className="inline-flex items-start md:items-end flex-col md:flex-row gap-[2vw]">
           <h2
             ref={worksHeadingRef}
-            className="text-[18vw] font-extrabold uppercase font-robo leading-[13vw] text-accent pt-2"
+            className="section-heading text-accent pt-2"
             style={{ transformStyle: "preserve-3d" }}
           >
             Works
           </h2>
           <div
             ref={secondaryContainerRef}
-            className="space-y-[1vw] lg:pb-3 grid grid-cols-2 sm:block"
+            className="space-y-[1vw] lg:pb-3 grid grid-cols-2 md:block"
             style={{ transformStyle: "preserve-3d" }}
           >
             <p className="sm:max-w-[40ch] text-[clamp(0.9rem,1.5vw,1.35rem)] dark:text-background/70 text-foreground/70 font-robo leading-snug">
@@ -151,12 +156,12 @@ const Works = () => {
               brands rise above the ordinary.
             </p>
 
-            <div className="place-self-end sm:justify-self-auto">
+            <div className="place-self-end md:justify-self-auto">
               <MagneticButton
                 className="hidden md:inline-flex dark:bg-background bg-foreground cursor-pointer h-max py-[1.2vw] px-[4vw] group rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent/60 transition-colors"
                 fillClassName="bg-accent"
-                dataStrength={10}
-                dataStrengthText={35}
+                dataStrength={2.5}
+                dataStrengthText={30}
                 aria-label="Explore all works"
                 href="/works"
               >
@@ -191,7 +196,7 @@ const Works = () => {
           <WorksCards />
         </Suspense>
       </CursorFollower>
-    </div>
+    </section>
   );
 };
 

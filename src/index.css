@@ -45,6 +45,13 @@
   font-style: normal;
   font-optical-sizing: auto;
 }
+@font-face {
+  font-family: "Grand Bold";
+  src: url("/fonts/GrandBold.woff2") format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-optical-sizing: auto;
+}
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -64,6 +71,9 @@
     Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", serif;
   --font-syne: "Syne", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", serif;
+  --font-grandbold: "Grand Bold", "Inter", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+    serif;
 
   --color-100: oklch(99.5% 0 89.876);
   --color-200: oklch(99.457% 0 67.803);
@@ -89,7 +99,7 @@
   --color-primary-foreground: oklch(0.985 0 0);
   --color-secondary: oklch(0.97 0 0);
   --color-secondary-foreground: oklch(0.205 0 0);
-  --color-accent: oklch(60.661% 0.21 33.781);
+  --color-accent: oklch(58.41% 0.201 26.027);
   --color-accent-foreground: oklch(0.205 0 0);
   --color-destructive: oklch(0.577 0.245 27.325);
   --color-border: oklch(0.922 0 0);
@@ -533,3 +543,15 @@ body {
 /* * {
   outline: 1px solid rgba(255, 0, 0, 0.5);
 } */
+
+.section-heading {
+  @apply text-[clamp(2rem,18vw,350px)] leading-[clamp(2rem,15vw,300px)] font-grandbold;
+}
+.section-sub-heading {
+  @apply text-[clamp(2rem,10vw,190px)] leading-[clamp(2rem,8.5vw,170px)] font-grandbold;
+}
+.text-stroke {
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: var(--text-stroke-color);
+  color: transparent;
+}

@@ -21,7 +21,7 @@ import AnimatedTooltip from "../components/AnimatedTooltip";
 import IconInstagram from "../components/icons/Instagram";
 import TimeDisplay from "../components/DualTime";
 import IconLinkedIn from "../components/icons/Linkedin";
-import { MENU_ITEMS } from "../constants/HERO";
+import { MENU_ITEMS } from "../constants/MENU";
 
 const CUSTOM_EASE = "0.7, 0, 0.2, 1";
 const ANIMATION_EASE_IN = "0.8, 0, 0.3, 1";
@@ -95,9 +95,9 @@ const NavItem = memo(
     <div
       className={cn(
         "link flex items-center gap-3 text-5xl lg:text-7xl font-extrabold opacity-0 cursor-pointer font-robo !font-var group/link transition-colors duration-400",
-        "perspective-distant will-change-transform",
+        "perspective-distant will-change-transform w-max",
         isActive
-          ? "text-foreground dark:text-background"
+          ? "text-foreground dark:text-accent"
           : "text-foreground/40 hover:text-foreground dark:hover:text-background dark:text-background/30"
       )}
       onClick={onClick}
