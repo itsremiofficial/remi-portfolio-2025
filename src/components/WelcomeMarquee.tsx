@@ -4,6 +4,7 @@ import horizontalLoop from "../utils/horizontalLoop";
 
 import { gsap } from "gsap";
 import { Observer } from "gsap/Observer";
+import { cn } from "../utils";
 
 const WelcomeMarquee = () => {
   const welcomeRef = useRef<HTMLDivElement>(null);
@@ -38,7 +39,11 @@ const WelcomeMarquee = () => {
   return (
     <div
       ref={welcomeRef}
-      className="flex items-center justify-center text-[8vw] font-extrabold bg-foreground text-background dark:bg-background dark:text-foreground py-4 align-self-start place-self-start font-grandbold [&>*]:select-none [&>*]:pointer-events-none [&>*]:mb-1 [&>*]:pr-25 [&>*]:leading-none"
+      className={cn(
+        "flex items-center justify-center text-[8vw] py-4 align-self-start place-self-start font-grandbold",
+        "bg-foreground text-background dark:bg-background dark:text-foreground",
+        "[&>*]:select-none [&>*]:pointer-events-none [&>*]:mb-1 [&>*]:pr-25 [&>*]:leading-none"
+      )}
     >
       <div className="marquee-welcome">WELCOME</div>
       <div className="marquee-welcome">WELCOME</div>

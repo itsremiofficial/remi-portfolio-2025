@@ -94,10 +94,10 @@ const NavItem = memo(
   }) => (
     <div
       className={cn(
-        "link flex items-center gap-3 text-5xl lg:text-7xl font-extrabold opacity-0 cursor-pointer font-robo !font-var group/link transition-colors duration-400",
-        "perspective-distant will-change-transform w-max",
+        "link w-max inline-flex items-center gap-3 text-5xl lg:text-7xl font-extrabold opacity-0 cursor-pointer font-robo !font-var group/link transition-colors duration-400",
+        "perspective-distant will-change-transform",
         isActive
-          ? "text-foreground dark:text-accent"
+          ? "text-accent"
           : "text-foreground/40 hover:text-foreground dark:hover:text-background dark:text-background/30"
       )}
       onClick={onClick}
@@ -137,7 +137,7 @@ const SocialIcon = memo(
           "size-14 lg:size-16 p-3 lg:p-4 mask mask-squircle !aspect-square cursor-pointer",
           "bg-foreground/15 hover:bg-foreground/20",
           "text-foreground md:text-foreground/85 hover:text-foreground",
-          "dark:bg-foreground dark:hover:bg-1100",
+          "dark:bg-foreground/70 dark:hover:bg-foreground",
           "dark:text-background/70 dark:hover:text-background",
           "transition-colors duration-400"
         )}
@@ -365,7 +365,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               {
                 height: openHeight,
                 opacity: 1,
-                backgroundColor: isDark ? "#0000009a" : "#ffffff8a",
+                backgroundColor: isDark ? "#030711cc" : "#ffffff8a",
                 duration: 0.8,
                 ease: CUSTOM_EASE,
                 force3D: true,
@@ -475,7 +475,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               {
                 height: closedHeight,
                 borderRadius: "1.5rem",
-                backgroundColor: isDark ? "#0000009a" : "#ffffff8a",
+                backgroundColor: isDark ? "#030711cc" : "#ffffff8a",
                 duration: 0.6,
                 ease: ANIMATION_EASE_IN,
                 force3D: true,
@@ -624,7 +624,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
                       "size-14 lg:size-16 p-3 lg:p-4 mask mask-squircle !aspect-square cursor-pointer",
                       "bg-foreground/15 hover:bg-foreground/20",
                       "text-foreground md:text-foreground/85 hover:text-foreground",
-                      "dark:bg-foreground dark:hover:bg-1100",
+                      "dark:bg-foreground/70 dark:hover:bg-foreground",
                       "dark:text-background/70 dark:hover:text-background",
                       "transition-colors duration-400"
                     )}

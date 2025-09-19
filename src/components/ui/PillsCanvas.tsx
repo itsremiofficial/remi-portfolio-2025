@@ -20,20 +20,20 @@ const MatterCanvas = () => {
     const matterContainer = containerRef.current;
     const THICCNESS = 60;
 
-    const {
-      Engine,
-      Render,
-      Runner,
-      Bodies,
-      Body,
-      Composite,
-      Mouse,
-      MouseConstraint,
-      Vector,
-    } = Matter;
+    // --- Engine (enableSleeping for stability) ---
+    // NOTE: enabling sleeping makes Matter.Render draw sleeping bodies with reduced opacity (≈0.5)
+    // If you want full opacity at rest, either:
+    //  - set enableSleeping: false
+    //  - or keep enableSleeping and add: render.options.showSleeping = false after Render.create
+    //  - or manually set body.render.opacity = 1 in an afterUpdate loop
+    const engine = Matter.Engine.create({
+      enableSleeping: true, // allow resting bodies to sleep (prevents micro jitter accumulation)
+    });
+    // Optional fine‑tune solver (slightly more stable)
+    engine.positionIterations = 8;
+    engine.velocityIterations = 6;
 
-    const engine = Engine.create();
-    const render = Render.create({
+    const render = Matter.Render.create({
       element: matterContainer,
       engine,
       options: {
@@ -41,12 +41,13 @@ const MatterCanvas = () => {
         height: matterContainer.clientHeight,
         background: "transparent",
         wireframes: false,
+        showSleeping: false,
         showAngleIndicator: false,
       },
     });
 
-    Render.run(render);
-    const runner = Runner.create();
+    Matter.Render.run(render);
+    const runner = Matter.Runner.create();
 
     // Bodies refs (assigned after drop)
     let ground: Matter.Body | null = null;
@@ -56,36 +57,30 @@ const MatterCanvas = () => {
     // Build assets based on current theme
     const themeSuffix = isDark ? "light" : "dark";
     const BASE_SKILLS: Array<{ name: string; width: number }> = [
-      { name: "bootstrap", width: 202 },
-      { name: "cloud", width: 234 },
-      { name: "cors", width: 129 },
-      { name: "css3", width: 125 },
-      { name: "expressjs", width: 201 },
-      { name: "figma", width: 142 },
-      { name: "git", width: 104 },
-      { name: "github", width: 152 },
-      { name: "html5", width: 146 },
-      { name: "illustrator", width: 218 },
-      { name: "indesign", width: 182 },
-      { name: "javascript", width: 205 },
-      { name: "jwt", width: 115 },
-      { name: "materialui", width: 213 },
-      { name: "mongodb", width: 191 },
-      { name: "mysql", width: 153 },
-      { name: "nextjs", width: 157 },
-      { name: "nodejs", width: 161 },
-      { name: "npm", width: 125 },
-      { name: "photoshop", width: 205 },
-      { name: "premierpro", width: 224 },
-      { name: "reactjs", width: 170 },
-      { name: "responsive", width: 210 },
-      { name: "sass", width: 126 },
-      { name: "socialmedia", width: 228 },
-      { name: "socketio", width: 183 },
-      { name: "swagger", width: 177 },
-      { name: "tailwindcss", width: 226 },
-      { name: "typescript", width: 204 },
-      { name: "vercel", width: 153 },
+      { name: "bootstrap", width: 277 },
+      { name: "expressjs", width: 215 },
+      { name: "figma", width: 184 },
+      { name: "github", width: 206 },
+      { name: "javascript", width: 243 },
+      { name: "materialui", width: 193 },
+      { name: "mongodb", width: 216 },
+      { name: "mysql", width: 196 },
+      { name: "nextjs", width: 218 },
+      { name: "nodejs", width: 203 },
+      { name: "reactjs", width: 204 },
+      { name: "socketio", width: 240 },
+      { name: "tailwindcss", width: 312 },
+      { name: "typescript", width: 247 },
+      { name: "gsap", width: 167 },
+      // CIRCULAR
+      { name: "framermotion", width: 73 },
+      { name: "css3", width: 73 },
+      { name: "html5", width: 73 },
+      { name: "sass", width: 73 },
+      { name: "photoshop", width: 73 },
+      { name: "premierpro", width: 73 },
+      { name: "illustrator", width: 73 },
+      { name: "aftereffects", width: 73 },
     ];
 
     const SKILL_ASSETS: { texture: string; width: number }[] = BASE_SKILLS.map(
@@ -96,12 +91,12 @@ const MatterCanvas = () => {
     );
 
     const SPRITE_BASE = 520;
-    const FIXED_HEIGHT = 55;
+    const FIXED_HEIGHT = 73;
 
     const pickAutoWidth = () => {
       if (matterContainer.clientWidth > 1000) return 260;
       if (matterContainer.clientWidth > 700) return 220;
-      return 55;
+      return 73;
     };
 
     const loadImage = (src: string) =>
@@ -157,41 +152,41 @@ const MatterCanvas = () => {
       const { w: natW, h: natH } = await ensureTextureMeta(asset.texture);
       const { w, h } = resolveSize(asset, natW, natH);
 
-      const box = Bodies.rectangle(
-        Math.floor(Math.random() * window.innerWidth) + 1,
-        0,
-        w,
-        h,
-        {
-          // Adjust "floatiness"/air resistance: smaller = more floaty, larger = more damped
-          frictionAir: 0.00001,
-          // Adjust overall bounce/springiness on collisions (0 = no bounce, 1 = very bouncy)
-          restitution: 0.4,
-          chamfer: { radius: Math.min(w, h) * 0.14 },
-          render: {
-            fillStyle: "#090909",
-            strokeStyle: "transparent",
-            lineWidth: 0.0001,
-            sprite: {
-              texture: asset.texture,
-              xScale: w / natW,
-              yScale: h / natH,
-            },
+      // Slight randomized spawn (avoid exact overlap)
+      const spawnX =
+        Math.random() * (matterContainer.clientWidth - w - 20) + 10 + w / 2;
+      const spawnY = -Math.random() * 120 - h; // spawn above view so they settle gently
+
+      const box = Matter.Bodies.rectangle(spawnX, spawnY, w, h, {
+        frictionAir: 0.00001, // more damping (was 0.00001)
+        friction: 0.018, // surface friction to bleed lateral energy
+        frictionStatic: 0.5,
+        restitution: 0.4, // reduce bounce (was 0.4) -> prevents perpetual micro bounces
+        chamfer: { radius: Math.min(w, h) * 0.14 },
+        render: {
+          // fillStyle: "#090909",
+          strokeStyle: "transparent",
+          lineWidth: 0.0001,
+          sprite: {
+            texture: asset.texture,
+            xScale: w / natW,
+            yScale: h / natH,
           },
-        }
-      );
-      Composite.add(engine.world, box);
+        },
+      });
+      Matter.Composite.add(engine.world, box);
     };
 
     const dropBodies = async () => {
       if (startedRef.current) return;
       startedRef.current = true;
 
-      // Transparent bottom boundary
-      ground = Bodies.rectangle(
+      // --- Boundaries (ground width reduced to container width + margins) ---
+      const groundWidth = matterContainer.clientWidth + THICCNESS * 2;
+      ground = Matter.Bodies.rectangle(
         matterContainer.clientWidth / 2,
         matterContainer.clientHeight + THICCNESS / 2,
-        27184,
+        groundWidth,
         THICCNESS,
         {
           isStatic: true,
@@ -203,67 +198,75 @@ const MatterCanvas = () => {
           },
         }
       );
-      leftWall = Bodies.rectangle(
-        0 - THICCNESS / 2,
+      leftWall = Matter.Bodies.rectangle(
+        -THICCNESS / 2,
         matterContainer.clientHeight / 2,
         THICCNESS,
         matterContainer.clientHeight * 5,
         { isStatic: true }
       );
-      rightWall = Bodies.rectangle(
+      rightWall = Matter.Bodies.rectangle(
         matterContainer.clientWidth + THICCNESS / 2,
         matterContainer.clientHeight / 2,
         THICCNESS,
         matterContainer.clientHeight * 5,
         { isStatic: true }
       );
+      Matter.Composite.add(engine.world, [ground, leftWall, rightWall]);
 
-      Composite.add(engine.world, [ground, leftWall, rightWall]);
-
-      const mouse = Mouse.create(render.canvas);
-      const mouseConstraint = MouseConstraint.create(engine, {
+      // Mouse constraint (keep same stiffness comment)
+      const mouse = Matter.Mouse.create(render.canvas);
+      const mouseConstraint = Matter.MouseConstraint.create(engine, {
         mouse,
         constraint: {
-          // Adjust drag "spring" feel when grabbing items (0 = loose, 1 = rigid)
-          stiffness: 0.2,
+          stiffness: 0.2, // Adjust drag "spring" feel
           render: { visible: false },
         },
       });
-      Composite.add(engine.world, mouseConstraint);
+      Matter.Composite.add(engine.world, mouseConstraint);
 
       await Promise.all(SKILL_ASSETS.map((a) => ensureTextureMeta(a.texture)));
-      await Promise.all(SKILL_ASSETS.map((a) => createObject(a)));
+      for (const a of SKILL_ASSETS) {
+        await createObject(a);
+      }
 
-      Runner.run(runner, engine);
+      Matter.Runner.run(runner, engine);
     };
 
     const scaleBodies = async () => {
       if (!startedRef.current) return;
-      const allBodies = Composite.allBodies(engine.world);
-      allBodies.forEach((body) => {
-        if (!body.isStatic) Composite.remove(engine.world, body);
+      const bodies = Matter.Composite.allBodies(engine.world);
+      bodies.forEach((b) => {
+        if (!b.isStatic) Matter.Composite.remove(engine.world, b);
       });
-
       await Promise.all(SKILL_ASSETS.map((a) => ensureTextureMeta(a.texture)));
-      await Promise.all(SKILL_ASSETS.map((a) => createObject(a)));
+      for (const a of SKILL_ASSETS) {
+        await createObject(a);
+      }
     };
 
     const handleResize = () => {
       render.canvas.width = matterContainer.clientWidth;
       render.canvas.height = matterContainer.clientHeight;
       if (startedRef.current && ground) {
-        Body.setPosition(
+        Matter.Body.setPosition(
           ground,
-          Vector.create(
+          Matter.Vector.create(
             matterContainer.clientWidth / 2,
             matterContainer.clientHeight + THICCNESS / 2
           )
         );
+        Matter.Body.scale(
+          ground,
+          (matterContainer.clientWidth + THICCNESS * 2) / ground.bounds.max.x -
+            ground.bounds.min.x,
+          1
+        );
       }
       if (startedRef.current && rightWall) {
-        Body.setPosition(
+        Matter.Body.setPosition(
           rightWall,
-          Vector.create(
+          Matter.Vector.create(
             matterContainer.clientWidth + THICCNESS / 2,
             matterContainer.clientHeight / 2
           )
@@ -273,6 +276,34 @@ const MatterCanvas = () => {
     };
 
     window.addEventListener("resize", handleResize);
+
+    // --- Velocity clamp to prevent runaway numeric energy ---
+    const MAX_V = 25;
+    const MAX_ANG_V = 0.8;
+    const afterUpdate = () => {
+      if (!startedRef.current) return;
+      const bodies = Matter.Composite.allBodies(engine.world);
+      for (const b of bodies) {
+        if (b.isStatic || b.isSleeping) continue;
+        // linear velocity clamp
+        const v = Math.hypot(b.velocity.x, b.velocity.y);
+        if (v > MAX_V) {
+          const scale = MAX_V / v;
+          Matter.Body.setVelocity(b, {
+            x: b.velocity.x * scale,
+            y: b.velocity.y * scale,
+          });
+        }
+        // angular velocity clamp
+        if (Math.abs(b.angularVelocity) > MAX_ANG_V) {
+          Matter.Body.setAngularVelocity(
+            b,
+            Math.sign(b.angularVelocity) * MAX_ANG_V
+          );
+        }
+      }
+    };
+    Matter.Events.on(engine, "afterUpdate", afterUpdate);
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -290,9 +321,10 @@ const MatterCanvas = () => {
     return () => {
       window.removeEventListener("resize", handleResize);
       observer.disconnect();
-      Render.stop(render);
-      Runner.stop(runner);
-      Engine.clear(engine);
+      Matter.Events.off(engine, "afterUpdate", afterUpdate);
+      Matter.Render.stop(render);
+      Matter.Runner.stop(runner);
+      Matter.Engine.clear(engine);
       if (render.canvas) render.canvas.remove();
     };
   }, [isDark]);

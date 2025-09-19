@@ -41,7 +41,7 @@ const About = () => {
       const SCROLL_DISTANCE = 400;
       const EXIT_OFFSET = 0.15;
 
-      const fullOpacityTargets = Array.from(
+      let fullOpacityTargets = Array.from(
         new Set(
           [
             ...highlightWords,
@@ -51,14 +51,25 @@ const About = () => {
         )
       ) as HTMLElement[];
 
-      // Place arrow container second last (if present)
-      if (arrowEl) {
-        const idx = fullOpacityTargets.indexOf(arrowEl);
-        if (idx > -1) {
-          fullOpacityTargets.splice(idx, 1); // remove current
-          const insertPos = Math.max(0, fullOpacityTargets.length - 1); // second last
-          fullOpacityTargets.splice(insertPos, 0, arrowEl);
-        }
+      // NEW ORDERING:
+      // Ensure arrowEl (and its words) animate to full opacity BEFORE the words of the last highlight span.
+      if (arrowEl && highlightSpans.length) {
+        const lastHighlightSpan = highlightSpans[highlightSpans.length - 1];
+        const lastSpanWords = words.filter((w) =>
+          lastHighlightSpan.contains(w)
+        );
+
+        // Filter groups
+        const arrowGroup = [arrowEl, ...arrowWords].filter(
+          (n, i, a) => a.indexOf(n) === i
+        );
+        const lastSpanGroup = lastSpanWords;
+        const others = fullOpacityTargets.filter(
+          (el) => !arrowGroup.includes(el) && !lastSpanGroup.includes(el)
+        );
+
+        // Recompose: others -> arrow group -> last highlight span group
+        fullOpacityTargets = [...others, ...arrowGroup, ...lastSpanGroup];
       }
 
       const entranceTl = gsap.timeline({
@@ -143,18 +154,23 @@ const About = () => {
         className="content__title font-extrabold font-robo uppercase text-[10vw] lg:text-[8vw] xl:text-[6vw] leading-none text-center max-w-[80%] px-4 select-none text-foreground dark:text-background"
       >
         Visual <span className="about-highlight font-grandbold">Designer</span>{" "}
-        & Web <span className="about-highlight font-grandbold">Developer</span>{" "}
+        <br className="lg:hidden" /> & Web{" "}
+        <span className="about-highlight font-grandbold">Developer</span>{" "}
         dedicated to the{" "}
-        <span className="about-highlight lg:hidden">craft</span>
-        <span className="hidden lg:inline-block font-grandbold lg:font-robo">craft</span> of{" "}
-        <span className="lg:hidden">creating</span>
+        <span className="about-highlight lg:hidden font-grandbold lg:font-robo">
+          craft
+        </span>
+        <span className="hidden lg:inline-block font-grandbold lg:font-robo">
+          craft
+        </span>{" "}
+        of <span className="lg:hidden">creating</span>
         <span className="about-highlight hidden lg:inline-block font-grandbold">
           creating
         </span>{" "}
         <span className="about-arrow inline-flex items-center justify-center gap-2 font-grandbold">
-          0 <ModernArrow className="w-[6vw] h-max" /> 1
+          0 <ModernArrow className="w-[10vw] lg:w-[6vw] h-max" /> 1
         </span>{" "}
-        experiences till the last{" "}
+        experiences till the <br className="lg:hidden" /> last{" "}
         <span className="about-highlight font-grandbold">detail</span>.
       </h2>
     </section>

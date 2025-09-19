@@ -6,13 +6,13 @@ import { gsap } from "gsap";
 import { Observer } from "gsap/Observer";
 
 const ServicesMarquee = () => {
-  const welcomeRef = useRef<HTMLDivElement>(null);
+  const servicesRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
-      const speed = 5;
+      const speed = 3;
       document.fonts.ready.then(() => {
-        const loop = horizontalLoop(".marquee-welcome", {
+        const loop = horizontalLoop(".marquee-services", {
           repeat: -1,
           speed: 1,
         });
@@ -32,32 +32,32 @@ const ServicesMarquee = () => {
       });
     },
     {
-      scope: welcomeRef,
+      scope: servicesRef,
     }
   );
   return (
     <div
-      ref={welcomeRef}
+      ref={servicesRef}
       className="flex items-center justify-center text-[8vw] font-extrabold bg-foreground text-background dark:bg-background dark:text-foreground py-4 align-self-start place-self-start font-grandbold [&>*]:select-none [&>*]:pointer-events-none [&>*]:mb-1 [&>*]:pr-25 [&>*]:leading-none"
     >
-      <div className="marquee-welcome">WELCOME</div>
-      <div className="marquee-welcome">WELCOME</div>
-      <div className="marquee-welcome">WELCOME</div>
-      <div className="marquee-welcome">WELCOME</div>
-      <div className="marquee-welcome">WELCOME</div>
-      <div className="marquee-welcome">WELCOME</div>
-      <div className="marquee-welcome">WELCOME</div>
-      <div className="marquee-welcome">WELCOME</div>
-      <div className="marquee-welcome">WELCOME</div>
-      <div className="marquee-welcome">WELCOME</div>
-      <div className="marquee-welcome">WELCOME</div>
-      <div className="marquee-welcome">WELCOME</div>
-      <div className="marquee-welcome">WELCOME</div>
-      <div className="marquee-welcome">WELCOME</div>
-      <div className="marquee-welcome">WELCOME</div>
-      <div className="marquee-welcome">WELCOME</div>
-      <div className="marquee-welcome">WELCOME</div>
-      <div className="marquee-welcome">WELCOME</div>
+      <div className="marquee-services">WELCOME</div>
+      <div className="marquee-services">WELCOME</div>
+      <div className="marquee-services">WELCOME</div>
+      <div className="marquee-services">WELCOME</div>
+      <div className="marquee-services">WELCOME</div>
+      <div className="marquee-services">WELCOME</div>
+      <div className="marquee-services">WELCOME</div>
+      <div className="marquee-services">WELCOME</div>
+      <div className="marquee-services">WELCOME</div>
+      <div className="marquee-services">WELCOME</div>
+      <div className="marquee-services">WELCOME</div>
+      <div className="marquee-services">WELCOME</div>
+      <div className="marquee-services">WELCOME</div>
+      <div className="marquee-services">WELCOME</div>
+      <div className="marquee-services">WELCOME</div>
+      <div className="marquee-services">WELCOME</div>
+      <div className="marquee-services">WELCOME</div>
+      <div className="marquee-services">WELCOME</div>
     </div>
   );
 };

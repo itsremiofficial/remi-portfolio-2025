@@ -706,7 +706,7 @@ const ContactIconItem = memo(() => {
           id="marquee-scroll-text"
           text="GET IN TOUCH • GET IN TOUCH • GET IN TOUCH • "
           animate
-          textClassName="text-[12px] tracking-[1.47px] font-bold text-foreground"
+          textClassName="text-[12px] tracking-[1.47px] font-bold dark:text-foreground text-background"
           size={128}
           radius={87}
           animationDuration="25s"
