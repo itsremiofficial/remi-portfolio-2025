@@ -56,10 +56,6 @@ const WorksCards = () => {
   const wheelActiveRef = useRef(false);
   const wheelVelocityRef = useRef(0);
 
-  const parallaxImgsRef = useRef<HTMLImageElement[]>([]);
-  const parallaxSettersRef = useRef<((v: number) => void)[]>([]);
-  const parallaxDepthsRef = useRef<number[]>([]);
-
   // Position-based parallax targets
   const parallaxTargetsRef = useRef<
     {

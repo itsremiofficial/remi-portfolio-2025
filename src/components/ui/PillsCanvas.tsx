@@ -57,30 +57,30 @@ const MatterCanvas = () => {
     // Build assets based on current theme
     const themeSuffix = isDark ? "light" : "dark";
     const BASE_SKILLS: Array<{ name: string; width: number }> = [
-      { name: "bootstrap", width: 277 },
-      { name: "expressjs", width: 215 },
-      { name: "figma", width: 184 },
-      { name: "github", width: 206 },
-      { name: "javascript", width: 243 },
-      { name: "materialui", width: 193 },
-      { name: "mongodb", width: 216 },
-      { name: "mysql", width: 196 },
-      { name: "nextjs", width: 218 },
-      { name: "nodejs", width: 203 },
-      { name: "reactjs", width: 204 },
-      { name: "socketio", width: 240 },
-      { name: "tailwindcss", width: 312 },
-      { name: "typescript", width: 247 },
-      { name: "gsap", width: 167 },
+      { name: "reactjs", width: 179 },
+      { name: "nextjs", width: 191 },
+      { name: "tailwindcss", width: 274 },
+      { name: "figma", width: 161 },
+      { name: "socketio", width: 211 },
+      { name: "typescript", width: 217 },
+      { name: "nodejs", width: 178 },
+      { name: "mongodb", width: 189 },
+      { name: "mysql", width: 172 },
+      { name: "github", width: 181 },
+      { name: "gsap", width: 147 },
+      { name: "bootstrap", width: 243 },
+      { name: "materialui", width: 169 },
+      { name: "expressjs", width: 189 },
+      { name: "javascript", width: 213 },
       // CIRCULAR
-      { name: "framermotion", width: 73 },
-      { name: "css3", width: 73 },
-      { name: "html5", width: 73 },
-      { name: "sass", width: 73 },
-      { name: "photoshop", width: 73 },
-      { name: "premierpro", width: 73 },
-      { name: "illustrator", width: 73 },
-      { name: "aftereffects", width: 73 },
+      { name: "framermotion", width: 64 },
+      { name: "css3", width: 64 },
+      { name: "html5", width: 64 },
+      { name: "sass", width: 64 },
+      { name: "photoshop", width: 64 },
+      { name: "premierpro", width: 64 },
+      { name: "illustrator", width: 64 },
+      { name: "aftereffects", width: 64 },
     ];
 
     const SKILL_ASSETS: { texture: string; width: number }[] = BASE_SKILLS.map(
@@ -91,12 +91,12 @@ const MatterCanvas = () => {
     );
 
     const SPRITE_BASE = 520;
-    const FIXED_HEIGHT = 73;
+    const FIXED_HEIGHT = 64;
 
     const pickAutoWidth = () => {
       if (matterContainer.clientWidth > 1000) return 260;
       if (matterContainer.clientWidth > 700) return 220;
-      return 73;
+      return 64;
     };
 
     const loadImage = (src: string) =>

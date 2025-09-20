@@ -11,7 +11,8 @@ const About = () => {
   useGSAP(
     () => {
       const titleEl = titleRef.current;
-      if (!titleEl) return;
+      const sectionEl = aboutContainer.current; // NEW: section reference
+      if (!titleEl || !sectionEl) return;
 
       const split = new SplitText(titleEl, { type: "words" });
       const words = split.words as HTMLElement[];
@@ -51,37 +52,31 @@ const About = () => {
         )
       ) as HTMLElement[];
 
-      // NEW ORDERING:
-      // Ensure arrowEl (and its words) animate to full opacity BEFORE the words of the last highlight span.
+      // Reorder so arrow group goes before last highlight group
       if (arrowEl && highlightSpans.length) {
         const lastHighlightSpan = highlightSpans[highlightSpans.length - 1];
         const lastSpanWords = words.filter((w) =>
           lastHighlightSpan.contains(w)
         );
-
-        // Filter groups
         const arrowGroup = [arrowEl, ...arrowWords].filter(
           (n, i, a) => a.indexOf(n) === i
         );
-        const lastSpanGroup = lastSpanWords;
         const others = fullOpacityTargets.filter(
-          (el) => !arrowGroup.includes(el) && !lastSpanGroup.includes(el)
+          (el) => !arrowGroup.includes(el) && !lastSpanWords.includes(el)
         );
-
-        // Recompose: others -> arrow group -> last highlight span group
-        fullOpacityTargets = [...others, ...arrowGroup, ...lastSpanGroup];
+        fullOpacityTargets = [...others, ...arrowGroup, ...lastSpanWords];
       }
 
       const entranceTl = gsap.timeline({
         scrollTrigger: {
-          trigger: titleEl,
-          start: "center center",
+          trigger: sectionEl, // CHANGED: pin the whole section
+          start: "top top",
           end: `+=${SCROLL_DISTANCE}%`,
-          endTrigger: "#about",
-          scrub: true,
-          pin: true,
+          scrub: 1,
+          pin: true, // section stays pinned
           pinSpacing: true,
           anticipatePin: 1,
+          // markers: true,
         },
       });
 
@@ -98,7 +93,6 @@ const About = () => {
             rotationY: () => gsap.utils.random(-25, 25),
           },
           {
-            // Per-element final opacity: arrow words = 1, others = 0.25
             opacity: (_, el) =>
               arrowWords.includes(el as HTMLElement) ? 1 : 0.25,
             rotationX: 0,
@@ -123,16 +117,16 @@ const About = () => {
             ease: "power2.out",
           },
           "-=0.15"
-        )
-        .to(
-          titleEl,
-          {
-            autoAlpha: 0,
-            ease: "power2.inOut",
-            duration: 1,
-          },
-          `-=${EXIT_OFFSET}`
         );
+      // .to(
+      //   titleEl,
+      //   {
+      //     autoAlpha: 0,
+      //     ease: "power2.inOut",
+      //     duration: 1,
+      //   },
+      //   `-=${EXIT_OFFSET}`
+      // );
 
       return () => {
         entranceTl.scrollTrigger?.kill();
@@ -146,7 +140,7 @@ const About = () => {
   return (
     <section
       ref={aboutContainer}
-      className="w-full flex items-center justify-center overflow-hidden"
+      className="about-section h-screen w-full flex items-center justify-center overflow-hidden"
       id="about"
     >
       <h2

@@ -114,6 +114,20 @@
   --color-nav-border: oklch(0.922 0 0);
 
   --ease-fluid: cubic-bezier(0.7, 0, 0.2, 1);
+
+  --animate-floating: floating 3s ease-in-out infinite;
+
+  @keyframes floating {
+    0% {
+      transform: translate(-50%, -50%);
+    }
+    50% {
+      transform: translate(-50%, -60%);
+    }
+    100% {
+      transform: translate(-50%, -50%);
+    }
+  }
 }
 
 ::-webkit-scrollbar {
@@ -448,7 +462,7 @@ body {
 }
 
 /* STACKING CARDS */
-.card-wrapper {
+/* .card-wrapper {
   width: 100%;
   perspective: 900px;
   margin-bottom: 50px;
@@ -468,7 +482,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  /* font-size: 30px; */
+  font-size: 30px;
   border-radius: 50px;
   background-size: cover;
   background-repeat: no-repeat;
@@ -494,7 +508,7 @@ body {
 .card.four {
   width: 100%;
   background-image: url("https://assets.codepen.io/16327/portrait-pattern-4.jpg");
-}
+} */
 /* 
 @media (min-width: 768px) {
   .cards {
@@ -548,10 +562,64 @@ body {
   @apply text-[clamp(2rem,18vw,350px)] leading-[clamp(2rem,15vw,300px)] font-grandbold;
 }
 .section-sub-heading {
-  @apply text-[clamp(2rem,10vw,190px)] leading-[clamp(2rem,8.5vw,170px)] font-grandbold;
+  @apply text-[clamp(2rem,10vw,140px)] leading-[clamp(2rem,8.5vw,135px)] font-grandbold;
 }
 .text-stroke {
   -webkit-text-stroke-width: 1px;
   -webkit-text-stroke-color: var(--text-stroke-color);
   color: transparent;
+}
+
+.service-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 240px;
+  height: 360px;
+  perspective: 1000px;
+}
+
+.service-card-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  animation: floating 3s infinite ease-in-out;
+}
+
+.flip-service-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.flip-service-card-front,
+.flip-service-card-back {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.flip-service-card-front {
+  background-color: var(--color-accent);
+  @apply flex items-center justify-center;
+}
+
+.flip-service-card-back {
+  background-color: var(--color-background);
+  transform: rotateY(180deg);
+  @apply flex items-center justify-center text-foreground;
+}
+
+.services_section,
+.about-section {
+  transition: 0s;
 }

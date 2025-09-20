@@ -17,7 +17,6 @@ import {
   SplitText,
 } from "gsap/all";
 import gsap from "gsap";
-import Skills from "./sections/Skills";
 import Services from "./sections/Services";
 import ServicesMarquee from "./components/ServicesMarquee";
 
@@ -70,7 +69,7 @@ const App = () => {
         <div className="grain"></div>
         <Header fontsLoaded={fontsLoaded} />
 
-        <main className="overflow-x-hidden text-black dark:text-white relative">
+        <main className="overflow-x-hidden text-foreground dark:text-background relative">
           <Hero />
           <WelcomeMarquee />
           <About />
@@ -82,6 +81,30 @@ const App = () => {
             id="services"
           >
             Services
+          </section>
+          <section
+            className="w-full min-h-screen flex items-center justify-center"
+            id="contact"
+          >
+            Contact
+          </section>
+          <section
+            className="w-full min-h-screen flex items-center justify-center"
+            id="contact"
+          >
+            Contact
+          </section>
+          <section
+            className="w-full min-h-screen flex items-center justify-center"
+            id="contact"
+          >
+            Contact
+          </section>
+          <section
+            className="w-full min-h-screen flex items-center justify-center"
+            id="contact"
+          >
+            Contact
           </section>
           <section
             className="w-full min-h-screen flex items-center justify-center"
