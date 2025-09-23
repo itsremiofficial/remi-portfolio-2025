@@ -10,13 +10,15 @@ const MatterCanvas = () => {
     Map<string, { w: number; h: number; img: HTMLImageElement }>
   >(new Map());
 
+  // NEW: store previous dimensions to scale boundaries & bodies smoothly
+  const prevWidthRef = useRef<number | null>(null);
+  const prevHeightRef = useRef<number | null>(null);
+
   useEffect(() => {
     // Reset state/caches when theme changes
     startedRef.current = false;
     textureMetaRef.current.clear();
-
     if (!containerRef.current) return;
-
     const matterContainer = containerRef.current;
     const THICCNESS = 60;
 
@@ -46,6 +48,12 @@ const MatterCanvas = () => {
       },
     });
 
+    // Make canvas stable & composited
+    const canvasEl = render.canvas;
+    canvasEl.style.willChange = "transform";
+    canvasEl.style.transition = "opacity 0.25s ease";
+    canvasEl.style.opacity = "0";
+
     Matter.Render.run(render);
     const runner = Matter.Runner.create();
 
@@ -59,19 +67,19 @@ const MatterCanvas = () => {
     const BASE_SKILLS: Array<{ name: string; width: number }> = [
       { name: "reactjs", width: 179 },
       { name: "nextjs", width: 191 },
-      { name: "tailwindcss", width: 274 },
+      { name: "tailwindcss", width: 237 },
       { name: "figma", width: 161 },
-      { name: "socketio", width: 211 },
-      { name: "typescript", width: 217 },
+      { name: "socketio", width: 201 },
+      { name: "typescript", width: 204 },
       { name: "nodejs", width: 178 },
-      { name: "mongodb", width: 189 },
+      { name: "mongodb", width: 202 },
       { name: "mysql", width: 172 },
-      { name: "github", width: 181 },
+      { name: "github", width: 171 },
       { name: "gsap", width: 147 },
-      { name: "bootstrap", width: 243 },
+      { name: "bootstrap", width: 197 },
       { name: "materialui", width: 169 },
       { name: "expressjs", width: 189 },
-      { name: "javascript", width: 213 },
+      { name: "javascript", width: 197 },
       // CIRCULAR
       { name: "framermotion", width: 64 },
       { name: "css3", width: 64 },
@@ -159,7 +167,7 @@ const MatterCanvas = () => {
 
       const box = Matter.Bodies.rectangle(spawnX, spawnY, w, h, {
         frictionAir: 0.00001, // more damping (was 0.00001)
-        friction: 0.018, // surface friction to bleed lateral energy
+        friction: 0.0018, // surface friction to bleed lateral energy
         frictionStatic: 0.5,
         restitution: 0.4, // reduce bounce (was 0.4) -> prevents perpetual micro bounces
         chamfer: { radius: Math.min(w, h) * 0.14 },
@@ -180,8 +188,9 @@ const MatterCanvas = () => {
     const dropBodies = async () => {
       if (startedRef.current) return;
       startedRef.current = true;
+      prevWidthRef.current = matterContainer.clientWidth;
+      prevHeightRef.current = matterContainer.clientHeight;
 
-      // --- Boundaries (ground width reduced to container width + margins) ---
       const groundWidth = matterContainer.clientWidth + THICCNESS * 2;
       ground = Matter.Bodies.rectangle(
         matterContainer.clientWidth / 2,
@@ -193,7 +202,6 @@ const MatterCanvas = () => {
           render: {
             fillStyle: "transparent",
             strokeStyle: "transparent",
-            lineWidth: 0,
             opacity: 0,
           },
         }
@@ -203,7 +211,14 @@ const MatterCanvas = () => {
         matterContainer.clientHeight / 2,
         THICCNESS,
         matterContainer.clientHeight * 5,
-        { isStatic: true }
+        {
+          isStatic: true,
+          render: {
+            fillStyle: "transparent",
+            strokeStyle: "transparent",
+            opacity: 0,
+          },
+        }
       );
       rightWall = Matter.Bodies.rectangle(
         matterContainer.clientWidth + THICCNESS / 2,
@@ -218,61 +233,127 @@ const MatterCanvas = () => {
       const mouse = Matter.Mouse.create(render.canvas);
       const mouseConstraint = Matter.MouseConstraint.create(engine, {
         mouse,
-        constraint: {
-          stiffness: 0.2, // Adjust drag "spring" feel
-          render: { visible: false },
-        },
+        constraint: { stiffness: 0.2, render: { visible: false } },
       });
       Matter.Composite.add(engine.world, mouseConstraint);
 
       await Promise.all(SKILL_ASSETS.map((a) => ensureTextureMeta(a.texture)));
-      for (const a of SKILL_ASSETS) {
-        await createObject(a);
-      }
+      for (const a of SKILL_ASSETS) await createObject(a);
 
       Matter.Runner.run(runner, engine);
+
+      // Fade in after first frame to hide initial clear
+      requestAnimationFrame(() => {
+        canvasEl.style.opacity = "1";
+      });
     };
 
-    const scaleBodies = async () => {
+    // -------- Blink-safe Resize (debounced) --------
+    let resizeRaf: number | null = null;
+    let debounceTimer: number | null = null;
+
+    const performResize = () => {
       if (!startedRef.current) return;
-      const bodies = Matter.Composite.allBodies(engine.world);
-      bodies.forEach((b) => {
-        if (!b.isStatic) Matter.Composite.remove(engine.world, b);
-      });
-      await Promise.all(SKILL_ASSETS.map((a) => ensureTextureMeta(a.texture)));
-      for (const a of SKILL_ASSETS) {
-        await createObject(a);
+      const newW = matterContainer.clientWidth;
+      const newH = matterContainer.clientHeight;
+      if (newW < 10 || newH < 10) return;
+
+      const prevW = prevWidthRef.current ?? newW;
+      const prevH = prevHeightRef.current ?? newH;
+
+      const deltaW = Math.abs(newW - prevW);
+      const deltaH = Math.abs(newH - prevH);
+
+      // Ignore micro jitter (common during pin/unpin)
+      if (deltaW < 8 && deltaH < 8) return;
+
+      // Only touch actual canvas dims if significant width change
+      if (deltaW >= 8) {
+        if (render.canvas.width !== newW) render.canvas.width = newW;
       }
+      if (deltaH >= 8) {
+        if (render.canvas.height !== newH) render.canvas.height = newH;
+      }
+
+      // Adjust ground if width meaningfully changed
+      if (ground && deltaW >= 8) {
+        const currentWidth = ground.bounds.max.x - ground.bounds.min.x;
+        const desiredWidth = newW + THICCNESS * 2;
+        const scaleX = desiredWidth / currentWidth;
+        if (Math.abs(scaleX - 1) > 0.05) {
+          Matter.Body.scale(ground, scaleX, 1);
+        }
+        Matter.Body.setPosition(
+          ground,
+          Matter.Vector.create(newW / 2, newH + THICCNESS / 2)
+        );
+      } else if (ground && deltaH >= 8) {
+        Matter.Body.setPosition(
+          ground,
+          Matter.Vector.create(newW / 2, newH + THICCNESS / 2)
+        );
+      }
+
+      const desiredWallHeight = newH * 5;
+      const adjustWall = (
+        wall: Matter.Body | null,
+        x: number
+      ): Matter.Body | null => {
+        if (!wall) return wall;
+        // Only rebuild if height delta large
+        const h = wall.bounds.max.y - wall.bounds.min.y;
+        if (Math.abs(h - desiredWallHeight) > 40) {
+          Matter.Composite.remove(engine.world, wall);
+          const replacement = Matter.Bodies.rectangle(
+            x,
+            newH / 2,
+            THICCNESS,
+            desiredWallHeight,
+            {
+              isStatic: true,
+              render: {
+                fillStyle: "transparent",
+                strokeStyle: "transparent",
+                opacity: 0,
+              },
+            }
+          );
+          Matter.Composite.add(engine.world, replacement);
+          return replacement;
+        }
+        Matter.Body.setPosition(wall, Matter.Vector.create(x, newH / 2));
+        return wall;
+      };
+      leftWall = adjustWall(leftWall, -THICCNESS / 2);
+      rightWall = adjustWall(rightWall, newW + THICCNESS / 2);
+
+      // Light reposition for dynamic bodies only if moderate resize
+      if (deltaW < newW * 0.4 && deltaH < newH * 0.4) {
+        const bodies = Matter.Composite.allBodies(engine.world).filter(
+          (b) => !b.isStatic
+        );
+        const scaleX = newW / prevW;
+        const scaleY = newH / prevH;
+        bodies.forEach((b) => {
+          Matter.Body.setPosition(b, {
+            x: b.position.x * scaleX,
+            y: b.position.y * scaleY,
+          });
+        });
+      }
+
+      prevWidthRef.current = newW;
+      prevHeightRef.current = newH;
+    };
+
+    const scheduleResize = () => {
+      if (resizeRaf) cancelAnimationFrame(resizeRaf);
+      resizeRaf = requestAnimationFrame(performResize);
     };
 
     const handleResize = () => {
-      render.canvas.width = matterContainer.clientWidth;
-      render.canvas.height = matterContainer.clientHeight;
-      if (startedRef.current && ground) {
-        Matter.Body.setPosition(
-          ground,
-          Matter.Vector.create(
-            matterContainer.clientWidth / 2,
-            matterContainer.clientHeight + THICCNESS / 2
-          )
-        );
-        Matter.Body.scale(
-          ground,
-          (matterContainer.clientWidth + THICCNESS * 2) / ground.bounds.max.x -
-            ground.bounds.min.x,
-          1
-        );
-      }
-      if (startedRef.current && rightWall) {
-        Matter.Body.setPosition(
-          rightWall,
-          Matter.Vector.create(
-            matterContainer.clientWidth + THICCNESS / 2,
-            matterContainer.clientHeight / 2
-          )
-        );
-        void scaleBodies();
-      }
+      if (debounceTimer) window.clearTimeout(debounceTimer);
+      debounceTimer = window.setTimeout(scheduleResize, 120); // wait out ScrollTrigger adjustments
     };
 
     window.addEventListener("resize", handleResize);
@@ -320,6 +401,8 @@ const MatterCanvas = () => {
 
     return () => {
       window.removeEventListener("resize", handleResize);
+      if (resizeRaf) cancelAnimationFrame(resizeRaf);
+      if (debounceTimer) clearTimeout(debounceTimer);
       observer.disconnect();
       Matter.Events.off(engine, "afterUpdate", afterUpdate);
       Matter.Render.stop(render);

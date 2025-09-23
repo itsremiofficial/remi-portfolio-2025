@@ -1,8 +1,9 @@
-import { forwardRef, useEffect, useRef } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/all";
 import MatterCanvas from "../components/ui/PillsCanvas";
+import { cn } from "../utils";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -10,6 +11,8 @@ const Services = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const servicesContainer = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement[]>([]);
+  const spacerRef = useRef<HTMLDivElement | null>(null); // NEW spacer to avoid jump
+  const [init, setInit] = useState(false);
 
   useGSAP(
     () => {
@@ -17,58 +20,134 @@ const Services = () => {
       const cards = cardsRef.current;
       if (!parentPin || !cards.length) return;
 
-      // Normalized config
+      // --- Stable scroll distance (do not derive from dynamic content during pin) ---
+      let SCROLL_DISTANCE = window.innerHeight * 2;
+
+      // Create spacer only once (after section) to emulate pin spacing manually
+      if (!spacerRef.current) {
+        const spacer = document.createElement("div");
+        spacer.style.width = "100%";
+        spacer.style.height = `${SCROLL_DISTANCE}px`;
+        spacer.style.pointerEvents = "none";
+        parentPin.insertAdjacentElement("afterend", spacer);
+        spacerRef.current = spacer;
+      }
+
+      const updateSpacer = () => {
+        SCROLL_DISTANCE = window.innerHeight * 2;
+        if (spacerRef.current)
+          spacerRef.current.style.height = `${SCROLL_DISTANCE}px`;
+      };
+
+      // ResizeObserver for width/height changes
+      const ro = new ResizeObserver(() => {
+        updateSpacer();
+        ScrollTrigger.refresh();
+      });
+      ro.observe(document.documentElement);
+
       const SPREAD_PORTION = 0.33;
-      const FLIP_BASE_START = 0.5;
+      const FLIP_BASE_START = 0.6;
       const FLIP_STAGGER = 0.05;
       const FLIP_PORTION = 0.33;
-      const positions = [14, 38, 62, 86];
-      const rotations = [-15, -7.5, 7.5, 15];
+      const rotations = [-12, -6, 0, 6];
 
-      // Master timeline with native pin spacing (prevents jump)
+      // Prepare card bases
+      cards.forEach((card) => {
+        gsap.set(card, { transformOrigin: "left center" });
+      });
+
       const tl = gsap.timeline({
         defaults: { ease: "none" },
         scrollTrigger: {
           trigger: parentPin,
           start: "top top",
-          end: () => "+=" + window.innerHeight * 2, // extra scroll distance (adds after initial view)
+          end: () => "+=" + SCROLL_DISTANCE,
           pin: true,
-          pinSpacing: true, // let ScrollTrigger handle spacing smoothly
+          pinSpacing: false, // we provide our own spacer => no jump
           scrub: true,
-          anticipatePin: 0,
           invalidateOnRefresh: true,
-          // markers: true,
+          pinType: parentPin.style.transform ? "transform" : "fixed",
+          onEnter: () => setInit(true),
+          onLeaveBack: () => setInit(false),
+          // markers: true, // optional debug
+          onRefreshInit: () => updateSpacer(),
         },
       });
 
       // Spread (parallel)
+      const cardCount = cards.length;
+      const positions = Array.from(
+        { length: cardCount },
+        (_, i) => ((i + 1) / (cardCount + 1)) * 100
+      );
+      console.log(positions);
       cards.forEach((card, i) => {
-        tl.to(
+        tl.to(card, { rotation: rotations[i], duration: SPREAD_PORTION }, 0).to(
           card,
-          {
-            left: `${positions[i]}%`,
-            rotation: rotations[i],
-            duration: SPREAD_PORTION,
-          },
-          0
+          { left: `${positions[i]}%`, duration: SPREAD_PORTION },
+          ">"
         );
       });
 
-      // Flip (stagger)
+      // 3D Flip (staggered) with overshoot
       cards.forEach((card, i) => {
+        const inner = card.querySelector(".flip-service-card-inner");
         const front = card.querySelector(".flip-service-card-front");
         const back = card.querySelector(".flip-service-card-back");
-        if (!front || !back) return;
-        const flipStart = FLIP_BASE_START + i * FLIP_STAGGER;
+        if (!inner || !front || !back) return;
 
-        tl.to(front, { rotateY: -180, duration: FLIP_PORTION }, flipStart)
-          .to(back, { rotateY: 0, duration: FLIP_PORTION }, flipStart)
-          .to(card, { rotation: 0, duration: FLIP_PORTION }, flipStart);
+        gsap.set(inner, {
+          transformStyle: "preserve-3d",
+          transformPerspective: 1200,
+          rotationY: 0,
+        });
+        gsap.set(front, { rotationY: 0, backfaceVisibility: "hidden" });
+        gsap.set(back, {
+          rotationY: 180,
+          backfaceVisibility: "hidden",
+          position: "absolute",
+          inset: 0,
+        });
+
+        const flipStart = FLIP_BASE_START + i * FLIP_STAGGER;
+        const overshootDeg = 198;
+        const overshootPortion = 0.7;
+        const settlePortion = 1 - overshootPortion;
+
+        tl.to(
+          inner,
+          {
+            rotationY: overshootDeg,
+            duration: FLIP_PORTION * overshootPortion,
+            ease: "power3.out",
+          },
+          flipStart
+        )
+          .to(
+            inner,
+            {
+              rotationY: 180,
+              duration: FLIP_PORTION * settlePortion,
+              ease: "power2.out",
+            },
+            flipStart + FLIP_PORTION * overshootPortion
+          )
+          .to(
+            card,
+            {
+              rotation: 0,
+              duration: FLIP_PORTION,
+              ease: "none",
+            },
+            flipStart
+          );
       });
 
       return () => {
         tl.scrollTrigger?.kill();
         tl.kill();
+        if (ro) ro.disconnect();
       };
     },
     { scope: sectionRef }
@@ -77,6 +156,11 @@ const Services = () => {
   useEffect(
     () => () => {
       ScrollTrigger.getAll().forEach((st) => st.kill());
+      // Clean spacer (optional)
+      if (spacerRef.current) {
+        spacerRef.current.remove();
+        spacerRef.current = null;
+      }
     },
     []
   );
@@ -104,24 +188,26 @@ const Services = () => {
           can I DO?
         </h2>
       </div>
-
-      {/* Background Effects */}
-      <div className="absolute inset-0 top-0 h-full w-full z-[0]">
-        <MatterCanvas />
-      </div>
-      <div className="absolute inset-0 top-0 w-full h-56 z-[1] pointer-events-none">
-        <div className="w-full h-full bg-gradient-to-t from-transparent dark:to-foreground to-background" />
-      </div>
-
-      {/* Cards */}
       <div ref={servicesContainer} className="relative w-full h-[60%]">
         <div className="services_cards w-full h-full">
           {[1, 2, 3, 4].map((id, index) => (
             <ServiceCard
               key={id}
-              id={`card-${id}`}
+              init={init}
+              id={`service-card-${id}`}
               index={index}
-              frontSide={<div className="p-6">Front Side {id}</div>}
+              frontSide={
+                <div className="p-2">
+                  <h4>Visual Design</h4>
+                  <ul className="skills-list">
+                    <li>Brand & Identity Design</li>
+                    <li>Marketing & Advertising Design</li>
+                    <li>Web & UI/UX Design</li>
+                    <li>Product & Packaging Design</li>
+                    <li>Motion & Multimedia Design</li>
+                  </ul>
+                </div>
+              }
               backSide={<div className="p-6">Back Side {id}</div>}
               ref={(el) => {
                 if (el) cardsRef.current[index] = el;
@@ -129,6 +215,12 @@ const Services = () => {
             />
           ))}
         </div>
+      </div>
+      <div className="absolute inset-0 top-0 h-full w-full z-[0]">
+        <MatterCanvas />
+      </div>
+      <div className="absolute inset-0 top-0 w-full h-56 z-[1] pointer-events-none">
+        <div className="w-full h-full bg-gradient-to-t from-transparent dark:to-foreground to-background" />
       </div>
     </section>
   );
@@ -141,10 +233,11 @@ interface ServiceCardProps {
   index?: number;
   frontSide?: React.ReactNode;
   backSide?: React.ReactNode;
+  init?: boolean;
 }
 
 const ServiceCard = forwardRef<HTMLDivElement, ServiceCardProps>(
-  ({ id, frontSide, backSide, index }, ref) => {
+  ({ id, frontSide, backSide, index, init }, ref) => {
     const delayMs = index ? index * 200 : 0;
     return (
       <div
@@ -153,7 +246,10 @@ const ServiceCard = forwardRef<HTMLDivElement, ServiceCardProps>(
         id={id?.toString()}
       >
         <div
-          className="service-card-wrapper w-full h-full relative rounded-xl overflow-hidden"
+          className={cn(
+            "service-card-wrapper w-full h-full relative rounded-xl",
+            init && "animate-floating"
+          )}
           style={{ animationDelay: `${delayMs}ms` }}
         >
           <div className="flip-service-card-inner relative w-full h-full">
