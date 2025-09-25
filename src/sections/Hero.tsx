@@ -835,7 +835,7 @@ const Hero = () => {
             className="text-[3vw] sm:text-[4vw] md:text-[3vw] lg:text-[2vw] font-mono flex items-center justify-center gap-[4vw] font-medium
            text-center tracking-wide text-foreground/40 dark:text-background/40"
           >
-            Designer <AnimatedArrow /> Developer
+            designer <AnimatedArrow /> developer
           </h4>
           <HeroTitle
             active={asteriskActive}

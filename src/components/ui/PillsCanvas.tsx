@@ -63,7 +63,9 @@ const MatterCanvas = () => {
     let rightWall: Matter.Body | null = null;
 
     // Build assets based on current theme
-    const themeSuffix = isDark ? "light" : "dark";
+    // IF SVGs needs to be updated according to theme state
+    // const themeSuffix = isDark ? "light" : "dark";
+
     const BASE_SKILLS: Array<{ name: string; width: number }> = [
       { name: "reactjs", width: 179 },
       { name: "nextjs", width: 191 },
@@ -93,7 +95,7 @@ const MatterCanvas = () => {
 
     const SKILL_ASSETS: { texture: string; width: number }[] = BASE_SKILLS.map(
       ({ name, width }) => ({
-        texture: `/skills/${name}_${themeSuffix}.svg`,
+        texture: `/skills/${name}.svg`,
         width,
       })
     );

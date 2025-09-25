@@ -1,18 +1,18 @@
-import type { ComponentType } from "react";
 import IconDesign from "../components/icons/Design";
 import IconDevelopment from "../components/icons/Development";
+import IconMarketing from "../components/icons/Marketing";
+import type { IconProps } from "../components/icons/Instagram";
+import type { FC } from "react";
 
-// Define a type where icon is a component (reference), not JSX.
-type IconComponent = ComponentType<{ className?: string }>;
 interface ExpertiseItem {
   title: string;
-  Icon?: IconComponent;
+  Icon?: FC<IconProps>;
   skills: { li: string }[];
 }
 
 export const EXPERTIES: ExpertiseItem[] = [
   {
-    title: "Visual Design",
+    title: "Design",
     Icon: IconDesign,
     skills: [
       { li: "Brand & Identity" },
@@ -23,7 +23,7 @@ export const EXPERTIES: ExpertiseItem[] = [
     ],
   },
   {
-    title: "Web Development",
+    title: "Development",
     Icon: IconDevelopment,
     skills: [
       { li: "JavaScript / TypeScript" },
@@ -34,8 +34,8 @@ export const EXPERTIES: ExpertiseItem[] = [
     ],
   },
   {
-    title: "Digital Marketing",
-    Icon: IconDesign,
+    title: "Marketing",
+    Icon: IconMarketing,
     skills: [
       { li: "Content Strategy" },
       { li: "Ad Campaign Management" },

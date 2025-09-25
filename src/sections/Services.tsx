@@ -189,7 +189,7 @@ const Services = () => {
           can I DO?
         </h2>
       </div>
-      <div ref={servicesContainer} className="relative w-full h-[60%] mt-24">
+      <div ref={servicesContainer} className="relative w-full h-[60%] mt-16">
         <div className="services_cards w-full h-full">
           {EXPERTIES.map(({ title, skills, Icon }, index) => (
             <ServiceCard
@@ -205,7 +205,7 @@ const Services = () => {
                   fill="transparent"
                   className="relative"
                 >
-                  <div className="p-10 size-full bg-accent">
+                  <div className="p-10 size-full bg-accent shadow-xl">
                     Front Side {title}
                   </div>
                 </Squircle>
@@ -218,11 +218,17 @@ const Services = () => {
                   fill="transparent"
                   className="relative"
                 >
-                  <div className="h-full w-full relative bg-background">
+                  <div className="h-full w-full relative bg-white dark:bg-background">
                     <div className="px-10 py-14 flex flex-col justify-between size-full space-y-4">
-                      <h4 className="text-[1.7vw] leading-none font-robo font-var uppercase text-balance text-accent inline-flex justify-between items-center">
+                      <h4 className="text-[1.7vw] leading-none font-grandbold uppercase text-balance text-accent inline-flex justify-between items-center">
                         <div>{title}</div>
-                        {Icon && <Icon className="size-12 text-foreground" />}
+                        {Icon && (
+                          <Icon
+                            // fill
+                            // duotone={false}
+                            className="size-12 text-accent"
+                          />
+                        )}
                       </h4>
                       <ul className="skills-list flex flex-col h-full py-6">
                         {skills.map((skill, skillIndex) => (
