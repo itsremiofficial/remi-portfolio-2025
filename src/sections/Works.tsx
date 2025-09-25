@@ -13,14 +13,16 @@ const Works = () => {
   const worksHeadingRef = useRef<HTMLHeadingElement>(null);
   const secondaryContainerRef = useRef<HTMLDivElement>(null);
   const mainContainerRef = useRef<HTMLDivElement>(null);
+  const worksdescRef = useRef<HTMLParagraphElement>(null);
 
   useGSAP(
     (_context) => {
       const selected = selectedHeadingRef.current;
       const works = worksHeadingRef.current;
       const secondary = secondaryContainerRef.current;
+      const worksDesc = worksdescRef.current;
       const wrapper = mainContainerRef.current;
-      if (!wrapper || !selected || !works || !secondary) return;
+      if (!wrapper || !selected || !works || !secondary || !worksDesc) return;
 
       // Create a matchMedia instance (no argument)
       const mm = gsap.matchMedia();
@@ -51,15 +53,15 @@ const Works = () => {
         wiggle(".wiggleleft", 5);
         wiggle(".wiggleright", -5);
 
-        const targets: HTMLElement[] = [selected, works, secondary];
+        const targets: HTMLElement[] = [selected, works, worksDesc, secondary];
         targets.forEach((el) => el.classList.add("will-change-transform"));
 
         const tl = gsap
           .timeline({
             scrollTrigger: {
               trigger: wrapper,
-              start: "top 85%",
-              end: "top 20%",
+              start: "top 90%",
+              end: "top 25%",
               scrub: 0.6,
             },
             defaults: { ease: "power1.inOut" },
@@ -68,8 +70,8 @@ const Works = () => {
             targets,
             {
               autoAlpha: 0,
-              xPercent: 10,
-              yPercent: 10,
+              xPercent: 6,
+              yPercent: 6,
               filter: "blur(10px)",
               inertia: {
                 x: 100,
@@ -149,16 +151,21 @@ const Works = () => {
             Works
           </h2>
           <div
-            ref={secondaryContainerRef}
             className="space-y-[1vw] lg:pb-3 grid grid-cols-2 md:block"
             style={{ transformStyle: "preserve-3d" }}
           >
-            <p className="sm:max-w-[40ch] text-[clamp(0.9rem,1.5vw,1.35rem)] dark:text-background/70 text-foreground/70 font-robo leading-snug">
+            <p
+              ref={worksdescRef}
+              className="sm:max-w-[40ch] text-[clamp(0.9rem,1.5vw,1.35rem)] dark:text-background/70 text-foreground/70 font-robo leading-snug"
+            >
               Step inside my projects—where <br className="hidden sm:block" />{" "}
               brands rise above the ordinary.
             </p>
 
-            <div className="place-self-end md:justify-self-auto">
+            <div
+              ref={secondaryContainerRef}
+              className="place-self-end md:justify-self-auto"
+            >
               <MagneticButton
                 className="hidden md:inline-flex dark:bg-background bg-foreground cursor-pointer h-max py-[1.2vw] px-[4vw] group rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent/60 transition-colors"
                 fillClassName="bg-accent"
