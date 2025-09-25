@@ -558,7 +558,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               <h4
                 className={cn(
                   "nav-links-heading select-none",
-                  "font-nippo font-medium tracking-widest",
+                  "font-mono tracking-widest",
                   "text-foreground/30 dark:text-background/40",
                   "sm:text-base text-xs",
                   "will-change-[opacity,transform]"
@@ -587,7 +587,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
                 <h4
                   className={cn(
                     "nav-links-heading select-none",
-                    "font-nippo font-medium tracking-widest",
+                    "font-mono tracking-widest",
                     "text-foreground/30 dark:text-background/40",
                     "sm:text-base text-xs",
                     "will-change-[opacity,transform]"
@@ -609,7 +609,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
                 <h4
                   className={cn(
                     "nav-links-heading select-none",
-                    "font-nippo font-medium tracking-widest",
+                    "font-mono tracking-widest",
                     "text-foreground/30 dark:text-background/40",
                     "sm:text-base text-xs",
                     "will-change-[opacity,transform]"
@@ -634,7 +634,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
                 </div>
               </div>
             </div>
-            <div className="flex items-end justify-between font-mono font-medium text-foreground/70 dark:text-background/50 text-xs md:pt-4">
+            <div className="flex items-end justify-between font-mono tracking-widest text-foreground/70 dark:text-background/50 text-xs md:pt-4">
               <TimeDisplay
                 timeType="time"
                 className="nav-links-heading"

@@ -70,21 +70,23 @@ const Works = () => {
               autoAlpha: 0,
               xPercent: 10,
               yPercent: 10,
+              filter: "blur(10px)",
               inertia: {
                 x: 100,
                 y: 100,
               },
               rotationX: -45,
               transformPerspective: 1000,
-              stagger: 0.08,
+              stagger: 0.8,
             },
             {
               autoAlpha: 1,
               xPercent: 0,
               yPercent: 0,
               rotationX: 0,
+              filter: "blur(0px)",
               duration: 1,
-              stagger: 0.08,
+              stagger: 0.8,
             }
           );
 

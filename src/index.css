@@ -8,43 +8,13 @@
   font-optical-sizing: auto;
 }
 @font-face {
-  font-family: "Syne";
-  src: url("/fonts/syne.ttf") format("truetype");
+  font-family: "Heming";
+  src: url("/fonts/Heming.ttf") format("truetype");
   font-display: swap;
   font-style: normal;
   font-optical-sizing: auto;
 }
 
-@font-face {
-  font-family: "Nippo";
-  src: url("/fonts/nippo-demibold.ttf") format("truetype");
-  font-display: swap;
-  font-style: normal;
-  font-weight: 500;
-  font-optical-sizing: auto;
-}
-@font-face {
-  font-family: "Nippo";
-  src: url("/fonts/nippo-extrabold.ttf") format("truetype");
-  font-display: swap;
-  font-style: normal;
-  font-optical-sizing: auto;
-  font-weight: 800;
-}
-@font-face {
-  font-family: "Nippo";
-  src: url("/fonts/nippo-regular.ttf") format("truetype");
-  font-display: swap;
-  font-style: normal;
-  font-optical-sizing: auto;
-}
-@font-face {
-  font-family: "Nippo";
-  src: url("/fonts/nippo-light.ttf") format("truetype");
-  font-display: swap;
-  font-style: normal;
-  font-optical-sizing: auto;
-}
 @font-face {
   font-family: "Grand Bold";
   src: url("/fonts/GrandBold.woff2") format("woff2");
@@ -67,10 +37,8 @@
     "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue";
   --font-inter: "Inter", "sans-serif", -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue";
-  --font-nippo: "Nippo", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", serif;
-  --font-syne: "Syne", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", serif;
+  --font-mono: "Heming", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", serif; 
   --font-grandbold: "Grand Bold", "Inter", -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
     serif;
@@ -262,8 +230,8 @@ body {
   font-size: clamp(1.8rem, calc(1vw + 1rem), 5rem);
 }
 
-/* AESTERICK SYMBOL */
 
+/* AESTERISK SYMBOL */
 .asterisk-container {
   position: relative;
 }
@@ -317,13 +285,15 @@ body {
 .asterisk-line:nth-child(13) {
   transform: translate(-50%, -100%) rotate(332.28deg);
 }
+/* AESTERISK SYMBOL */
 
 .marquee-item {
   display: inline-block;
 }
 
-/* GALLERY */
 
+
+/* VIDEO CAROUSEL LOOP */
 .div-block-100 {
   aspect-ratio: 1 !important;
   border-radius: var(--radius--round);
@@ -349,14 +319,17 @@ body {
     height: 3em;
   }
 }
+/* VIDEO CAROUSEL LOOP */
 
+
+
+
+/* TESTIMONIALS HIGHLIGHTS */
 .testimonials_highlights {
   flex-flow: column;
   flex: none;
   justify-content: center;
-  align-items: stretch;
-  /* width: 33ch;
-  height: 100%; */
+  align-items: stretch; 
   display: flex;
   position: relative;
 }
@@ -419,7 +392,6 @@ body {
   display: flex;
 }
 .small_paragraph--tw1 {
-  /* font-size: 0.75rem; */
   margin-top: 0;
   margin-bottom: 0;
   position: relative;
@@ -450,80 +422,16 @@ body {
   left: 0;
   @apply bg-accent;
 }
-/* .link_cta_container:hover .link_underline {
-  width: 100%;
-  transition: width 300ms var(--ease-fluid);
-} */
 
 .link_cta_container:hover .link_cta {
   width: 100%;
   transition: width 300ms var(--ease-fluid), color 300ms var(--ease-fluid);
   @apply text-accent;
 }
+/* TESTIMONIALS HIGHLIGHTS */
 
-/* STACKING CARDS */
-/* .card-wrapper {
-  width: 100%;
-  perspective: 900px;
-  margin-bottom: 50px;
-}
-.card-wrapper:last-child {
-  margin-bottom: 0;
-}
 
-.cards {
-  width: 100%;
-  padding: 0 20px;
-}
-
-.card {
-  width: 100%;
-  height: 750px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 30px;
-  border-radius: 50px;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: top center;
-}
-
-.card {
-  border-radius: 50px;
-  width: 100%;
-  background-image: url("https://assets.codepen.io/16327/portrait-pattern-1.jpg");
-}
-
-.card.two {
-  width: 100%;
-  background-image: url("https://assets.codepen.io/16327/portrait-pattern-2.jpg");
-}
-
-.card.three {
-  width: 100%;
-  background-image: url("https://assets.codepen.io/16327/portrait-pattern-3.jpg");
-}
-
-.card.four {
-  width: 100%;
-  background-image: url("https://assets.codepen.io/16327/portrait-pattern-4.jpg");
-} */
-/* 
-@media (min-width: 768px) {
-  .cards {
-    width: 80%;
-    padding: 0 30px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .cards {
-    width: 70%;
-    padding: 0 50px;
-  }
-} */
-
+/* WORKS CARDS */
 .works-card-clip {
   width: 800px;
   height: 500px;
@@ -553,10 +461,12 @@ body {
 .is-dragging {
   cursor: grabbing;
 }
+/* WORKS CARDS */
 
 /* * {
   outline: 1px solid rgba(255, 0, 0, 0.5);
 } */
+
 
 .section-heading {
   @apply text-[clamp(2rem,18vw,350px)] leading-[clamp(2rem,15vw,300px)] font-grandbold;
@@ -564,18 +474,13 @@ body {
 .section-sub-heading {
   @apply text-[clamp(2rem,10vw,140px)] leading-[clamp(2rem,8.5vw,135px)] font-grandbold;
 }
+
 .text-stroke {
   -webkit-text-stroke-width: 1px;
   -webkit-text-stroke-color: var(--text-stroke-color);
   color: transparent;
 }
-
-.service_cards {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-}
-
+ 
 .service-card {
   position: absolute;
   top: 50%;
@@ -584,7 +489,7 @@ body {
   perspective: 1000px;
   width: 100%;
   aspect-ratio: 314 / 438;
-  max-width: 15vw;
+  max-width: 450px;
   height: auto;
 }
 
@@ -611,18 +516,14 @@ body {
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
-  border-radius: 1rem;
+  /* clip-path: path(
+    "M325.742 57.419c2.111 9.644 3.166 14.466 4.84 18.53a50 50 0 0 0 37.508 30.188c4.328.766 9.263.766 19.135.766 12.024 0 18.036 0 23.029 1.029a50 50 0 0 1 38.88 38.88c1.029 4.993 1.029 11.005 1.029 23.029V500.72c0 47.14 0 70.71-14.645 85.355s-38.214 14.645-85.355 14.645h-250c-47.14 0-70.71 0-85.355-14.645S.163 547.86.163 500.72v-400c0-47.14 0-70.711 14.645-85.356S53.023.72 100.163.72h158.825c13.381 0 20.072 0 25.871 1.404a50 50 0 0 1 33.192 26.714c2.612 5.365 4.042 11.901 6.902 24.974z"
+  ); */
+  /* @apply overflow-hidden; */
 }
-
-.flip-service-card-front {
-  background-color: var(--color-accent);
-  @apply flex items-center justify-center;
-}
-
+ 
 .flip-service-card-back {
-  background-color: var(--color-background);
   transform: rotateY(180deg);
-  @apply flex items-center justify-center text-foreground;
 }
 
 .services_section,

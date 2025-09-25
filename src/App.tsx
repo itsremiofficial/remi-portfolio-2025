@@ -19,6 +19,7 @@ import {
 import gsap from "gsap";
 import Services from "./sections/Services";
 import ServicesMarquee from "./components/ServicesMarquee";
+import Skills from "./sections/Skills";
 
 gsap.registerPlugin(
   ScrollTrigger,
@@ -70,6 +71,7 @@ const App = () => {
         <Header fontsLoaded={fontsLoaded} />
 
         <main className="overflow-x-hidden text-foreground dark:text-background relative">
+          {/* <Skills /> */}
           <Hero />
           <WelcomeMarquee />
           <About />

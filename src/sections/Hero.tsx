@@ -832,7 +832,7 @@ const Hero = () => {
       <div className="flex items-center justify-center grow">
         <div className="flex flex-col justify-center space-y-3">
           <h4
-            className="text-[3vw] sm:text-[4vw] md:text-[3vw] lg:text-[2vw] font-nippo flex items-center justify-center gap-[4vw] font-medium uppercase
+            className="text-[3vw] sm:text-[4vw] md:text-[3vw] lg:text-[2vw] font-mono flex items-center justify-center gap-[4vw] font-medium
            text-center tracking-wide text-foreground/40 dark:text-background/40"
           >
             Designer <AnimatedArrow /> Developer

@@ -4,6 +4,8 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/all";
 import MatterCanvas from "../components/ui/PillsCanvas";
 import { cn } from "../utils";
+import { EXPERTIES } from "../constants/EXPERTIES";
+import Squircle from "../components/ui/Squircle";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -50,7 +52,7 @@ const Services = () => {
       const FLIP_BASE_START = 0.6;
       const FLIP_STAGGER = 0.05;
       const FLIP_PORTION = 0.33;
-      const rotations = [-12, -6, 0, 6];
+      const rotations = [-16, -6, 4];
 
       // Prepare card bases
       cards.forEach((card) => {
@@ -81,7 +83,6 @@ const Services = () => {
         { length: cardCount },
         (_, i) => ((i + 1) / (cardCount + 1)) * 100
       );
-      console.log(positions);
       cards.forEach((card, i) => {
         tl.to(card, { rotation: rotations[i], duration: SPREAD_PORTION }, 0).to(
           card,
@@ -111,7 +112,7 @@ const Services = () => {
         });
 
         const flipStart = FLIP_BASE_START + i * FLIP_STAGGER;
-        const overshootDeg = 198;
+        const overshootDeg = 215; // how much the card overshoots (more than 180 for better effect)
         const overshootPortion = 0.7;
         const settlePortion = 1 - overshootPortion;
 
@@ -138,7 +139,7 @@ const Services = () => {
             {
               rotation: 0,
               duration: FLIP_PORTION,
-              ease: "none",
+              ease: "power2.out",
             },
             flipStart
           );
@@ -188,27 +189,59 @@ const Services = () => {
           can I DO?
         </h2>
       </div>
-      <div ref={servicesContainer} className="relative w-full h-[60%]">
+      <div ref={servicesContainer} className="relative w-full h-[60%] mt-24">
         <div className="services_cards w-full h-full">
-          {[1, 2, 3, 4].map((id, index) => (
+          {EXPERTIES.map(({ title, skills, Icon }, index) => (
             <ServiceCard
-              key={id}
+              key={title}
               init={init}
-              id={`service-card-${id}`}
+              id={`service-card-${title}`}
               index={index}
               frontSide={
-                <div className="p-2">
-                  <h4>Visual Design</h4>
-                  <ul className="skills-list">
-                    <li>Brand & Identity Design</li>
-                    <li>Marketing & Advertising Design</li>
-                    <li>Web & UI/UX Design</li>
-                    <li>Product & Packaging Design</li>
-                    <li>Motion & Multimedia Design</li>
-                  </ul>
-                </div>
+                <Squircle
+                  width={450}
+                  height={600}
+                  radius={130}
+                  fill="transparent"
+                  className="relative"
+                >
+                  <div className="p-10 size-full bg-accent">
+                    Front Side {title}
+                  </div>
+                </Squircle>
               }
-              backSide={<div className="p-6">Back Side {id}</div>}
+              backSide={
+                <Squircle
+                  width={450}
+                  height={600}
+                  radius={130}
+                  fill="transparent"
+                  className="relative"
+                >
+                  <div className="h-full w-full relative bg-background">
+                    <div className="px-10 py-14 flex flex-col justify-between size-full space-y-4">
+                      <h4 className="text-[1.7vw] leading-none font-robo font-var uppercase text-balance text-accent inline-flex justify-between items-center">
+                        <div>{title}</div>
+                        {Icon && <Icon className="size-12 text-foreground" />}
+                      </h4>
+                      <ul className="skills-list flex flex-col h-full py-6">
+                        {skills.map((skill, skillIndex) => (
+                          <li
+                            key={skillIndex}
+                            className="text-xl py-4 grow border-y border-dashed border-foreground/20 text-foreground font-mono"
+                          >
+                            {skill.li}
+                          </li>
+                        ))}
+                      </ul>
+                      <h4 className="text-xl font-robo uppercase text-balance text-foreground/70 rotate-y-180 self-end flex justify-between items-baseline w-full">
+                        {title}
+                        {Icon && <Icon className="size-6 text-foreground/70" />}
+                      </h4>
+                    </div>
+                  </div>
+                </Squircle>
+              }
               ref={(el) => {
                 if (el) cardsRef.current[index] = el;
               }}
@@ -234,10 +267,11 @@ interface ServiceCardProps {
   frontSide?: React.ReactNode;
   backSide?: React.ReactNode;
   init?: boolean;
+  className?: string;
 }
 
 const ServiceCard = forwardRef<HTMLDivElement, ServiceCardProps>(
-  ({ id, frontSide, backSide, index, init }, ref) => {
+  ({ id, frontSide, backSide, index, init, className }, ref) => {
     const delayMs = index ? index * 200 : 0;
     return (
       <div
@@ -247,16 +281,21 @@ const ServiceCard = forwardRef<HTMLDivElement, ServiceCardProps>(
       >
         <div
           className={cn(
-            "service-card-wrapper w-full h-full relative rounded-xl",
+            "service-card-wrapper w-full h-full relative",
             init && "animate-floating"
           )}
           style={{ animationDelay: `${delayMs}ms` }}
         >
-          <div className="flip-service-card-inner relative w-full h-full">
-            <div className="flip-service-card-front absolute inset-0 flex items-center justify-center bg-background/80 dark:bg-foreground/10 rounded-xl backdrop-blur-md shadow-lg">
+          <div
+            className={cn(
+              "flip-service-card-inner relative w-full h-full",
+              className
+            )}
+          >
+            <div className="flip-service-card-front absolute left-0 top-0 rounded-4xl overflow-hidden">
               {frontSide}
             </div>
-            <div className="flip-service-card-back absolute inset-0 flex items-center justify-center bg-accent/80 dark:bg-accent/30 rounded-xl backdrop-blur-md shadow-lg">
+            <div className="flip-service-card-back absolute left-0 top-0">
               {backSide}
             </div>
           </div>
