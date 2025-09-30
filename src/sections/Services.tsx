@@ -191,7 +191,7 @@ const Services = () => {
       </div>
       <div ref={servicesContainer} className="relative w-full h-[60%] mt-16">
         <div className="services_cards w-full h-full">
-          {EXPERTIES.map(({ title, skills, Icon }, index) => (
+          {EXPERTIES.map(({ title, subtitle, skills, Icon }, index) => (
             <ServiceCard
               key={title}
               init={init}
@@ -220,11 +220,18 @@ const Services = () => {
                 >
                   <div className="h-full w-full relative bg-white dark:bg-background">
                     <div className="px-10 py-14 flex flex-col justify-between size-full space-y-4">
-                      <h4 className="text-[1.7vw] leading-none font-grandbold uppercase text-balance text-accent inline-flex justify-between items-center">
-                        <div>{title}</div>
+                      <h4 className="inline-flex justify-between items-center">
+                        <div className="flex flex-col">
+                          <span className="text-[clamp(2rem,1.5vw,40px)] leading-none font-grandbold text-accent">
+                            {subtitle}
+                          </span>
+                          <span className="text-[clamp(2rem,1.5vw,40px)] leading-none font-script text-foreground relative z-10 -top-6">
+                            {title}
+                          </span>
+                        </div>
                         {Icon && (
                           <Icon
-                            // fill
+                            fill
                             // duotone={false}
                             className="size-12 text-accent"
                           />

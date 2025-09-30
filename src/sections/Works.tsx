@@ -145,7 +145,7 @@ const Works = () => {
         <div className="inline-flex items-start md:items-end flex-col md:flex-row gap-[2vw]">
           <h2
             ref={worksHeadingRef}
-            className="section-heading text-accent pt-2 !font-script"
+            className="section-heading text-accent pt-2"
             style={{ transformStyle: "preserve-3d" }}
           >
             Works

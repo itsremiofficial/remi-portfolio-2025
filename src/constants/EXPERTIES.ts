@@ -6,6 +6,7 @@ import type { FC } from "react";
 
 interface ExpertiseItem {
   title: string;
+  subtitle?: string;
   Icon?: FC<IconProps>;
   skills: { li: string }[];
 }
@@ -13,6 +14,7 @@ interface ExpertiseItem {
 export const EXPERTIES: ExpertiseItem[] = [
   {
     title: "Design",
+    subtitle: "Visual",
     Icon: IconDesign,
     skills: [
       { li: "Brand & Identity" },
@@ -24,6 +26,7 @@ export const EXPERTIES: ExpertiseItem[] = [
   },
   {
     title: "Development",
+    subtitle: "Web",
     Icon: IconDevelopment,
     skills: [
       { li: "JavaScript / TypeScript" },
@@ -35,6 +38,7 @@ export const EXPERTIES: ExpertiseItem[] = [
   },
   {
     title: "Marketing",
+    subtitle: "Digital",
     Icon: IconMarketing,
     skills: [
       { li: "Content Strategy" },
