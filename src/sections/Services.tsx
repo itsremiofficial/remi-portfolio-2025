@@ -225,7 +225,7 @@ const Services = () => {
                           <span className="text-[clamp(2rem,1.5vw,40px)] leading-none font-grandbold text-accent">
                             {subtitle}
                           </span>
-                          <span className="text-[clamp(2rem,1.5vw,40px)] leading-none font-script text-foreground relative z-10 -top-6">
+                          <span className="text-[clamp(2rem,1.5vw,40px)] leading-none font-script text-foreground relative z-10 -top-6 mix-blend-darken">
                             {title}
                           </span>
                         </div>
