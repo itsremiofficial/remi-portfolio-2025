@@ -60,8 +60,8 @@ const Works = () => {
           .timeline({
             scrollTrigger: {
               trigger: wrapper,
-              start: "top 90%",
-              end: "top 25%",
+              start: "top 80%",
+              end: "top 10%",
               scrub: 0.6,
             },
             defaults: { ease: "power1.inOut" },
@@ -192,7 +192,7 @@ const Works = () => {
       </div>
 
       <CursorFollower
-        cursorWrapperClassName="backdrop-blur-lg dark:bg-foreground/50 bg-background/40 rounded-full"
+        cursorWrapperClassName="backdrop-blur-lg dark:bg-background/50 bg-foreground/40 rounded-full"
         cursor={dragCursor}
       >
         <Suspense

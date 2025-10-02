@@ -701,7 +701,7 @@ const ContactIconItem = memo(() => {
         "text-foreground dark:text-background"
       )}
     >
-      <div className="size-32 lg:size-40 uppercase justify-self-center-safe relative group/contact rounded-full wavy-circle p-2 md:p-3 ">
+      <div className="size-32 lg:size-40 uppercase justify-self-center-safe relative group/contact rounded-full bg-foreground dark:bg-background text-background dark:text-foreground p-2 md:p-3 ">
         <CircularText
           id="marquee-scroll-text"
           text="GET IN TOUCH • GET IN TOUCH • GET IN TOUCH • "

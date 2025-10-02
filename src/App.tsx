@@ -20,6 +20,7 @@ import gsap from "gsap";
 import Services from "./sections/Services";
 import ServicesMarquee from "./components/ServicesMarquee";
 import Skills from "./sections/Skills";
+import FluidCursor from "./components/ui/fluidCursor";
 
 gsap.registerPlugin(
   ScrollTrigger,
@@ -116,6 +117,7 @@ const App = () => {
           </section>
         </main>
       </LenisProvider>
+      <FluidCursor />
     </ThemeProvider>
   );
 };
