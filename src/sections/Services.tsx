@@ -191,7 +191,7 @@ const Services = () => {
       </div>
       <div ref={servicesContainer} className="relative w-full h-[60%] mt-16">
         <div className="services_cards w-full h-full">
-          {EXPERTIES.map(({ title, subtitle, skills, Icon }, index) => (
+          {EXPERTIES.map(({ title, subtitle, skills, Icon, image }, index) => (
             <ServiceCard
               key={title}
               init={init}
@@ -205,8 +205,12 @@ const Services = () => {
                   fill="transparent"
                   className="relative"
                 >
-                  <div className="p-10 size-full bg-accent shadow-xl">
-                    Front Side {title}
+                  <div className="size-full bg-foreground shadow-xl">
+                    <img
+                      src={image}
+                      alt=""
+                      className="size-full object-fit-cover"
+                    />
                   </div>
                 </Squircle>
               }
