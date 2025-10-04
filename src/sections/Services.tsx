@@ -6,6 +6,7 @@ import MatterCanvas from "../components/ui/PillsCanvas";
 import { cn } from "../utils";
 import { EXPERTIES } from "../constants/EXPERTIES";
 import Squircle from "../components/ui/Squircle";
+import DesingIllustration from "../components/ui/DesignIllustration";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -191,79 +192,87 @@ const Services = () => {
       </div>
       <div ref={servicesContainer} className="relative w-full h-[60%] mt-16">
         <div className="services_cards w-full h-full">
-          {EXPERTIES.map(({ title, subtitle, skills, Icon, image }, index) => (
-            <ServiceCard
-              key={title}
-              init={init}
-              id={`service-card-${title}`}
-              index={index}
-              frontSide={
-                <Squircle
-                  width={450}
-                  height={600}
-                  radius={130}
-                  fill="transparent"
-                  className="relative"
-                >
-                  <div className="size-full bg-foreground shadow-xl">
-                    <img
-                      src={image}
-                      alt=""
-                      className="size-full object-fit-cover"
-                    />
-                  </div>
-                </Squircle>
-              }
-              backSide={
-                <Squircle
-                  width={450}
-                  height={600}
-                  radius={130}
-                  fill="transparent"
-                  className="relative"
-                >
-                  <div className="h-full w-full relative bg-white dark:bg-background">
-                    <div className="px-10 py-14 flex flex-col justify-between size-full space-y-4">
-                      <h4 className="inline-flex justify-between items-center">
-                        <div className="flex flex-col">
-                          <span className="text-[clamp(2rem,1.5vw,40px)] leading-none font-grandbold text-accent">
-                            {subtitle}
-                          </span>
-                          <span className="text-[clamp(2rem,1.5vw,40px)] leading-none font-script text-foreground relative z-10 -top-6 mix-blend-darken">
-                            {title}
-                          </span>
-                        </div>
-                        {Icon && (
-                          <Icon
-                            fill
-                            // duotone={false}
-                            className="size-12 text-accent"
-                          />
-                        )}
-                      </h4>
-                      <ul className="skills-list flex flex-col h-full py-6">
-                        {skills.map((skill, skillIndex) => (
-                          <li
-                            key={skillIndex}
-                            className="text-xl py-4 grow border-y border-dashed border-foreground/20 text-foreground font-mono"
-                          >
-                            {skill.li}
-                          </li>
-                        ))}
-                      </ul>
-                      <h4 className="text-xl font-robo uppercase text-balance text-foreground/70 rotate-y-180 self-end flex justify-between items-baseline w-full">
-                        {title}
-                        {Icon && <Icon className="size-6 text-foreground/70" />}
-                      </h4>
+          {EXPERTIES.map(
+            ({ title, subtitle, skills, Icon, illustration }, index) => (
+              <ServiceCard
+                key={title}
+                init={init}
+                id={`service-card-${title}`}
+                index={index}
+                frontSide={
+                  <Squircle
+                    width={450}
+                    height={600}
+                    radius={130}
+                    fill="transparent"
+                    className="relative"
+                  >
+                    <div className="size-full bg-foreground dark:bg-background shadow-xl">
+                      {/* FIX: Use capitalized variable for component */}
+                      {illustration
+                        ? (() => {
+                            const Illustration = illustration;
+                            return (
+                              <Illustration className="size-full object-fit-cover text-white dark:text-foreground" />
+                            );
+                          })()
+                        : null}
                     </div>
-                  </div>
-                </Squircle>
-              }
-              ref={(el) => {
-                if (el) cardsRef.current[index] = el;
-              }}
-            />
-          ))}
+                  </Squircle>
+                }
+                backSide={
+                  <Squircle
+                    width={450}
+                    height={600}
+                    radius={130}
+                    fill="transparent"
+                    className="relative"
+                  >
+                    <div className="h-full w-full relative bg-white dark:bg-background">
+                      <div className="px-10 py-14 flex flex-col justify-between size-full space-y-4">
+                        <h4 className="inline-flex justify-between items-center">
+                          <div className="flex flex-col">
+                            <span className="text-[clamp(2rem,1.5vw,40px)] leading-none font-grandbold text-accent">
+                              {subtitle}
+                            </span>
+                            <span className="text-[clamp(2rem,1.5vw,40px)] leading-none font-script text-foreground relative z-10 -top-6 mix-blend-darken">
+                              {title}
+                            </span>
+                          </div>
+                          {Icon && (
+                            <Icon
+                              fill
+                              // duotone={false}
+                              className="size-12 text-accent"
+                            />
+                          )}
+                        </h4>
+                        <ul className="skills-list flex flex-col h-full py-6">
+                          {skills.map((skill, skillIndex) => (
+                            <li
+                              key={skillIndex}
+                              className="text-xl py-4 grow border-y border-dashed border-foreground/20 text-foreground font-mono"
+                            >
+                              {skill.li}
+                            </li>
+                          ))}
+                        </ul>
+                        <h4 className="text-xl font-robo uppercase text-balance text-foreground/70 rotate-y-180 self-end flex justify-between items-baseline w-full">
+                          {title}
+                          {Icon && (
+                            <Icon className="size-6 text-foreground/70" />
+                          )}
+                        </h4>
+                      </div>
+                    </div>
+                  </Squircle>
+                }
+                ref={(el) => {
+                  if (el) cardsRef.current[index] = el;
+                }}
+              />
+            )
+          )}
         </div>
       </div>
       <div className="absolute inset-0 top-0 h-full w-full z-[0]">

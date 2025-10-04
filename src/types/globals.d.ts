@@ -1,0 +1,3 @@
+type IllustrationProps = {
+  className?: string;
+};
