@@ -6,7 +6,7 @@ import MatterCanvas from "../components/ui/PillsCanvas";
 import { cn } from "../utils";
 import { EXPERTIES } from "../constants/EXPERTIES";
 import Squircle from "../components/ui/Squircle";
-import DesingIllustration from "../components/ui/DesignIllustration";
+import DesingIllustration from "../components/illustrations/DesignIllustration";
 
 gsap.registerPlugin(ScrollTrigger);
 

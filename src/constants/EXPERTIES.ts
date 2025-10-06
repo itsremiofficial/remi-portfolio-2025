@@ -3,7 +3,9 @@ import IconDevelopment from "../components/icons/Development";
 import IconMarketing from "../components/icons/Marketing";
 import type { IconProps } from "../components/icons/Instagram";
 import type { FC } from "react";
-import DesignIllustration from "../components/ui/DesignIllustration";
+import DesignIllustration from "../components/illustrations/DesignIllustration";
+import DevIllustration from "../components/illustrations/DevIllustrations";
+import MarketingIllustration from "../components/illustrations/MarketingIllustration";
 
 interface ExpertiseItem {
   title: string;
@@ -31,7 +33,7 @@ export const EXPERTIES: ExpertiseItem[] = [
     title: "Development",
     subtitle: "Web",
     Icon: IconDevelopment,
-    illustration: DesignIllustration,
+    illustration: DevIllustration,
     skills: [
       { li: "JavaScript / TypeScript" },
       { li: "React & Next.js" },
@@ -44,7 +46,7 @@ export const EXPERTIES: ExpertiseItem[] = [
     title: "Marketing",
     subtitle: "Digital",
     Icon: IconMarketing,
-    illustration: DesignIllustration,
+    illustration: MarketingIllustration,
     skills: [
       { li: "Content Strategy" },
       { li: "Ad Campaign Management" },
