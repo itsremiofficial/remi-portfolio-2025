@@ -4,9 +4,20 @@ import horizontalLoop from "../utils/horizontalLoop";
 
 import { gsap } from "gsap";
 import { Observer } from "gsap/Observer";
+import IconDesign from "./icons/Design";
+import IconDevelopment from "./icons/Development";
+import IconMarketing from "./icons/Marketing";
+import { cn } from "../utils";
 
 const ServicesMarquee = () => {
   const servicesRef = useRef<HTMLDivElement>(null);
+  const ICON_SIZE = "size-[8vw]";
+  const SERVICES = [
+    { icon: IconDesign, label: "VISUAL DESIGN" },
+    { icon: IconDevelopment, label: "WEB DEVELOPMENT" },
+    { icon: IconMarketing, label: "DIGITAL MARKETING" },
+  ];
+  const REPEAT = 4; // Adjust to match the original number of items
 
   useGSAP(
     () => {
@@ -38,26 +49,21 @@ const ServicesMarquee = () => {
   return (
     <div
       ref={servicesRef}
-      className="flex items-center justify-center text-[8vw] font-extrabold bg-foreground text-background dark:bg-background dark:text-foreground py-4 align-self-start place-self-start font-grandbold [&>*]:select-none [&>*]:pointer-events-none [&>*]:mb-1 [&>*]:pr-25 [&>*]:leading-none"
+      className={cn(
+        "flex items-center justify-center text-[8vw] font-extrabold bg-foreground text-background dark:bg-background dark:text-foreground py-4 align-self-start place-self-start font-grandbold",
+        "[&>div]:select-none [&>div]:pointer-events-none [&>div]:mb-1 [&>div]:pr-25 [&>div]:leading-none [&>div]:whitespace-nowrap [&>div]:flex [&>div]:items-center [&>div]:gap-4"
+      )}
     >
-      <div className="marquee-services">WELCOME</div>
-      <div className="marquee-services">WELCOME</div>
-      <div className="marquee-services">WELCOME</div>
-      <div className="marquee-services">WELCOME</div>
-      <div className="marquee-services">WELCOME</div>
-      <div className="marquee-services">WELCOME</div>
-      <div className="marquee-services">WELCOME</div>
-      <div className="marquee-services">WELCOME</div>
-      <div className="marquee-services">WELCOME</div>
-      <div className="marquee-services">WELCOME</div>
-      <div className="marquee-services">WELCOME</div>
-      <div className="marquee-services">WELCOME</div>
-      <div className="marquee-services">WELCOME</div>
-      <div className="marquee-services">WELCOME</div>
-      <div className="marquee-services">WELCOME</div>
-      <div className="marquee-services">WELCOME</div>
-      <div className="marquee-services">WELCOME</div>
-      <div className="marquee-services">WELCOME</div>
+      {Array.from({ length: REPEAT }).flatMap((_, i) =>
+        SERVICES.map(({ icon: Icon, label }, j) => (
+          <div className="marquee-services" key={`${i}-${label}`}>
+            <div>
+              <Icon fill className={ICON_SIZE} />
+            </div>
+            <div>{label}</div>
+          </div>
+        ))
+      )}
     </div>
   );
 };
