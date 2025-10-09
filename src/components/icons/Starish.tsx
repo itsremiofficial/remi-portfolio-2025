@@ -7,7 +7,7 @@ interface IconProps {
   width?: string | number;
 }
 
-const IconStarish2: FC<IconProps> = ({ className }) => {
+const IconStarish: FC<IconProps> = ({ className }) => {
   return (
     <>
       <svg
@@ -18,7 +18,7 @@ const IconStarish2: FC<IconProps> = ({ className }) => {
         height="200"
         fill="none"
       >
-        <g clip-path="url(#clip0_118_208)">
+        <g clipPath="url(#clip0_118_208)">
           <path
             d="M100 200C97.1048 105.262 94.738 102.91 0 100C94.738 97.1048 97.0903 94.738 100 0C102.895 94.738 105.262 97.0903 200 100C105.262 102.91 102.91 105.233 100 200Z"
             fill="url(#paint0_linear_118_208)"
@@ -45,4 +45,4 @@ const IconStarish2: FC<IconProps> = ({ className }) => {
   );
 };
 
-export default IconStarish2;
+export default IconStarish;

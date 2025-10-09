@@ -491,15 +491,16 @@ body {
 }
 
 .service-card {
+  --aspect-ratio: 314 / 438;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   perspective: 1000px;
   width: 100%;
-  aspect-ratio: 314 / 438;
+  aspect-ratio: var(--aspect-ratio);
   max-width: 450px;
-  height: auto;
+  /* height: calc(450px * var(--aspect-ratio)); */
 }
 
 .service-card-wrapper {
@@ -525,10 +526,6 @@ body {
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
-  /* clip-path: path(
-    "M325.742 57.419c2.111 9.644 3.166 14.466 4.84 18.53a50 50 0 0 0 37.508 30.188c4.328.766 9.263.766 19.135.766 12.024 0 18.036 0 23.029 1.029a50 50 0 0 1 38.88 38.88c1.029 4.993 1.029 11.005 1.029 23.029V500.72c0 47.14 0 70.71-14.645 85.355s-38.214 14.645-85.355 14.645h-250c-47.14 0-70.71 0-85.355-14.645S.163 547.86.163 500.72v-400c0-47.14 0-70.711 14.645-85.356S53.023.72 100.163.72h158.825c13.381 0 20.072 0 25.871 1.404a50 50 0 0 1 33.192 26.714c2.612 5.365 4.042 11.901 6.902 24.974z"
-  ); */
-  /* @apply overflow-hidden; */
 }
 
 .flip-service-card-back {

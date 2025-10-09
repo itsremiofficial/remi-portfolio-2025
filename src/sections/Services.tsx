@@ -6,7 +6,6 @@ import MatterCanvas from "../components/ui/PillsCanvas";
 import { cn } from "../utils";
 import { EXPERTIES } from "../constants/EXPERTIES";
 import Squircle from "../components/ui/Squircle";
-import DesingIllustration from "../components/illustrations/DesignIllustration";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -202,7 +201,7 @@ const Services = () => {
                 frontSide={
                   <Squircle
                     width={450}
-                    height={600}
+                    height={628}
                     radius={130}
                     fill="transparent"
                     className="relative"
@@ -232,10 +231,10 @@ const Services = () => {
                       <div className="px-10 py-14 flex flex-col justify-between size-full space-y-4">
                         <h4 className="inline-flex justify-between items-center">
                           <div className="flex flex-col">
-                            <span className="text-[clamp(2rem,1.5vw,40px)] leading-none font-grandbold text-accent">
+                            <span className="text-[clamp(5rem,1.5vw,40px)] leading-[10%] font-playground text-foreground relative z-10 mix-blend-darken">
                               {subtitle}
                             </span>
-                            <span className="text-[clamp(2rem,1.5vw,40px)] leading-none font-script text-foreground relative z-10 -top-6 mix-blend-darken">
+                            <span className="text-[clamp(2rem,1.5vw,40px)] leading-none font-grandbold text-accent">
                               {title}
                             </span>
                           </div>

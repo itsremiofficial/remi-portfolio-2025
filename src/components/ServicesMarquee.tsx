@@ -50,13 +50,13 @@ const ServicesMarquee = () => {
     >
       {Array.from({ length: REPEAT }).flatMap((_, i) =>
         SERVICES_MARQUEE.map(({ icon: Icon, title, subtitle }, j) => (
-          <div className="marquee-services [&>div]:pr-25" key={`${i}-${title}`}>
-            <div>
+          <div className="marquee-services" key={`${i}-${title}`}>
+            <div className="px-[8vw] lg:px-[8vw]">
               <Icon className={ICON_CLASSES} />
             </div>
             <div className="relative">
               {title}
-              <span className="text-[8vw] absolute inset-0 flex items-center justify-center font-playground leading-[80%] text-accent/80">
+              <span className="text-[8vw] absolute -bottom-4 inset-x-0 flex items-center justify-center font-playground leading-[80%] text-accent">
                 {subtitle}
               </span>
             </div>

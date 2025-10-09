@@ -51,7 +51,7 @@ const DevIllustration: React.FC<IllustrationProps> = ({ className }) => {
               fill={COLOR_SEC}
               stroke={COLOR_CURRENT}
               strokeMiterlimit={10}
-              strokeWidth={0.4}
+              strokeWidth={STROKE_WIDTH}
               d="M100.97 228.07c-27.14 0-49.14-2.27-49.14-5.07s22-5.07 49.14-5.07 49.14 2.27 49.14 5.07-22 5.07-49.14 5.07Z"
             />
             <path fill="url(#devd)" d="M51.09 171.22 98.9 223.7v-41.84z" />
