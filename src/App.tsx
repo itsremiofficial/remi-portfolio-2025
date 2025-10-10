@@ -21,6 +21,7 @@ import Services from "./sections/Services";
 import ServicesMarquee from "./components/ServicesMarquee";
 import Skills from "./sections/Skills";
 import FluidCursor from "./components/ui/fluidCursor";
+import Testimonials from "./sections/Testimonials";
 
 gsap.registerPlugin(
   ScrollTrigger,
@@ -79,6 +80,7 @@ const App = () => {
           <Works />
           <Services />
           <ServicesMarquee />
+          <Testimonials />
           <section
             className="w-full min-h-screen flex items-center justify-center"
             id="services"

@@ -76,7 +76,7 @@ const WelcomeMarquee = () => {
               <div className="relative">
                 <Icon className="h-[12vw] lg:h-[6vw] text-background dark:text-foreground" />
                 <span className="text-[8vw] absolute inset-0 flex items-center justify-center font-playground leading-[80%] text-accent z-20 pointer-events-none">
-                  <WelcomeScript className="h-[12vw] lg:h-[6vw]" />
+                  <WelcomeScript className="h-[12vw] lg:h-[6vw] relative top-[1.5vw] lg:top-[0.6vw]" />
                 </span>
               </div>
             </div>

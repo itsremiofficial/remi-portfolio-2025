@@ -491,15 +491,16 @@ body {
 }
 
 .service-card {
-  --aspect-ratio: 314 / 438;
+  /* --ratio-services: 314 / 438;
+  --width-services: 450px; */
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   perspective: 1000px;
   width: 100%;
-  aspect-ratio: var(--aspect-ratio);
-  max-width: 450px;
+  aspect-ratio: var(--ratio-services);
+  max-width: var(--width-services);
   /* height: calc(450px * var(--aspect-ratio)); */
 }
 

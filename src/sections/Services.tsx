@@ -6,8 +6,12 @@ import MatterCanvas from "../components/ui/PillsCanvas";
 import { cn } from "../utils";
 import { EXPERTIES } from "../constants/EXPERTIES";
 import Squircle from "../components/ui/Squircle";
-
-gsap.registerPlugin(ScrollTrigger);
+import { useResponsiveVars } from "../hooks/useResponsiveVars";
+type Dimensions = {
+  width: number;
+  height: number;
+  radius: number;
+};
 
 const Services = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -15,6 +19,25 @@ const Services = () => {
   const cardsRef = useRef<HTMLDivElement[]>([]);
   const spacerRef = useRef<HTMLDivElement | null>(null); // NEW spacer to avoid jump
   const [init, setInit] = useState(false);
+
+  const { width, height, ratio } = useResponsiveVars(450, 628, "card");
+  const [dims, setDims] = useState<Dimensions>({
+    width: width,
+    height: height,
+    radius: 130,
+  });
+  // Whenever width or height changes, recalc radius
+  useEffect(() => {
+    const newRadius = Math.min(dims.width, dims.height) / 4;
+    setDims((prev) => ({ ...prev, radius: newRadius }));
+  }, [dims.width, dims.height]);
+
+  // Whenever width or height changes, recalc radius
+  useEffect(() => {
+    // Example formula: radius is proportional to the smaller side
+    const newRadius = Math.min(dims.width, dims.height) / 4;
+    setDims((prev) => ({ ...prev, radius: newRadius }));
+  }, [dims.width, dims.height]);
 
   useGSAP(
     () => {
@@ -198,11 +221,14 @@ const Services = () => {
                 init={init}
                 id={`service-card-${title}`}
                 index={index}
+                width={width}
+                height={height}
+                ratio={ratio}
                 frontSide={
                   <Squircle
-                    width={450}
-                    height={628}
-                    radius={130}
+                    width={width}
+                    height={height}
+                    radius={dims.radius.toFixed(0)}
                     fill="transparent"
                     className="relative"
                   >
@@ -221,14 +247,14 @@ const Services = () => {
                 }
                 backSide={
                   <Squircle
-                    width={450}
-                    height={600}
+                    width={width}
+                    height={height}
                     radius={130}
                     fill="transparent"
                     className="relative"
                   >
                     <div className="h-full w-full relative bg-white dark:bg-background">
-                      <div className="px-10 py-14 flex flex-col justify-between size-full space-y-4">
+                      <div className="px-[clamp(1rem,1vw,40px)] py-[clamp(2rem,1vw,56px)] flex flex-col justify-between size-full space-y-4">
                         <h4 className="inline-flex justify-between items-center">
                           <div className="flex flex-col">
                             <span className="text-[clamp(5rem,1.5vw,40px)] leading-[10%] font-playground text-foreground relative z-10 mix-blend-darken">
@@ -250,7 +276,7 @@ const Services = () => {
                           {skills.map((skill, skillIndex) => (
                             <li
                               key={skillIndex}
-                              className="text-xl py-4 grow border-y border-dashed border-foreground/20 text-foreground font-mono"
+                              className="text-[clamp(0.75rem,0.8vw,20px)] py-[clamp(0.1rem,1.5vw,10px)] grow border-y border-dashed border-foreground/20 text-foreground font-mono"
                             >
                               {skill.li}
                             </li>
@@ -293,15 +319,25 @@ interface ServiceCardProps {
   backSide?: React.ReactNode;
   init?: boolean;
   className?: string;
+  width?: number;
+  height?: number;
+  ratio?: number;
 }
 
 const ServiceCard = forwardRef<HTMLDivElement, ServiceCardProps>(
-  ({ id, frontSide, backSide, index, init, className }, ref) => {
+  (
+    { id, frontSide, backSide, index, init, className, width, height, ratio },
+    ref
+  ) => {
     const delayMs = index ? index * 200 : 0;
+
     return (
       <div
         ref={ref}
-        className="service-card will-change-transform z-[-1]"
+        className={cn("service-card will-change-transform z-[-1]")}
+        style={{
+          transition: "all 0.3s ease",
+        }}
         id={id?.toString()}
       >
         <div
@@ -309,7 +345,12 @@ const ServiceCard = forwardRef<HTMLDivElement, ServiceCardProps>(
             "service-card-wrapper w-full h-full relative",
             init && "animate-floating"
           )}
-          style={{ animationDelay: `${delayMs}ms` }}
+          style={{
+            animationDelay: `${delayMs}ms`,
+            width,
+            height,
+            aspectRatio: ratio,
+          }}
         >
           <div
             className={cn(
