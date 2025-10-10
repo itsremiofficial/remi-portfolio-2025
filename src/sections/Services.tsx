@@ -7,11 +7,7 @@ import { cn } from "../utils";
 import { EXPERTIES } from "../constants/EXPERTIES";
 import Squircle from "../components/ui/Squircle";
 import { useResponsiveVars } from "../hooks/useResponsiveVars";
-type Dimensions = {
-  width: number;
-  height: number;
-  radius: number;
-};
+import { useRadius } from "../hooks/useRadius";
 
 const Services = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -21,23 +17,7 @@ const Services = () => {
   const [init, setInit] = useState(false);
 
   const { width, height, ratio } = useResponsiveVars(450, 628, "card");
-  const [dims, setDims] = useState<Dimensions>({
-    width: width,
-    height: height,
-    radius: 130,
-  });
-  // Whenever width or height changes, recalc radius
-  useEffect(() => {
-    const newRadius = Math.min(dims.width, dims.height) / 4;
-    setDims((prev) => ({ ...prev, radius: newRadius }));
-  }, [dims.width, dims.height]);
-
-  // Whenever width or height changes, recalc radius
-  useEffect(() => {
-    // Example formula: radius is proportional to the smaller side
-    const newRadius = Math.min(dims.width, dims.height) / 4;
-    setDims((prev) => ({ ...prev, radius: newRadius }));
-  }, [dims.width, dims.height]);
+  const { radius } = useRadius(450, 628);
 
   useGSAP(
     () => {
@@ -228,12 +208,11 @@ const Services = () => {
                   <Squircle
                     width={width}
                     height={height}
-                    radius={dims.radius.toFixed(0)}
+                    radius={radius}
                     fill="transparent"
                     className="relative"
                   >
                     <div className="size-full bg-foreground dark:bg-background shadow-xl">
-                      {/* FIX: Use capitalized variable for component */}
                       {illustration
                         ? (() => {
                             const Illustration = illustration;
