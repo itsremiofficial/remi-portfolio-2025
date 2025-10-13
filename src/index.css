@@ -491,8 +491,8 @@ body {
 }
 
 .service-card {
-  /* --ratio-services: 314 / 438;
-  --width-services: 450px; */
+  --ratio-services: 314 / 438;
+  --width-services: 450px;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -501,7 +501,7 @@ body {
   width: 100%;
   aspect-ratio: var(--ratio-services);
   max-width: var(--width-services);
-  /* height: calc(450px * var(--aspect-ratio)); */
+  height: var(--height-services);
 }
 
 .service-card-wrapper {
@@ -511,6 +511,7 @@ body {
   transform: translate(-50%, -50%);
   width: 100%;
   height: 100%;
+  @apply flex items-center gap-10;
 }
 
 .flip-service-card-inner {
@@ -545,4 +546,31 @@ body {
 
 .isolate_svg {
   isolation: isolate;
+}
+
+.perspective-distantt {
+  perspective: 1800px;
+  perspective-origin: bottom;
+}
+
+.testimonial-image {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 1.5rem;
+  transform-style: preserve-3d;
+  will-change: transform, filter;
+  filter: blur(0px) drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
+  transition: filter 0.8s cubic-bezier(0.215, 0.61, 0.355, 1);
+  clip-path: path(
+    "M0 120c0-51.62 0-77.43 13.833-95.087a65 65 0 0 1 11.08-11.08C42.57 0 68.38 0 120 0s77.43 0 95.087 13.833a65 65 0 0 1 11.08 11.08C240 42.57 240 68.38 240 120v80c0 51.62 0 77.43-13.833 95.087a65 65 0 0 1-11.08 11.08C197.43 320 171.62 320 120 320s-77.43 0-95.087-13.833a65 65 0 0 1-11.08-11.08C0 277.43 0 251.62 0 200z"
+  );
+}
+
+.quote .word {
+  display: inline-block;
+  opacity: 1;
+  will-change: transform, opacity, filter;
+  filter: blur(0px);
 }

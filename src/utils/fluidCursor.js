@@ -1266,7 +1266,7 @@ const useFluidCursor = () => {
       { r: 0.851, g: 0.208, b: 0.208 }, // Base color #d93535
       { r: 0.9, g: 0.38, b: 0.38 }, // Light red
       //   { r: 0.95, g: 0.5, b: 0.5 }, // Lighter red
-        { r: 1.0, g: 0.62, b: 0.62 }, // Very light red/pink
+      { r: 1.0, g: 0.62, b: 0.62 }, // Very light red/pink
       //   { r: 1.0, g: 0.75, b: 0.75 }, // Pale red/pink
     ];
 

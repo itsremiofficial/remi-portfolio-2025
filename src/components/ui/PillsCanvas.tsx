@@ -66,39 +66,41 @@ const MatterCanvas = () => {
     // IF SVGs needs to be updated according to theme state
     // const themeSuffix = isDark ? "light" : "dark";
 
-    const BASE_SKILLS: Array<{ name: string; width: number }> = [
-      { name: "reactjs", width: 179 },
-      { name: "nextjs", width: 191 },
-      { name: "tailwindcss", width: 237 },
-      { name: "figma", width: 161 },
-      { name: "socketio", width: 201 },
-      { name: "typescript", width: 204 },
-      { name: "nodejs", width: 178 },
-      { name: "mongodb", width: 202 },
-      { name: "mysql", width: 172 },
-      { name: "github", width: 171 },
-      { name: "gsap", width: 147 },
-      { name: "bootstrap", width: 197 },
-      { name: "materialui", width: 169 },
-      { name: "expressjs", width: 189 },
-      { name: "javascript", width: 197 },
-      // CIRCULAR
-      { name: "framermotion", width: 64 },
-      { name: "css3", width: 64 },
-      { name: "html5", width: 64 },
-      { name: "sass", width: 64 },
-      { name: "photoshop", width: 64 },
-      { name: "premierpro", width: 64 },
-      { name: "illustrator", width: 64 },
-      { name: "aftereffects", width: 64 },
-    ];
+    const BASE_SKILLS: Array<{ name: string; width: number; height?: number }> =
+      [
+        { name: "reactjs", width: 179 },
+        { name: "nextjs", width: 191 },
+        { name: "tailwindcss", width: 237 },
+        { name: "figma", width: 161 },
+        { name: "socketio", width: 201 },
+        { name: "typescript", width: 204 },
+        { name: "nodejs", width: 178 },
+        { name: "mongodb", width: 202 },
+        { name: "mysql", width: 172 },
+        { name: "github", width: 171 },
+        { name: "gsap", width: 147 },
+        { name: "bootstrap", width: 197 },
+        { name: "materialui", width: 169 },
+        { name: "expressjs", width: 189 },
+        { name: "javascript", width: 197 },
+        { name: "drag", width: 150, height: 150 },
+        // CIRCULAR
+        { name: "framermotion", width: 64 },
+        { name: "css3", width: 64 },
+        { name: "html5", width: 64 },
+        { name: "sass", width: 64 },
+        { name: "photoshop", width: 64 },
+        { name: "premierpro", width: 64 },
+        { name: "illustrator", width: 64 },
+        { name: "aftereffects", width: 64 },
+      ];
 
-    const SKILL_ASSETS: { texture: string; width: number }[] = BASE_SKILLS.map(
-      ({ name, width }) => ({
+    const SKILL_ASSETS: { texture: string; width: number; height?: number }[] =
+      BASE_SKILLS.map(({ name, width, height }) => ({
         texture: `/skills/${name}.svg`,
         width,
-      })
-    );
+        height,
+      }));
 
     const SPRITE_BASE = 520;
     const FIXED_HEIGHT = 64;
@@ -146,7 +148,7 @@ const MatterCanvas = () => {
       natW: number,
       natH: number
     ) => {
-      const h = FIXED_HEIGHT;
+      const h = asset.height !== undefined ? asset.height : FIXED_HEIGHT;
       const w =
         asset.width !== undefined
           ? asset.width
@@ -167,12 +169,16 @@ const MatterCanvas = () => {
         Math.random() * (matterContainer.clientWidth - w - 20) + 10 + w / 2;
       const spawnY = -Math.random() * 120 - h; // spawn above view so they settle gently
 
+      // For square items (w === h), use full circular radius
+      const isSquare = w === h;
+      const chamferRadius = isSquare ? Math.min(w, h) * 0.5 : Math.min(w, h) * 0.14;
+
       const box = Matter.Bodies.rectangle(spawnX, spawnY, w, h, {
         frictionAir: 0.00001, // more damping (was 0.00001)
         friction: 0.0018, // surface friction to bleed lateral energy
         frictionStatic: 0.5,
         restitution: 0.4, // reduce bounce (was 0.4) -> prevents perpetual micro bounces
-        chamfer: { radius: Math.min(w, h) * 0.14 },
+        chamfer: { radius: chamferRadius },
         render: {
           // fillStyle: "#090909",
           strokeStyle: "transparent",

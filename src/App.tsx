@@ -19,9 +19,9 @@ import {
 import gsap from "gsap";
 import Services from "./sections/Services";
 import ServicesMarquee from "./components/ServicesMarquee";
-import Skills from "./sections/Skills";
 import FluidCursor from "./components/ui/fluidCursor";
 import Testimonials from "./sections/Testimonials";
+import Skills from "./sections/Skills";
 
 gsap.registerPlugin(
   ScrollTrigger,
@@ -79,6 +79,7 @@ const App = () => {
           <About />
           <Works />
           <Services />
+          <Skills />
           <ServicesMarquee />
           <Testimonials />
           <section

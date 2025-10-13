@@ -29,10 +29,11 @@ export const useResponsiveVars = (
       const w = window.innerWidth;
       let width = maxWidth;
 
-      if (w >= 1366) width = maxWidth;
-      else if (w >= 1024) width = Math.round(maxWidth * 0.8);
-      else if (w >= 768) width = Math.round(maxWidth * 0.66);
-      else if (w >= 640) width = Math.round(maxWidth * 0.55);
+      if (w >= 1536) width = Math.round(maxWidth * 0.9);
+      else if (w >= 1440) width = Math.round(maxWidth * 0.8);
+      else if (w >= 1366) width = Math.round(maxWidth * 0.7);
+      else if (w >= 1280) width = Math.round(maxWidth * 0.65);
+      else if (w >= 1024) width = Math.round(maxWidth * 0.6);
       else width = Math.round(maxWidth * 0.45);
 
       const height = Math.round(width / baseRatio);

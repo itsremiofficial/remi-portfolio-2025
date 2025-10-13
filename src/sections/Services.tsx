@@ -2,7 +2,6 @@ import { forwardRef, useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/all";
-import MatterCanvas from "../components/ui/PillsCanvas";
 import { cn } from "../utils";
 import { EXPERTIES } from "../constants/EXPERTIES";
 import Squircle from "../components/ui/Squircle";
@@ -171,7 +170,7 @@ const Services = () => {
 
   return (
     <section
-      className="services_section min-h-screen h-full w-full relative mt-40"
+      className="services_section w-full relative mt-40 space-y-32"
       ref={sectionRef}
       id="services"
     >
@@ -192,7 +191,7 @@ const Services = () => {
           can I DO?
         </h2>
       </div>
-      <div ref={servicesContainer} className="relative w-full h-[60%] mt-16">
+      <div ref={servicesContainer} className="relative w-full min-h-[600px]">
         <div className="services_cards w-full h-full">
           {EXPERTIES.map(
             ({ title, subtitle, skills, Icon, illustration }, index) => (
@@ -228,12 +227,12 @@ const Services = () => {
                   <Squircle
                     width={width}
                     height={height}
-                    radius={130}
+                    radius={radius}
                     fill="transparent"
                     className="relative"
                   >
                     <div className="h-full w-full relative bg-white dark:bg-background">
-                      <div className="px-[clamp(1rem,1vw,40px)] py-[clamp(2rem,1vw,56px)] flex flex-col justify-between size-full space-y-4">
+                      <div className="px-[1.5vw] py-[3.5vw] flex flex-col justify-between size-full space-y-4">
                         <h4 className="inline-flex justify-between items-center">
                           <div className="flex flex-col">
                             <span className="text-[clamp(5rem,1.5vw,40px)] leading-[10%] font-playground text-foreground relative z-10 mix-blend-darken">
@@ -245,17 +244,16 @@ const Services = () => {
                           </div>
                           {Icon && (
                             <Icon
-                              fill
                               // duotone={false}
                               className="size-12 text-accent"
                             />
                           )}
                         </h4>
-                        <ul className="skills-list flex flex-col h-full py-6">
+                        <ul className="skills-list flex flex-col h-full py-[0.5vw]">
                           {skills.map((skill, skillIndex) => (
                             <li
                               key={skillIndex}
-                              className="text-[clamp(0.75rem,0.8vw,20px)] py-[clamp(0.1rem,1.5vw,10px)] grow border-y border-dashed border-foreground/20 text-foreground font-mono"
+                              className="text-[1vw] py-[clamp(0.1rem,1.5vw,10px)] grow border-y border-dashed border-foreground/20 text-foreground font-mono flex items-center"
                             >
                               {skill.li}
                             </li>
@@ -278,12 +276,6 @@ const Services = () => {
             )
           )}
         </div>
-      </div>
-      <div className="absolute inset-0 top-0 h-full w-full z-[0]">
-        <MatterCanvas />
-      </div>
-      <div className="absolute inset-0 top-0 w-full h-56 z-[1] pointer-events-none">
-        <div className="w-full h-full bg-gradient-to-t from-transparent dark:to-foreground to-background" />
       </div>
     </section>
   );
