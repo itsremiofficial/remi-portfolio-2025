@@ -232,20 +232,20 @@ const Services = () => {
                     className="relative"
                   >
                     <div className="h-full w-full relative bg-white dark:bg-background">
-                      <div className="px-[1.5vw] py-[3.5vw] flex flex-col justify-between size-full space-y-4">
+                      <div className="px-[1.5vw] py-10 flex flex-col justify-between size-full space-y-4">
                         <h4 className="inline-flex justify-between items-center">
                           <div className="flex flex-col">
-                            <span className="text-[clamp(5rem,1.5vw,40px)] leading-[10%] font-playground text-foreground relative z-10 mix-blend-darken">
+                            <span className="text-[clamp(3rem,1.5vw,40px)] leading-[10%] font-playground text-foreground relative z-10 mix-blend-darken">
                               {subtitle}
                             </span>
-                            <span className="text-[clamp(2rem,1.5vw,40px)] leading-none font-grandbold text-accent">
+                            <span className="text-[clamp(1.5rem,1.5vw,30px)] leading-none font-grandbold text-accent">
                               {title}
                             </span>
                           </div>
                           {Icon && (
                             <Icon
                               // duotone={false}
-                              className="size-12 text-accent"
+                              className="size-[clamp(2.5rem,2vw,48px)] text-accent"
                             />
                           )}
                         </h4>
@@ -253,13 +253,13 @@ const Services = () => {
                           {skills.map((skill, skillIndex) => (
                             <li
                               key={skillIndex}
-                              className="text-[1vw] py-[clamp(0.1rem,1.5vw,10px)] grow border-y border-dashed border-foreground/20 text-foreground font-mono flex items-center"
+                              className="text-[clamp(0.7rem,1.3vw,20px)] py-[clamp(0.1rem,1.5vw,10px)] grow border-y border-dashed border-foreground/20 text-foreground font-mono flex items-center"
                             >
                               {skill.li}
                             </li>
                           ))}
                         </ul>
-                        <h4 className="text-xl font-robo uppercase text-balance text-foreground/70 rotate-y-180 self-end flex justify-between items-baseline w-full">
+                        <h4 className="text-[clamp(0.7rem,1.3vw,20px)] font-robo uppercase text-balance text-foreground/70 rotate-y-180 self-end flex justify-between items-baseline w-full">
                           {title}
                           {Icon && (
                             <Icon className="size-6 text-foreground/70" />

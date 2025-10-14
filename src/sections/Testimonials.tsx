@@ -3,53 +3,10 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import IconArrowRight from "../components/icons/ArrowRight";
 import MagneticButtonCircular from "../components/MagneticButtonCircular";
-
-gsap.registerPlugin(ScrollTrigger);
-
-interface Testimonial {
-  quote: string;
-  name: string;
-  designation: string;
-  src: string;
-}
-
-const testimonials: Testimonial[] = [
-  {
-    name: "Jack Moss",
-    designation: "CEO Zonow Network",
-    quote:
-      "I have worked with Remi for multiple years. His designs are amazing and high detailed, with the fastest turnaround time I have seen. As for his websites, they are extremely well made and astonishingly fast. Zero corners are cut and he goes above and beyond to make my requests with 100% perfection.",
-    src: "https://images.unsplash.com/photo-1512316609839-ce289d3eba0a?q=80&w=1368&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-    name: "Murtaza Memon",
-    designation: "Managing Director Fronus",
-    quote:
-      "This place exceeded all expectations! The atmosphere is inviting, and the staff truly goes above and beyond to ensure a fantastic visit. I'll definitely keep returning for more exceptional dining experience.",
-    src: "https://images.unsplash.com/photo-1628749528992-f5702133b686?q=80&w=1368&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-    name: "Christopher P.",
-    designation: "Satisfied Customer",
-    quote:
-      "Shining Yam is a hidden gem! From the moment I walked in, I knew I was in for a treat. The impeccable service and overall attention to detail created a memorable experience. I highly recommend it!",
-    src: "https://images.unsplash.com/photo-1524267213992-b76e8577d046?q=80&w=1368&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-    name: "David Chen",
-    designation: "Product Manager at TechCorp",
-    quote:
-      "An absolutely outstanding experience from start to finish! The quality of service and attention to detail is unmatched. Every interaction felt personalized and genuine. This is what excellence looks like!",
-    src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1368&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-    name: "Sarah Williams",
-    designation: "Creative Director at DesignHub",
-    quote:
-      "Working with this team has been transformative for our business. Their innovative approach and dedication to delivering results is truly remarkable. I couldn't be happier with the outcome!",
-    src: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=1368&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-];
+import type { IconProps } from "../components/icons/Instagram";
+import { cn } from "../utils";
+import IconArrowLeft from "../components/icons/AltArrowLeft";
+import { testimonials } from "../constants/TESTIMONIALS";
 
 // Memoize calculate gap function outside component to avoid recreation
 const calculateGap = (width: number): number => {
@@ -71,6 +28,7 @@ const Testimonials = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const nameRef = useRef<HTMLHeadingElement>(null);
+  const subnameRef = useRef<HTMLHeadingElement>(null);
   const designationRef = useRef<HTMLParagraphElement>(null);
   const quoteRef = useRef<HTMLParagraphElement>(null);
   const autoplayIntervalRef = useRef<number | null>(null);
@@ -136,12 +94,14 @@ const Testimonials = () => {
 
       const imageContainer = imageContainerRef.current;
       const nameElement = nameRef.current;
+      const subnameElement = subnameRef.current;
       const designationElement = designationRef.current;
       const quoteElement = quoteRef.current;
 
       if (
         !imageContainer ||
         !nameElement ||
+        !subnameElement ||
         !designationElement ||
         !quoteElement
       )
@@ -254,7 +214,7 @@ const Testimonials = () => {
 
       timeline
         .to(
-          [nameElement, designationElement, quoteElement],
+          [nameElement, subnameElement, designationElement, quoteElement],
           {
             opacity: 0,
             y: -15,
@@ -266,11 +226,22 @@ const Testimonials = () => {
         )
         .call(() => {
           nameElement.textContent = testimonials[newIndex].name;
+          subnameElement.textContent = testimonials[newIndex].subname;
           designationElement.textContent = testimonials[newIndex].designation;
           quoteElement.innerHTML = splitQuotes[newIndex];
         })
         .to(
           nameElement,
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            ease: "power2.out",
+          },
+          0.5
+        )
+        .to(
+          subnameElement,
           {
             opacity: 1,
             y: 0,
@@ -336,6 +307,7 @@ const Testimonials = () => {
   useEffect(() => {
     // Set initial state to prevent flashing/faded text
     const nameElement = nameRef.current;
+    const subnameElement = subnameRef.current;
     const designationElement = designationRef.current;
     const quoteElement = quoteRef.current;
     const buttonContainer = buttonContainerRef.current;
@@ -344,6 +316,7 @@ const Testimonials = () => {
 
     if (
       nameElement &&
+      subnameElement &&
       designationElement &&
       quoteElement &&
       buttonContainer &&
@@ -352,7 +325,13 @@ const Testimonials = () => {
     ) {
       // Set initial hidden states for all elements
       gsap.set(
-        [nameElement, designationElement, quoteElement, buttonContainer],
+        [
+          nameElement,
+          subnameElement,
+          designationElement,
+          quoteElement,
+          buttonContainer,
+        ],
         {
           opacity: 0,
           y: 0,
@@ -514,15 +493,16 @@ const Testimonials = () => {
       });
 
       const nameElement = nameRef.current;
+      const subnameElement = subnameRef.current;
       const designationElement = designationRef.current;
       const quoteElement = quoteRef.current;
 
-      if (nameElement && designationElement && quoteElement) {
+      if (nameElement && subnameElement && designationElement && quoteElement) {
         const timeline = gsap.timeline();
 
         timeline
           .to(
-            [nameElement, designationElement, quoteElement],
+            [nameElement, subnameElement, designationElement, quoteElement],
             {
               opacity: 0,
               y: -15,
@@ -534,6 +514,7 @@ const Testimonials = () => {
           )
           .call(() => {
             nameElement.textContent = testimonials[activeIndex].name;
+            subnameElement.textContent = testimonials[activeIndex].subname;
             designationElement.textContent =
               testimonials[activeIndex].designation;
             quoteElement.innerHTML = splitQuotes[activeIndex];
@@ -547,6 +528,16 @@ const Testimonials = () => {
               ease: "power2.out",
             },
             0.7
+          )
+          .to(
+            subnameElement,
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.5,
+              ease: "power2.out",
+            },
+            0.8
           )
           .to(
             designationElement,
@@ -596,19 +587,24 @@ const Testimonials = () => {
       className="min-h-[60vh] flex items-center justify-center"
       ref={sectionRef}
     >
-      <div className="w-full max-w-6xl p-8">
-        <div className="grid gap-20 md:grid-cols-5 ml-20 !h-96">
+      <div className="w-full max-w-7xl p-8">
+        <div className="grid gap-20 md:grid-cols-5 !h-96">
           <div
-            className="relative w-60 h-80 perspective-distantt col-span-2 mt-4 self-end-safe"
+            className="relative w-60 h-full perspective-distantt col-span-2 mt-14 self-end-safe place-self-center"
             id="image-container"
             ref={imageContainerRef}
           ></div>
-          <div className="flex flex-col justify-between col-span-3 h-6/7 mt-10">
+          <div className="flex flex-col justify-between col-span-3 h-full">
             <div>
               <h3
-                className="text-[3vw] leading-none font-grandbold tracking-wider text-accent will-change-[transofrm,opacity] mb-1"
+                className="text-6xl leading-none font-grandbold tracking-wider text-accent will-change-[transofrm,opacity] mb-1"
                 id="name"
                 ref={nameRef}
+              ></h3>
+              <h3
+                className="text-6xl leading-none font-grandbold tracking-wider text-accent will-change-[transofrm,opacity] mb-1"
+                id="subname"
+                ref={subnameRef}
               ></h3>
               <p
                 className="text-sm text-background/50 mb-6 will-change-[transofrm,opacity]"
@@ -624,37 +620,56 @@ const Testimonials = () => {
               ></p>
             </div>
             <div
-              className="flex items-center gap-4 transition-all will-change-transform mt-6"
+              className="flex items-center gap-4 transition-all will-change-transform "
               ref={buttonContainerRef}
             >
-              <MagneticButtonCircular
-                className="inline-flex items-center justify-center dark:bg-background bg-foreground cursor-pointer size-14 group rounded-full transition-all"
-                fillClassName="bg-accent"
-                dataStrength={2.5}
-                dataStrengthText={30}
-                aria-label="Previous testimonial"
-                id="prev-button"
-                onClick={handlePrev}
-              >
-                <IconArrowRight
-                  className="size-4 rotate-180 md:size-5 text-background dark:text-foreground"
-                  duotone={false}
-                />
-              </MagneticButtonCircular>
-              <MagneticButtonCircular
-                className="inline-flex items-center justify-center dark:bg-background bg-foreground cursor-pointer size-14 group rounded-full transition-all"
-                fillClassName="bg-accent"
-                id="next-button"
-                dataStrength={2.5}
-                dataStrengthText={30}
-                aria-label="Next testimonial"
-                onClick={handleNext}
-              >
-                <IconArrowRight
-                  className="size-4 md:size-5 text-background dark:text-foreground"
-                  duotone={false}
-                />
-              </MagneticButtonCircular>
+              {[
+                {
+                  Icon: IconArrowLeft,
+                  onClick: handlePrev,
+                  label: "Previous Testimonial",
+                  id: "prev-button",
+                },
+                {
+                  Icon: IconArrowRight,
+                  onClick: handleNext,
+                  label: "Next Testimonial",
+                  id: "next-button",
+                },
+              ].map(
+                ({
+                  Icon,
+                  onClick,
+                  label,
+                  id,
+                }: {
+                  Icon: React.FC<IconProps>;
+                  onClick: () => void;
+                  label: string;
+                  id: string;
+                }) => {
+                  return (
+                    <MagneticButtonCircular
+                      key={label}
+                      className="inline-flex items-center justify-center dark:bg-background bg-foreground cursor-pointer size-14 group rounded-full transition-all"
+                      fillClassName="bg-accent"
+                      dataStrength={2.5}
+                      dataStrengthText={30}
+                      aria-label={label}
+                      id={id}
+                      onClick={onClick}
+                    >
+                      <Icon
+                        className={cn(
+                          "size-4 md:size-5 text-background dark:text-foreground"
+                        )}
+                        duotone={false}
+                        width={2.5}
+                      />
+                    </MagneticButtonCircular>
+                  );
+                }
+              )}
             </div>
           </div>
         </div>

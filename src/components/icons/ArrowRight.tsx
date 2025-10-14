@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import { type FC } from "react";
 import type { IconProps } from "./Instagram";
 
 const IconArrowRight: FC<IconProps> = ({
@@ -11,7 +11,7 @@ const IconArrowRight: FC<IconProps> = ({
     <>
       {!fill ? (
         <svg
-          className={className}
+          className={`!rotate-180 ${className}`}
           width="24"
           height="24"
           viewBox="0 0 24 24"
@@ -19,12 +19,7 @@ const IconArrowRight: FC<IconProps> = ({
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            opacity={duotone ? "0.5" : "1"}
-            d="M4 11.25C3.58579 11.25 3.25 11.5858 3.25 12C3.25 12.4142 3.58579 12.75 4 12.75V11.25ZM4 12.75H20V11.25H4V12.75Z"
-            fill="currentColor"
-          />
-          <path
-            d="M14 6L20 12L14 18"
+            d="M20 12H4M4 12L10 6M4 12L10 18"
             stroke="currentColor"
             strokeWidth={width}
             strokeLinecap="round"
@@ -33,7 +28,7 @@ const IconArrowRight: FC<IconProps> = ({
         </svg>
       ) : duotone ? (
         <svg
-          className={className}
+          className={`!rotate-180 ${className}`}
           width="24"
           height="24"
           viewBox="0 0 24 24"
@@ -44,17 +39,17 @@ const IconArrowRight: FC<IconProps> = ({
             opacity={duotone ? "0.5" : "1"}
             fillRule="evenodd"
             clipRule="evenodd"
-            d="M3.25 12C3.25 11.5858 3.58579 11.25 4 11.25H13.25V12.75H4C3.58579 12.75 3.25 12.4142 3.25 12Z"
+            d="M20.75 12C20.75 11.5858 20.4142 11.25 20 11.25H10.75V12.75H20C20.4142 12.75 20.75 12.4142 20.75 12Z"
             fill="currentColor"
           />
           <path
-            d="M13.25 12.75V18C13.25 18.3034 13.4327 18.5768 13.713 18.6929C13.9932 18.809 14.3158 18.7449 14.5303 18.5304L20.5303 12.5304C20.671 12.3897 20.75 12.1989 20.75 12C20.75 11.8011 20.671 11.6103 20.5303 11.4697L14.5303 5.46969C14.3158 5.25519 13.9932 5.19103 13.713 5.30711C13.4327 5.4232 13.25 5.69668 13.25 6.00002V11.25V12.75Z"
+            d="M10.75 18C10.75 18.3034 10.5673 18.5768 10.287 18.6929C10.0068 18.809 9.68417 18.7449 9.46967 18.5304L3.46967 12.5304C3.32902 12.3897 3.25 12.1989 3.25 12C3.25 11.8011 3.32902 11.6103 3.46967 11.4697L9.46967 5.46969C9.68417 5.25519 10.0068 5.19103 10.287 5.30711C10.5673 5.4232 10.75 5.69668 10.75 6.00002V18Z"
             fill="currentColor"
           />
         </svg>
       ) : (
         <svg
-          className={className}
+          className={`!rotate-180 ${className}`}
           width="24"
           height="24"
           viewBox="0 0 24 24"
@@ -62,7 +57,7 @@ const IconArrowRight: FC<IconProps> = ({
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            d="M4 11.25C3.58579 11.25 3.25 11.5858 3.25 12C3.25 12.4142 3.58579 12.75 4 12.75H13.25V18C13.25 18.3034 13.4327 18.5768 13.713 18.6929C13.9932 18.809 14.3158 18.7449 14.5303 18.5304L20.5303 12.5304C20.671 12.3897 20.75 12.1989 20.75 12C20.75 11.8011 20.671 11.6103 20.5303 11.4697L14.5303 5.46969C14.3158 5.25519 13.9932 5.19103 13.713 5.30711C13.4327 5.4232 13.25 5.69668 13.25 6.00002V11.25H4Z"
+            d="M20 11.25C20.4142 11.25 20.75 11.5858 20.75 12C20.75 12.4142 20.4142 12.75 20 12.75H10.75L10.75 18C10.75 18.3034 10.5673 18.5768 10.287 18.6929C10.0068 18.809 9.68417 18.7449 9.46967 18.5304L3.46967 12.5304C3.32902 12.3897 3.25 12.1989 3.25 12C3.25 11.8011 3.32902 11.6103 3.46967 11.4697L9.46967 5.46969C9.68417 5.25519 10.0068 5.19103 10.287 5.30711C10.5673 5.4232 10.75 5.69668 10.75 6.00002L10.75 11.25H20Z"
             fill="currentColor"
           />
         </svg>
@@ -70,4 +65,5 @@ const IconArrowRight: FC<IconProps> = ({
     </>
   );
 };
+
 export default IconArrowRight;
