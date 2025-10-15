@@ -232,13 +232,13 @@ const Services = () => {
                     className="relative"
                   >
                     <div className="h-full w-full relative bg-white dark:bg-background">
-                      <div className="px-[1.5vw] py-10 flex flex-col justify-between size-full space-y-4">
+                      <div className="px-[clamp(1.5rem,1.5vw,30px)] py-[clamp(3rem,1.5vw,30px)] flex flex-col justify-between size-full space-y-4">
                         <h4 className="inline-flex justify-between items-center">
                           <div className="flex flex-col">
-                            <span className="text-[clamp(3rem,1.5vw,40px)] leading-[10%] font-playground text-foreground relative z-10 mix-blend-darken">
+                            <span className="text-[clamp(4rem,1.5vw,40px)] leading-[10%] font-playground text-foreground relative z-10 mix-blend-darken">
                               {subtitle}
                             </span>
-                            <span className="text-[clamp(1.5rem,1.5vw,30px)] leading-none font-grandbold text-accent">
+                            <span className="text-[clamp(2rem,1.5vw,30px)] leading-none font-grandbold text-accent">
                               {title}
                             </span>
                           </div>

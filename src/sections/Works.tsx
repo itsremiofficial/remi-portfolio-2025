@@ -113,8 +113,16 @@ const Works = () => {
   const dragCursor = useMemo(
     () => (
       <div className="relative size-30 lg:size-40 rounded-full border border-accent flex items-center justify-center gap-2 text-accent">
-        <IconAltArrowLeft width={2} className="size-4 lg:size-6 wiggleleft" />
-        <span className="font-bold font-robo text-sm select-none">DRAG</span>
+        <IconAltArrowRight
+          width={2}
+          className="size-4 lg:size-6 wiggleleft rotate-180"
+        />
+        <span className="font-bold font-robo text-sm select-none text-center">
+          DRAG <br />
+          OR
+          <br />
+          CLICK
+        </span>
         <IconAltArrowRight width={2} className="size-4 lg:size-6 wiggleright" />
       </div>
     ),

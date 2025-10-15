@@ -63,7 +63,7 @@ const Testimonials = () => {
       {
         opacity: 0,
         y: 10,
-        filter: "blur(8px)",
+        filter: "blur(6px)",
       },
       {
         opacity: 1,
@@ -146,7 +146,7 @@ const Testimonials = () => {
 
         const opacity = 1;
         const scale = index === newIndex ? 1 : 0.85;
-        const blur = index === newIndex ? 0 : 4;
+        const blur = index === newIndex ? 0 : 6;
         const shadow =
           index === newIndex
             ? "drop-shadow(0px 25px 30px rgba(0, 0, 0, 0.35)) drop-shadow(0px 10px 15px rgba(0, 0, 0, 0.25))"
@@ -433,7 +433,7 @@ const Testimonials = () => {
         }
 
         const scale = index === activeIndex ? 1 : 0.85;
-        const blur = index === activeIndex ? 0 : 4;
+        const blur = index === activeIndex ? 0 : 6;
         const shadow =
           index === activeIndex
             ? "drop-shadow(0px 25px 30px rgba(0, 0, 0, 0.35)) drop-shadow(0px 10px 15px rgba(0, 0, 0, 0.25))"
@@ -607,14 +607,14 @@ const Testimonials = () => {
                 ref={subnameRef}
               ></h3>
               <p
-                className="text-sm text-background/50 mb-6 will-change-[transofrm,opacity]"
+                className="text-sm text-foreground/50 dark:text-background/50 mb-6 will-change-[transofrm,opacity]"
                 id="designation"
                 ref={designationRef}
               ></p>
             </div>
             <div>
               <p
-                className=" text-background/70 leading-loose mb-4 will-change-[transofrm,opacity]"
+                className=" text-foreground dark:text-background/70 leading-loose mb-4 will-change-[transofrm,opacity]"
                 id="quote"
                 ref={quoteRef}
               ></p>

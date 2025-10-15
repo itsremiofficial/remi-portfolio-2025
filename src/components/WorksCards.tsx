@@ -4,6 +4,7 @@ import WORKS from "../constants/WORKS";
 import gsap from "gsap";
 import { Observer } from "gsap/all";
 import horizontalLoop from "../utils/horizontalLoop";
+import { useRoute } from "../hooks/useNavigate";
 
 const DRAG_SENSITIVITY = 0.012;
 const DRAG_LERP = 0.18;
@@ -578,6 +579,8 @@ const WorksCards = () => {
     []
   );
 
+  const { navigate } = useRoute();
+
   return (
     <div
       ref={outerRef}
@@ -591,7 +594,7 @@ const WorksCards = () => {
           WebkitOverflowScrolling: "touch",
         }}
       >
-        {WORKS.map(({ title, imageUrl, year, type }, index) => (
+        {WORKS.map(({ title, imageUrl, year, type, href }, index) => (
           <div
             key={index}
             ref={(el) => {
@@ -599,7 +602,7 @@ const WorksCards = () => {
             }}
             className="menu--item m-4 marquee-works-card flex-shrink-0"
           >
-            <div className="relative space-x-20">
+            <div onClick={() => navigate(href)} className="relative space-x-20">
               <div className="absolute right-0 top-2 flex items-center justify-center rounded-full w-6 md:w-8 lg:w-14 h-1/3">
                 <div className="flex items-center gap-2 rotate-270 text-foreground dark:text-background text-md md:text-lg lg:text-3xl leading-none font-robo font-extrabold whitespace-nowrap">
                   <div className="rotate-180 text-accent">
