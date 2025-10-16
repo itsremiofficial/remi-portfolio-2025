@@ -1,24 +1,37 @@
 import ModernArrow from "../components/ModernArrow";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import { SplitText } from "gsap/all";
 import { useGSAP } from "@gsap/react";
 
 const About = () => {
-  const titleRef = useRef<HTMLHeadingElement | null>(null);
+  const aboutTitleRef = useRef<HTMLHeadingElement | null>(null);
   const aboutContainer = useRef<HTMLElement | null>(null);
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+
+  useEffect(() => {
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => {
+        setFontsLoaded(true);
+      });
+    } else {
+      setFontsLoaded(true);
+    }
+  }, []);
 
   useGSAP(
     () => {
-      const titleEl = titleRef.current;
-      const sectionEl = aboutContainer.current; // NEW: section reference
-      if (!titleEl || !sectionEl) return;
+      if (!fontsLoaded) return;
 
-      const split = new SplitText(titleEl, { type: "words" });
+      const aboutTitleEl = aboutTitleRef.current;
+      const sectionEl = aboutContainer.current;
+      if (!aboutTitleEl || !sectionEl) return;
+
+      const split = new SplitText(aboutTitleEl, { type: "words" });
       const words = split.words as HTMLElement[];
       if (!words.length) return;
 
-      const arrowEl = titleEl.querySelector(
+      const arrowEl = aboutTitleEl.querySelector(
         ".about-arrow"
       ) as HTMLElement | null;
       const targets: HTMLElement[] = arrowEl ? [...words, arrowEl] : words;
@@ -29,7 +42,7 @@ const About = () => {
       });
 
       const highlightSpans = Array.from(
-        titleEl.querySelectorAll(".about-highlight")
+        aboutTitleEl.querySelectorAll(".about-highlight")
       ) as HTMLElement[];
       const insertIndex = Math.max(0, highlightSpans.length - 1);
       if (arrowEl) highlightSpans.splice(insertIndex, 0, arrowEl);
@@ -40,7 +53,6 @@ const About = () => {
         : [];
 
       const SCROLL_DISTANCE = 400;
-      const EXIT_OFFSET = 0.15;
 
       let fullOpacityTargets = Array.from(
         new Set(
@@ -69,14 +81,15 @@ const About = () => {
 
       const entranceTl = gsap.timeline({
         scrollTrigger: {
-          trigger: sectionEl, // CHANGED: pin the whole section
+          trigger: sectionEl,
           start: "top top",
           end: `+=${SCROLL_DISTANCE}%`,
           scrub: 1,
-          pin: true, // section stays pinned
+          pin: true,
           pinSpacing: true,
           anticipatePin: 1,
-          // markers: true,
+          fastScrollEnd: true,
+          refreshPriority: 1,
         },
       });
 
@@ -118,15 +131,6 @@ const About = () => {
           },
           "-=0.15"
         );
-      // .to(
-      //   titleEl,
-      //   {
-      //     autoAlpha: 0,
-      //     ease: "power2.inOut",
-      //     duration: 1,
-      //   },
-      //   `-=${EXIT_OFFSET}`
-      // );
 
       return () => {
         entranceTl.scrollTrigger?.kill();
@@ -134,17 +138,18 @@ const About = () => {
         split.revert();
       };
     },
-    { scope: aboutContainer }
+    { scope: aboutContainer, dependencies: [fontsLoaded] }
   );
 
   return (
     <section
       ref={aboutContainer}
-      className="about-section h-screen w-full flex items-center justify-center overflow-hidden"
+      className="about-section h-screen w-full flex items-center justify-center overflow-hidden relative isolate"
       id="about"
+      style={{ zIndex: 20 }}
     >
       <h2
-        ref={titleRef}
+        ref={aboutTitleRef}
         className="content__title font-extrabold font-robo uppercase text-[10vw] lg:text-[8vw] xl:text-[6vw] leading-none text-center max-w-[80%] px-4 select-none text-foreground dark:text-background"
       >
         Visual <span className="about-highlight font-grandbold">Designer</span>{" "}

@@ -301,16 +301,19 @@ const WorksCards = () => {
       onChangeY: (self) => {
         if (!loopRef.current) return;
         if (isDraggingRef.current || inertiaRef.current) return;
-        const delta = -self.deltaY;
+        // Scroll down (deltaY > 0) = carousel moves left-to-right (positive direction)
+        // Scroll up (deltaY < 0) = carousel moves right-to-left (negative direction)
+        const factor = self.deltaY > 0 ? 1 : -1;
 
         if (!wheelActiveRef.current) {
           loopRef.current.pause();
           wheelActiveRef.current = true;
         }
 
-        targetTimeRef.current += delta * WHEEL_SENSITIVITY;
-        wheelVelocityRef.current += delta * WHEEL_VELOCITY_MULT;
-        if (delta !== 0) directionRef.current = delta > 0 ? 1 : -1;
+        // Use factor to control direction, ensuring scroll down = left-to-right
+        targetTimeRef.current += Math.abs(self.deltaY) * WHEEL_SENSITIVITY * factor;
+        wheelVelocityRef.current += Math.abs(self.deltaY) * WHEEL_VELOCITY_MULT * factor;
+        directionRef.current = factor;
       },
     });
   };

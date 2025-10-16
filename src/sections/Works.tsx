@@ -1,5 +1,4 @@
 import { useGSAP } from "@gsap/react";
-import IconAltArrowLeft from "../components/icons/AltArrowLeft";
 import IconAltArrowRight from "../components/icons/AltArrowRight";
 import MagneticButton from "../components/MagneticButton";
 import CursorFollower from "../components/ui/CursroFollower";
@@ -73,13 +72,8 @@ const Works = () => {
               xPercent: 6,
               yPercent: 6,
               filter: "blur(10px)",
-              inertia: {
-                x: 100,
-                y: 100,
-              },
               rotationX: -45,
               transformPerspective: 1000,
-              stagger: 0.8,
             },
             {
               autoAlpha: 1,
@@ -130,19 +124,13 @@ const Works = () => {
   );
 
   return (
-    // If you want semantic landmark: change to <section aria-labelledby="selected-works-heading">
     <section
       id="works"
       ref={mainContainerRef}
       className="w-full lg:space-y-8"
-      aria-labelledby="selected-works-heading"
+      aria-label="Selected Works"
     >
       <div className="px-4 md:px-6">
-        {/* Optionally uncomment for a single accessible heading: */}
-        <h2 id="selected-works-heading" className="sr-only">
-          Selected Works
-        </h2>
-
         <h2
           ref={selectedHeadingRef}
           className="section-heading text-foreground dark:text-background pt-2"
@@ -186,14 +174,13 @@ const Works = () => {
                   Explore All
                 </span>
               </MagneticButton>
-              <div className="md:hidden py-2.5 px-6 bg-accent rounded-full">
-                <a
-                  href="#all-works"
-                  className="font-bold uppercase text-sm lg:text-lg font-robo leading-none text-background hover:text-background dark:hover:text-foreground transition-colors duration-500 whitespace-nowrap"
-                >
-                  Explore All
-                </a>
-              </div>
+              <a
+                href="#all-works"
+                className="md:hidden inline-block py-2.5 px-6 bg-accent rounded-full font-bold uppercase text-sm font-robo leading-none text-background hover:text-background dark:hover:text-foreground transition-colors duration-500 whitespace-nowrap"
+                aria-label="Explore all works"
+              >
+                Explore All
+              </a>
             </div>
           </div>
         </div>
