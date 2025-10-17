@@ -1,4 +1,5 @@
 export interface Testimonial {
+  id: string;
   quote: string;
   name: string;
   subname: string;
@@ -6,8 +7,9 @@ export interface Testimonial {
   src: string;
 }
 
-export const testimonials: Testimonial[] = [
+export const TESTIMONIALS: Testimonial[] = [
   {
+    id: "jack-moss",
     name: "Jack",
     subname: "Moss",
     designation: "CEO Zonow Network",
@@ -16,14 +18,16 @@ export const testimonials: Testimonial[] = [
     src: "testimonials/JackMoss.avif",
   },
   {
+    id: "murtaza-memon",
     name: "Murtaza",
     subname: "Memon",
-    designation: "CEO Mivator Development",
+    designation: "Managing Director Wasiq Industries",
     quote:
-      "This place exceeded all expectations! The atmosphere is inviting, and the staff truly goes above and beyond to ensure a fantastic visit. I'll definitely keep returning for more exceptional dining experience.",
+      "Working with Mika was amazing! He’s great at web design and development, turning ideas into reality with skill and creativity. His clear communication and attention to detail made everything easy. Highly recommend him!",
     src: "testimonials/MurtazaMemon.avif",
   },
   {
+    id: "chriss-pregler",
     name: "Chriss.",
     subname: "Pregler",
     designation: "CEO Mivator Development",
@@ -32,6 +36,7 @@ export const testimonials: Testimonial[] = [
     src: "testimonials/ChrissPregler.avif",
   },
   {
+    id: "zeshan-nawaz",
     name: "Zeshan",
     subname: "Nawaz",
     designation: "Managing Director Wasiq Industries",
@@ -40,6 +45,7 @@ export const testimonials: Testimonial[] = [
     src: "testimonials/ZeeshanNawaz.avif",
   },
   {
+    id: "sarah-williams",
     name: "Sarah",
     subname: "Williams",
     designation: "Creative Director at DesignHub",

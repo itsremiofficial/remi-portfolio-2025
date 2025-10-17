@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useMemo } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { testimonials } from "../constants/TESTIMONIALS";
+import { TESTIMONIALS } from "../constants/TESTIMONIALS";
 
 // gsap.registerPlugin(ScrollTrigger);
 
@@ -26,14 +26,16 @@ const Testimonials = () => {
   const subnameRef = useRef<HTMLHeadingElement>(null);
   const designationRef = useRef<HTMLParagraphElement>(null);
   const quoteRef = useRef<HTMLParagraphElement>(null);
-  const imageElementsRef = useRef<Map<number, HTMLImageElement>>(new Map());
+  const slidingElementsRef = useRef<Map<number, HTMLDivElement>>(new Map());
   const sectionRef = useRef<HTMLDivElement>(null);
   const currentIndexRef = useRef(0);
   const spacerRef = useRef<HTMLDivElement | null>(null);
+  const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
+  const targetTestimonialIdRef = useRef<string | null>(null);
 
   const splitQuotes = useMemo(
     () =>
-      testimonials.map((t) =>
+      TESTIMONIALS.map((t) =>
         t.quote
           .split(" ")
           .map((word) => `<span class="word">${word}</span>`)
@@ -48,7 +50,7 @@ const Testimonials = () => {
 
     gsap.fromTo(
       wordElements,
-      { opacity: 0, y: 10, filter: "blur(6px)" },
+      { opacity: 0, y: 10, filter: "blur(3px)" },
       {
         opacity: 1,
         y: 0,
@@ -83,25 +85,39 @@ const Testimonials = () => {
       const gap = calculateGap(containerWidth);
       const maxStickUp = gap * 0.8;
 
-      // Update images
-      testimonials.forEach((testimonial, idx) => {
-        let img = imageElementsRef.current.get(idx);
+      // Update sliding containers (image + shadow)
+      TESTIMONIALS.forEach((testimonial, idx) => {
+        let slidingContainer = slidingElementsRef.current.get(idx);
 
-        if (!img) {
-          img = document.createElement("img");
+        if (!slidingContainer) {
+          // Create container div
+          slidingContainer = document.createElement("div");
+          slidingContainer.className = "absolute w-full h-[320px]";
+          slidingContainer.id = `${testimonial.id}`;
+
+          // Create shadow div
+          const shadowDiv = document.createElement("div");
+          shadowDiv.className =
+            "absolute w-27/28 inset-0 top-1.5 left-1 -z-10 rounded-[4.5rem] dark:bg-foreground bg-background shadow-element";
+
+          // Create image
+          const img = document.createElement("img");
           img.src = testimonial.src;
           img.alt = testimonial.name;
           img.classList.add("testimonial-image");
           img.loading = "eager";
-          imageContainer.appendChild(img);
-          imageElementsRef.current.set(idx, img);
+
+          slidingContainer.appendChild(shadowDiv);
+          slidingContainer.appendChild(img);
+          imageContainer.appendChild(slidingContainer);
+          slidingElementsRef.current.set(idx, slidingContainer);
         }
 
         const offset =
-          (idx - index + testimonials.length) % testimonials.length;
-        const zIndex = offset === 0 ? 10 : offset === 1 || offset === 4 ? 5 : 3;
+          (idx - index + TESTIMONIALS.length) % TESTIMONIALS.length;
+        const zIndex = offset === 0 ? 20 : offset === 1 || offset === 4 ? 5 : 3;
         const scale = idx === index ? 1 : 0.85;
-        const blur = idx === index ? 0 : 6;
+        const blur = idx === index ? 0 : 3;
 
         let x = "0%",
           y = "0%",
@@ -109,23 +125,42 @@ const Testimonials = () => {
 
         if (offset === 1) {
           x = "30%";
-          y = `-${(maxStickUp / (img.offsetHeight || 320)) * 100}%`;
+          y = `-${(maxStickUp / 320) * 100}%`;
           rotateY = -35;
         } else if (offset === 2) {
           x = "50%";
-          y = `-${((maxStickUp * 1.5) / (img.offsetHeight || 320)) * 100}%`;
+          y = `-${((maxStickUp * 1.5) / 320) * 100}%`;
           rotateY = -45;
         } else if (offset === 3) {
           x = "-50%";
-          y = `-${((maxStickUp * 1.5) / (img.offsetHeight || 320)) * 100}%`;
+          y = `-${((maxStickUp * 1.5) / 320) * 100}%`;
           rotateY = 45;
         } else if (offset === 4) {
           x = "-30%";
-          y = `-${(maxStickUp / (img.offsetHeight || 320)) * 100}%`;
+          y = `-${(maxStickUp / 320) * 100}%`;
           rotateY = 35;
         }
 
-        gsap.to(img, {
+        // Update shadow styling based on position
+        const shadowElement = slidingContainer.querySelector(
+          ".shadow-element"
+        ) as HTMLElement;
+        if (shadowElement) {
+          // Hide shadow on last images (offset 2 and 3)
+          shadowElement.style.opacity =
+            offset === 2 || offset === 3 ? "0" : "1";
+
+          // Apply custom-shadow class to front slide, small-custom-shadow to others
+          if (offset === 0) {
+            shadowElement.classList.remove("small-custom-shadow");
+            shadowElement.classList.add("custom-shadow");
+          } else {
+            shadowElement.classList.remove("custom-shadow");
+            shadowElement.classList.add("small-custom-shadow");
+          }
+        }
+
+        gsap.to(slidingContainer, {
           zIndex,
           opacity: 1,
           scale,
@@ -147,9 +182,9 @@ const Testimonials = () => {
         stagger: 0.05,
       })
         .call(() => {
-          nameElement.textContent = testimonials[index].name;
-          subnameElement.textContent = testimonials[index].subname;
-          designationElement.textContent = testimonials[index].designation;
+          nameElement.textContent = TESTIMONIALS[index].name;
+          subnameElement.textContent = TESTIMONIALS[index].subname;
+          designationElement.textContent = TESTIMONIALS[index].designation;
           quoteElement.innerHTML = splitQuotes[index];
         })
         .to(nameElement, { opacity: 1, y: 0, duration: 0.4 }, 0.45)
@@ -181,7 +216,7 @@ const Testimonials = () => {
       .to(imageContainer, { opacity: 1, x: 0, duration: 0.8 })
       .call(() => updateTestimonial(0), [], 0.4);
 
-    const scrollDistance = window.innerHeight * testimonials.length;
+    const scrollDistance = window.innerHeight * TESTIMONIALS.length;
 
     const spacer = document.createElement("div");
     spacer.style.height = `${scrollDistance}px`;
@@ -189,29 +224,47 @@ const Testimonials = () => {
     section.insertAdjacentElement("afterend", spacer);
     spacerRef.current = spacer;
 
+    // Enable smooth scrolling
+    gsap.set(section, { willChange: "transform" });
+
     const st = ScrollTrigger.create({
       trigger: section,
       start: "top top",
       end: `+=${scrollDistance}`,
       pin: true,
       pinSpacing: false,
-      scrub: 0.5,
+      scrub: true,
+      anticipatePin: 1,
+      fastScrollEnd: false,
+      preventOverlaps: false,
+      normalizeScroll: true, // Smooth normalize scrolling
       snap: {
-        snapTo: 1 / testimonials.length,
+        snapTo: 1 / TESTIMONIALS.length,
         duration: { min: 0.2, max: 0.5 },
         ease: "power1.inOut",
       },
       onUpdate: (self) => {
         const slideIndex = Math.min(
-          Math.floor(self.progress * testimonials.length),
-          testimonials.length - 1
+          Math.floor(self.progress * TESTIMONIALS.length),
+          TESTIMONIALS.length - 1
         );
 
         if (slideIndex !== currentIndexRef.current) {
           updateTestimonial(slideIndex);
         }
       },
+      onLeave: () => {
+        gsap.set(section, { willChange: "auto" });
+      },
+      onEnterBack: () => {
+        gsap.set(section, { willChange: "transform" });
+      },
+      onLeaveBack: () => {
+        gsap.set(section, { willChange: "auto" });
+      },
     });
+
+    scrollTriggerRef.current = st;
 
     return () => {
       entranceTl.kill();
@@ -228,13 +281,62 @@ const Testimonials = () => {
       ScrollTrigger.refresh();
 
       if (spacerRef.current) {
-        const scrollDistance = window.innerHeight * testimonials.length;
+        const scrollDistance = window.innerHeight * TESTIMONIALS.length;
         spacerRef.current.style.height = `${scrollDistance}px`;
       }
     };
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Handle scrolling to specific testimonial via URL hash or data attribute
+  useEffect(() => {
+    const scrollToSpecificTestimonial = () => {
+      const section = sectionRef.current;
+      const st = scrollTriggerRef.current;
+
+      // Check if we have a target testimonial ID stored
+      if (targetTestimonialIdRef.current && section && st) {
+        const testimonialIndex = TESTIMONIALS.findIndex(
+          (t) => t.id === targetTestimonialIdRef.current
+        );
+
+        if (testimonialIndex !== -1) {
+          // Calculate the target scroll position for this testimonial
+          const progress = testimonialIndex / TESTIMONIALS.length;
+          const scrollDistance = window.innerHeight * TESTIMONIALS.length;
+          const targetScroll = st.start + progress * scrollDistance;
+
+          // Scroll to the testimonial after a small delay to ensure everything is rendered
+          setTimeout(() => {
+            window.scrollTo({
+              top: targetScroll,
+              behavior: "smooth",
+            });
+            targetTestimonialIdRef.current = null; // Clear after scrolling
+          }, 100);
+        }
+      }
+    };
+
+    // Listen for custom event from Hero section
+    const handleScrollToTestimonial = (event: CustomEvent<{ id: string }>) => {
+      targetTestimonialIdRef.current = event.detail.id;
+      scrollToSpecificTestimonial();
+    };
+
+    window.addEventListener(
+      "scrollToTestimonial",
+      handleScrollToTestimonial as EventListener
+    );
+
+    return () => {
+      window.removeEventListener(
+        "scrollToTestimonial",
+        handleScrollToTestimonial as EventListener
+      );
+    };
   }, []);
 
   return (
@@ -246,7 +348,7 @@ const Testimonials = () => {
       <div className="w-full max-w-7xl p-8">
         <div className="grid gap-20 md:grid-cols-5 !h-96 w-full">
           <div
-            className="relative w-60 !h-full col-span-2 mt-14 place-self-center"
+            className="relative w-60 !h-full col-span-2 mt-14 place-self-center flex items-center justify-center"
             ref={imageContainerRef}
           />
 
@@ -257,7 +359,7 @@ const Testimonials = () => {
                 ref={nameRef}
               />
               <h3
-                className="text-8xl leading-[0.2] font-grandbold text-foreground dark:text-white mb-8 [-webkit-text-stroke:1.5px_var(--color-background)] dark:[-webkit-text-stroke:3px_var(--color-foreground)]"
+                className="text-8xl leading-[0.2] font-grandbold text-foreground dark:text-background mb-8 [-webkit-text-stroke:1.5px_var(--color-background)] dark:[-webkit-text-stroke:3px_var(--color-foreground)]"
                 ref={subnameRef}
               />
               <p

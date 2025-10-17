@@ -311,14 +311,14 @@ body {
   width: 4.6em;
 }
 
-.div-block-100.dennis {
-  background-image: url("https://cdn.prod.website-files.com/672dc217e27ecc7b1096daa2/672e48de93fc293bc3df43de_dennis-m-mika-web-design-eh.webp");
+.div-block-100.jack-moss {
+  background-image: url("/testimonials/JackMossSmall.avif");
   background-position: 50%;
   background-size: cover;
 }
 
-.div-block-100.ari {
-  background-image: url("https://cdn.prod.website-files.com/672dc217e27ecc7b1096daa2/672e0a30b1f35afa9cefa5ee_ari-p-mika-web-design.webp");
+.div-block-100.murtaza-memon {
+  background-image: url("/testimonials/MurtazaMemonSmall.avif");
   background-position: 50%;
   background-size: cover;
 }
@@ -379,13 +379,13 @@ body {
   position: absolute;
 }
 
-.testimonial_hero.ari {
+.testimonial_hero.jack-moss {
   z-index: 1;
   display: flex;
   top: -5.8em;
 }
 
-.testimonial_hero.dennis {
+.testimonial_hero.murtaza-memon {
   z-index: 0;
   top: 0.1em;
 }
@@ -569,4 +569,23 @@ body {
   opacity: 1;
   will-change: transform, opacity, filter;
   filter: blur(0px);
+}
+
+.custom-shadow {
+  --shadow-color: 0deg 0% 55%;
+  --shadow-elevation-high: 0px -0.2px 0.2px hsl(var(--shadow-color) / 0.32),
+    -0.1px -1.3px 1.5px -0.3px hsl(var(--shadow-color) / 0.32),
+    -0.1px -2.3px 2.6px -0.6px hsl(var(--shadow-color) / 0.32),
+    -0.2px -3.5px 3.9px -0.8px hsl(var(--shadow-color) / 0.32),
+    -0.3px -5.1px 5.7px -1.1px hsl(var(--shadow-color) / 0.32),
+    -0.4px -7.3px 8.2px -1.4px hsl(var(--shadow-color) / 0.32),
+    -0.6px -10.5px 11.8px -1.7px hsl(var(--shadow-color) / 0.32),
+    -0.8px -14.6px 16.4px -1.9px hsl(var(--shadow-color) / 0.32),
+    -1.1px -20.1px 22.6px -2.2px hsl(var(--shadow-color) / 0.32),
+    -1.5px -27.2px 30.6px -2.5px hsl(var(--shadow-color) / 0.32);
+  box-shadow: var(--shadow-elevation-high);
+}
+
+.dark .custom-shadow {
+  --shadow-color: 0deg 255% 0%;
 }

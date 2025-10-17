@@ -53,9 +53,6 @@ export const useScrollTo = () => {
         return;
       }
 
-      //   console.log("Lenis instance:", lenis);
-      //   console.log("Lenis isReady:", isReady);
-
       // Handle both CSS selectors and direct element references
       let targetElement: HTMLElement | null = null;
 
@@ -72,22 +69,39 @@ export const useScrollTo = () => {
         return;
       }
 
-      //   console.log(`Scrolling to element:`, targetElement);
-      //   console.log("Element offset top:", targetElement.offsetTop);
+      // Calculate accurate position accounting for pinned sections
+      const getElementPosition = (element: HTMLElement): number => {
+        let top = 0;
+        let currentElement: HTMLElement | null = element;
 
-      // Use position-based scrolling which is more reliable
-      const elementTop = targetElement.offsetTop + (options?.offset || 0);
-      //   console.log("Calculated scroll position:", elementTop);
+        // Traverse up the DOM tree to calculate cumulative offset
+        while (currentElement && currentElement !== document.body) {
+          // Check if element has transform that might affect position
+          const style = window.getComputedStyle(currentElement);
+          const position = style.position;
+
+          // Use getBoundingClientRect for pinned/fixed elements
+          if (position === "fixed" || position === "sticky") {
+            const rect = element.getBoundingClientRect();
+            return window.scrollY + rect.top;
+          }
+
+          top += currentElement.offsetTop;
+          currentElement = currentElement.offsetParent as HTMLElement;
+        }
+
+        return top;
+      };
+
+      const elementTop = getElementPosition(targetElement) + (options?.offset || 0);
 
       // Force scroll to position instead of element
       lenis.scrollTo(elementTop, {
         ...options,
         onStart: (instance: any) => {
-          //   console.log("Scroll started to position:", elementTop);
           options?.onStart?.(instance);
         },
         onComplete: (instance: any) => {
-          //   console.log("Scroll completed to position:", elementTop);
           options?.onComplete?.(instance);
         },
       });

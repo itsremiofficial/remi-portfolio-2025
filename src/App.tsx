@@ -152,12 +152,6 @@ const App = () => {
         <Testimonials />
         <section
           className="w-full min-h-screen flex items-center justify-center"
-          id="services"
-        >
-          Services
-        </section>
-        <section
-          className="w-full min-h-screen flex items-center justify-center"
           id="contact"
         >
           Contact

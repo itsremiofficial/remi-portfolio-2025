@@ -12,11 +12,86 @@ const Services = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement[]>([]);
   const spacerRef = useRef<HTMLDivElement | null>(null);
+  const whatHeadingRef = useRef<HTMLHeadingElement>(null);
+  const canIDoHeadingRef = useRef<HTMLHeadingElement>(null);
   const [init, setInit] = useState(false);
 
   const { width, height, ratio } = useResponsiveVars(450, 628, "card");
   const { radius } = useRadius(450, 628);
 
+  // Heading animations (similar to Works section)
+  useGSAP(
+    () => {
+      const section = sectionRef.current;
+      const whatHeading = whatHeadingRef.current;
+      const canIDoHeading = canIDoHeadingRef.current;
+
+      if (!section || !whatHeading || !canIDoHeading) return;
+
+      const mm = gsap.matchMedia();
+      const targets = [whatHeading, canIDoHeading];
+
+      // Reduced motion - static display
+      mm.add("(prefers-reduced-motion: reduce)", () => {
+        gsap.set(targets, {
+          autoAlpha: 1,
+          xPercent: 0,
+          yPercent: 0,
+          rotationX: 0,
+          clearProps: "transform",
+        });
+      });
+
+      // Full motion - animated
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        // Add performance hint
+        targets.forEach((el) => el.classList.add("will-change-transform"));
+
+        const tl = gsap
+          .timeline({
+            scrollTrigger: {
+              trigger: section,
+              start: "top 80%",
+              end: "top 30%",
+              scrub: 0.6,
+            },
+            defaults: { ease: "power1.inOut" },
+            onComplete: () => {
+              targets.forEach((el) =>
+                el.classList.remove("will-change-transform")
+              );
+            },
+          })
+          .fromTo(
+            targets,
+            {
+              autoAlpha: 0,
+              xPercent: 6,
+              yPercent: 6,
+              filter: "blur(10px)",
+              rotationX: -45,
+              transformPerspective: 1000,
+            },
+            {
+              autoAlpha: 1,
+              xPercent: 0,
+              yPercent: 0,
+              rotationX: 0,
+              filter: "blur(0px)",
+              duration: 1,
+              stagger: 0.4,
+            }
+          );
+
+        return () => tl.kill();
+      });
+
+      return () => mm.revert();
+    },
+    { scope: sectionRef }
+  );
+
+  // Cards animation
   useGSAP(
     () => {
       const parentPin = sectionRef.current;
@@ -55,6 +130,9 @@ const Services = () => {
         gsap.set(card, { transformOrigin: "left center" })
       );
 
+      // Enable smooth scrolling
+      gsap.set(parentPin, { willChange: "transform" });
+
       const tl = gsap.timeline({
         defaults: { ease: "none" },
         scrollTrigger: {
@@ -66,10 +144,25 @@ const Services = () => {
           scrub: true,
           invalidateOnRefresh: true,
           anticipatePin: 1,
-          fastScrollEnd: true,
+          fastScrollEnd: false,
+          preventOverlaps: false, // Allow natural flow
+          normalizeScroll: true, // Smooth normalize scrolling
           refreshPriority: -1,
-          onEnter: () => setInit(true),
-          onLeaveBack: () => setInit(false),
+          onEnter: () => {
+            setInit(true);
+            gsap.to(parentPin, { autoAlpha: 1, duration: 0.3, ease: "power2.out" });
+          },
+          onLeave: () => {
+            gsap.set(parentPin, { willChange: "auto" });
+          },
+          onEnterBack: () => {
+            gsap.set(parentPin, { willChange: "transform" });
+          },
+          onLeaveBack: () => {
+            setInit(false);
+            gsap.to(parentPin, { autoAlpha: 1, duration: 0.3, ease: "power2.out" });
+            gsap.set(parentPin, { willChange: "auto" });
+          },
           onRefreshInit: () => updateSpacer(),
         },
       });
@@ -156,10 +249,18 @@ const Services = () => {
       aria-label="Services - What Can I Do For You?"
     >
       <div className="inline-flex items-end gap-[2vw] px-4 md:px-6 relative z-[2] [&>*]:select-none">
-        <h2 className="section-heading text-accent [transform-style:preserve-3d]">
+        <h2
+          ref={whatHeadingRef}
+          className="section-heading text-accent"
+          style={{ transformStyle: "preserve-3d" }}
+        >
           What
         </h2>
-        <h2 className="section-sub-heading dark:text-background text-foreground [transform-style:preserve-3d]">
+        <h2
+          ref={canIDoHeadingRef}
+          className="section-sub-heading dark:text-background text-foreground"
+          style={{ transformStyle: "preserve-3d" }}
+        >
           can I DO?
         </h2>
       </div>
