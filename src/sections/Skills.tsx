@@ -2,7 +2,7 @@ import MatterCanvas from "../components/ui/PillsCanvas";
 
 const Skills = () => {
   return (
-    <section className="relative min-h-[50vh] w-full flex flex-col items-end">
+    <section id="skills" className="relative min-h-[50vh] w-full flex flex-col items-end">
       <div className="absolute inset-0 top-0 h-full w-full z-[0]">
         <MatterCanvas />
       </div>

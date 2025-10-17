@@ -3,7 +3,7 @@ import IconAltArrowRight from "../components/icons/AltArrowRight";
 import MagneticButton from "../components/MagneticButton";
 import CursorFollower from "../components/ui/CursroFollower";
 import gsap from "gsap";
-import { lazy, Suspense, useMemo, useRef } from "react";
+import { lazy, Suspense, useRef, useMemo } from "react";
 
 const WorksCards = lazy(() => import("../components/WorksCards"));
 
@@ -15,20 +15,21 @@ const Works = () => {
   const worksdescRef = useRef<HTMLParagraphElement>(null);
 
   useGSAP(
-    (_context) => {
+    () => {
       const selected = selectedHeadingRef.current;
       const works = worksHeadingRef.current;
       const secondary = secondaryContainerRef.current;
       const worksDesc = worksdescRef.current;
       const wrapper = mainContainerRef.current;
+
       if (!wrapper || !selected || !works || !secondary || !worksDesc) return;
 
-      // Create a matchMedia instance (no argument)
       const mm = gsap.matchMedia();
+      const targets = [selected, works, worksDesc, secondary];
 
-      // Reduced motion
+      // Reduced motion - static display
       mm.add("(prefers-reduced-motion: reduce)", () => {
-        gsap.set([selected, works, secondary], {
+        gsap.set(targets, {
           autoAlpha: 1,
           xPercent: 0,
           yPercent: 0,
@@ -37,10 +38,10 @@ const Works = () => {
         });
       });
 
-      // Full motion
+      // Full motion - animated
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        // Wiggles
-        const wiggle = (selector: string, distance: number) =>
+        // Create wiggle animation helper
+        const createWiggle = (selector: string, distance: number) =>
           gsap.to(selector, {
             x: distance,
             yoyo: true,
@@ -49,10 +50,10 @@ const Works = () => {
             ease: "sine.inOut",
           });
 
-        wiggle(".wiggleleft", 5);
-        wiggle(".wiggleright", -5);
+        createWiggle(".wiggleleft", 5);
+        createWiggle(".wiggleright", -5);
 
-        const targets: HTMLElement[] = [selected, works, worksDesc, secondary];
+        // Add performance hint
         targets.forEach((el) => el.classList.add("will-change-transform"));
 
         const tl = gsap
@@ -64,6 +65,11 @@ const Works = () => {
               scrub: 0.6,
             },
             defaults: { ease: "power1.inOut" },
+            onComplete: () => {
+              targets.forEach((el) =>
+                el.classList.remove("will-change-transform")
+              );
+            },
           })
           .fromTo(
             targets,
@@ -86,22 +92,12 @@ const Works = () => {
             }
           );
 
-        tl.eventCallback("onComplete", () =>
-          targets.forEach((el) => el.classList.remove("will-change-transform"))
-        );
-
-        // Return a cleanup for this media query branch
-        return () => {
-          tl.kill();
-        };
+        return () => tl.kill();
       });
 
-      // Global cleanup (revert matchMedia when component unmounts)
-      return () => {
-        mm.revert(); // kills all mm-added tweens/ScrollTriggers inside
-      };
+      return () => mm.revert();
     },
-    { scope: mainContainerRef } // IMPORTANT: restores proper scoping & auto cleanup
+    { scope: mainContainerRef }
   );
 
   const dragCursor = useMemo(

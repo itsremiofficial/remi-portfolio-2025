@@ -216,8 +216,8 @@ const Testimonials = () => {
     return () => {
       entranceTl.kill();
       st.kill();
-      if (spacerRef.current) {
-        spacerRef.current.remove();
+      if (spacerRef.current && spacerRef.current.parentNode) {
+        spacerRef.current.parentNode.removeChild(spacerRef.current);
         spacerRef.current = null;
       }
     };

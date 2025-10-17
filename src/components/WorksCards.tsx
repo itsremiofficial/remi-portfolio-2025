@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, react-hooks/exhaustive-deps */
 import { useRef, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import WORKS from "../constants/WORKS";
 import gsap from "gsap";
 import { Observer } from "gsap/all";
 import horizontalLoop from "../utils/horizontalLoop";
-import { useRoute } from "../hooks/useNavigate";
 
-const DRAG_SENSITIVITY = 0.012;
+// Physics constants
+const DRAG_SENSITIVITY = 0.005;
 const DRAG_LERP = 0.18;
 const INERTIA_LERP = 0.18;
 const VELOCITY_SMOOTH = 0.4;
@@ -20,6 +21,12 @@ const WHEEL_LERP = 0.18;
 const WHEEL_FRICTION = 0.9;
 const WHEEL_MIN_V = 0.0005;
 
+// Interaction constants
+const DRAG_THRESHOLD = 5;
+const MAX_PARALLAX_OFFSET = 120;
+const BASE_PARALLAX_OFFSET = 40;
+
+// Utility
 const clamp = (min: number, max: number, v: number) =>
   Math.min(max, Math.max(min, v));
 
@@ -83,10 +90,8 @@ const WorksCards = () => {
         navigator.userAgent
       ));
 
-  // NEW: single flag to disable animations on mobile or when reduced motion is set
+  // Single flag to disable animations on mobile or when reduced motion is set
   const disableAnimations = reduceMotion || isMobileDevice;
-
-  const dragThreshold = 5;
 
   const lerp = useCallback(
     (v0: number, v1: number, t: number) => v0 * (1 - t) + v1 * t,
@@ -301,8 +306,8 @@ const WorksCards = () => {
       onChangeY: (self) => {
         if (!loopRef.current) return;
         if (isDraggingRef.current || inertiaRef.current) return;
-        // Scroll down (deltaY > 0) = carousel moves left-to-right (positive direction)
-        // Scroll up (deltaY < 0) = carousel moves right-to-left (negative direction)
+        // Scroll down (deltaY > 0) = carousel moves right-to-left (positive direction)
+        // Scroll up (deltaY < 0) = carousel moves left-to-right (negative direction)
         const factor = self.deltaY > 0 ? 1 : -1;
 
         if (!wheelActiveRef.current) {
@@ -310,9 +315,12 @@ const WorksCards = () => {
           wheelActiveRef.current = true;
         }
 
-        // Use factor to control direction, ensuring scroll down = left-to-right
-        targetTimeRef.current += Math.abs(self.deltaY) * WHEEL_SENSITIVITY * factor;
-        wheelVelocityRef.current += Math.abs(self.deltaY) * WHEEL_VELOCITY_MULT * factor;
+        // Use factor to control scrolling and maintain direction for autoplay
+        targetTimeRef.current +=
+          Math.abs(self.deltaY) * WHEEL_SENSITIVITY * factor;
+        wheelVelocityRef.current +=
+          Math.abs(self.deltaY) * WHEEL_VELOCITY_MULT * factor;
+        // Update direction to match scroll direction for consistent autoplay
         directionRef.current = factor;
       },
     });
@@ -320,7 +328,13 @@ const WorksCards = () => {
 
   const resumeAutoplay = () => {
     if (!loopRef.current) return;
-    loopRef.current.timeScale(directionRef.current).play();
+    // Smoothly animate back to autoplay with the last interaction direction
+    gsap.timeline().to(loopRef.current, {
+      timeScale: 1.5 * directionRef.current,
+      duration: 0.5,
+      ease: "power2.out",
+      onStart: () => loopRef.current?.play(),
+    });
   };
 
   /* ---------- Pointer / Drag ---------- */
@@ -354,8 +368,12 @@ const WorksCards = () => {
       if (!isPointerDownRef.current) return;
       const x = e.clientX;
       const travel = x - touchStartRef.current;
-      if (!dragStartedRef.current && Math.abs(travel) > dragThreshold)
+      if (!dragStartedRef.current && Math.abs(travel) > DRAG_THRESHOLD) {
         startDrag();
+        // Reset touchX to prevent accumulated threshold pixels from causing a jump
+        touchXRef.current = x;
+        return; // Skip this frame to avoid jump
+      }
       if (!dragStartedRef.current) return;
 
       // IMPORTANT: prevent vertical scroll capture only while actively dragging:
@@ -542,20 +560,29 @@ const WorksCards = () => {
       // Position-based parallax: offset by distance from viewport center
       if (parallaxTargetsRef.current.length) {
         const vpCenter = window.innerWidth / 2;
-        // Cap maximum px offset to avoid excessive motion
-        const MAX_OFFSET = 48;
-        const FACTOR = 0.15; // scale position delta to px
+        const vpWidth = window.innerWidth;
 
         for (const { host, depth, setX } of parallaxTargetsRef.current) {
           const rect = host.getBoundingClientRect();
           const hostCenterX = rect.left + rect.width / 2;
-          const deltaFromCenter = hostCenterX - vpCenter; // >0 means item is to the right
-          // Move opposite to motion to create subtle depth
+          const deltaFromCenter = hostCenterX - vpCenter;
+
+          // Normalize position: 0 at center, ±1 at edges
+          const normalizedPos = clamp(-1, 1, deltaFromCenter / (vpWidth / 2));
+
+          // Smooth ease-out curve: stronger near center, gentler at edges
+          const easeMultiplier = 1 - Math.abs(normalizedPos) * 0.3;
+
+          // Calculate smooth parallax with base + center boost
+          const parallaxAmount =
+            BASE_PARALLAX_OFFSET +
+            (MAX_PARALLAX_OFFSET - BASE_PARALLAX_OFFSET) * easeMultiplier;
           const offset = clamp(
-            -MAX_OFFSET,
-            MAX_OFFSET,
-            -deltaFromCenter * FACTOR * depth
+            -MAX_PARALLAX_OFFSET,
+            MAX_PARALLAX_OFFSET,
+            -normalizedPos * parallaxAmount * depth
           );
+
           setX(offset);
         }
       }
@@ -582,7 +609,7 @@ const WorksCards = () => {
     []
   );
 
-  const { navigate } = useRoute();
+  const navigate = useNavigate();
 
   return (
     <div
@@ -597,15 +624,18 @@ const WorksCards = () => {
           WebkitOverflowScrolling: "touch",
         }}
       >
-        {WORKS.map(({ title, imageUrl, year, type, href }, index) => (
+        {WORKS.map(({ title, imageUrl, year, type, slug, id }, index) => (
           <div
-            key={index}
+            key={id}
             ref={(el) => {
               if (el) cardRefs.current[index] = el;
             }}
             className="menu--item m-4 marquee-works-card flex-shrink-0"
           >
-            <div onClick={() => navigate(href)} className="relative space-x-20">
+            <div
+              onClick={() => navigate(`/work/${slug}`)}
+              className="relative space-x-20 cursor-pointer"
+            >
               <div className="absolute right-0 top-2 flex items-center justify-center rounded-full w-6 md:w-8 lg:w-14 h-1/3">
                 <div className="flex items-center gap-2 rotate-270 text-foreground dark:text-background text-md md:text-lg lg:text-3xl leading-none font-robo font-extrabold whitespace-nowrap">
                   <div className="rotate-180 text-accent">
@@ -623,10 +653,10 @@ const WorksCards = () => {
                   alt={title}
                   loading="lazy"
                   decoding="async"
-                  className="size-full scale-115 object-cover select-none pointer-events-none will-change-transform"
+                  className="size-full scale-120 object-cover select-none pointer-events-none will-change-transform"
                   draggable={false}
                   data-parallax="true"
-                  data-depth="0.5"
+                  data-depth="1.2"
                 />
               </div>
 

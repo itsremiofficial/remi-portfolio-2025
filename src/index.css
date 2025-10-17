@@ -303,10 +303,6 @@ body {
 }
 /* AESTERISK SYMBOL */
 
-.marquee-item {
-  display: inline-block;
-}
-
 /* VIDEO CAROUSEL LOOP */
 .div-block-100 {
   aspect-ratio: 1 !important;

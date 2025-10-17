@@ -8,6 +8,7 @@ import horizontalLoop from "../utils/horizontalLoop";
 import AsteriskCircleAnimated from "../components/ui/AsteriskCircleAnimated";
 import CircularText from "../components/ui/CircularText";
 import { cn } from "../utils";
+import StartBrust from "../components/ui/StartBrust";
 
 // Extracted reusable pill component for better rendering
 const Pill = memo(({ text }: { text: string }) => (
@@ -693,7 +694,8 @@ const ContactIconItem = memo(() => {
   });
 
   return (
-    <div
+    <a
+      href=""
       className={cn(
         "flex items-center justify-center marquee-item rounded-xl",
         "md:px-8 md:py-4",
@@ -701,19 +703,10 @@ const ContactIconItem = memo(() => {
         "text-foreground dark:text-background"
       )}
     >
-      <div className="size-32 lg:size-40 uppercase justify-self-center-safe relative group/contact rounded-full bg-foreground dark:bg-background text-background dark:text-foreground p-2 md:p-3 ">
-        <CircularText
-          id="marquee-scroll-text"
-          text="GET IN TOUCH • GET IN TOUCH • GET IN TOUCH • "
-          animate
-          textClassName="text-[12px] tracking-[1.47px] font-bold dark:text-foreground text-background"
-          size={128}
-          radius={87}
-          animationDuration="25s"
-        />
+      <div className="size-32 lg:size-40 relative uppercase justify-self-center-safe  group/contact rounded-ful text-background dark:text-foreground">
         <div
           ref={contactIconRef}
-          className="absolute inset-0 flex items-center justify-center size-full"
+          className="absolute inset-0 flex items-center justify-center size-full z-20"
         >
           <svg
             className="size-8 md:size-12"
@@ -768,8 +761,13 @@ const ContactIconItem = memo(() => {
             />
           </svg>
         </div>
+
+        <StartBrust
+          className="dark:text-background text-foreground"
+          textClassName="text-white dark:text-foreground"
+        />
       </div>
-    </div>
+    </a>
   );
 });
 
@@ -837,6 +835,7 @@ const Hero = () => {
           >
             designer <AnimatedArrow /> developer
           </h4>
+
           <HeroTitle
             active={asteriskActive}
             onEnter={() => setAsteriskActive(true)}
