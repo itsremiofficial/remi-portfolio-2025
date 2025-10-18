@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, {
   useCallback,
   useEffect,
@@ -6,7 +5,7 @@ import React, {
   useState,
   memo,
   useMemo,
-  useLayoutEffect, // added
+  useLayoutEffect,
 } from "react";
 import { cn } from "../utils";
 import { useClickOutside } from "../hooks/outsideClick";
@@ -23,9 +22,70 @@ import TimeDisplay from "../components/DualTime";
 import IconLinkedIn from "../components/icons/Linkedin";
 import { MENU_ITEMS } from "../constants/MENU";
 
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
 const CUSTOM_EASE = "0.7, 0, 0.2, 1";
 const ANIMATION_EASE_IN = "0.8, 0, 0.3, 1";
-// Change the Logo component to properly handle the ref type
+const SCROLL_THRESHOLD = 150;
+
+const BREAKPOINTS = {
+  SCROLL: {
+    xs: "(max-width: 639px)",
+    sm: "(min-width: 640px) and (max-width: 767px)",
+    md: "(min-width: 768px)",
+  },
+  MENU: {
+    xs: "(max-width: 639px)",
+    sm: "(min-width: 640px) and (max-width: 767px)",
+    md: "(min-width: 768px) and (max-width: 991px)",
+    lg: "(min-width: 992px)",
+  },
+} as const;
+
+const MENU_HEIGHTS = {
+  CLOSED: 64,
+  XS: 480,
+  SM: 500,
+  MD: 540,
+  LG: 640,
+} as const;
+
+const MORPH_TARGETS = {
+  COMPRESSED: {
+    r: "#full-rounded-square",
+    e: "#triangle",
+    m: "#parallelogram",
+    i: "#half-rounded-square",
+  },
+  EXPANDED: {
+    r: "#r_letter",
+    e: "#e_letter",
+    m: "#m_letter",
+    i: "#i_letter",
+  },
+} as const;
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+interface MenuItem {
+  text: string;
+  href: string;
+}
+
+interface SocialPlatform {
+  social: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string; fill?: boolean }>;
+}
+
+// ============================================================================
+// SUB-COMPONENTS
+// ============================================================================
+
 const Logo = memo(
   React.forwardRef<SVGSVGElement>((_props, ref) => (
     <svg
@@ -77,586 +137,71 @@ const Logo = memo(
     </svg>
   ))
 );
-// Memoize Nav Menu items to prevent unnecessary re-renders
-const NavItem = memo(
-  ({
-    item,
-    index,
-    isActive,
-    onClick,
-    fontsLoaded,
-  }: {
-    item: { text: string; href: string };
-    index: number;
-    isActive: boolean;
-    onClick: () => void;
-    fontsLoaded: boolean;
-  }) => (
-    <div
-      className={cn(
-        "link w-max inline-flex items-center gap-3 text-5xl lg:text-7xl font-extrabold opacity-0 cursor-pointer font-robo !font-var group/link transition-colors duration-400",
-        "perspective-distant will-change-transform",
-        isActive
-          ? "text-accent"
-          : "text-foreground/40 hover:text-foreground dark:hover:text-background dark:text-background/30"
-      )}
-      onClick={onClick}
-    >
-      <div>{index + 1}.</div>
-      <div className="leading-0 cursor-pointer overflow-hidden">
-        <AnimatedText
-          linkText1={item.text}
-          linkText2={item.text}
-          className={cn(
-            "link_text tracking-wide lg:tracking-normal leading-0 whitespace-nowrap"
-          )}
-          fontsLoaded={fontsLoaded}
-        />
-      </div>
-    </div>
-  )
-);
 
-// Memoize Social Icon component
-const SocialIcon = memo(
-  ({
-    platform,
-    index,
-  }: {
-    platform: { social: string; href: string; icon: any };
-    index: number;
-  }) => (
-    <a
-      key={index}
-      href={platform.href}
-      className="size-16 relative rounded-2xl social_icon"
-    >
-      <AnimatedTooltip
-        id={index + 1}
-        className={cn(
-          "size-14 lg:size-16 p-3 lg:p-4 mask mask-squircle !aspect-square cursor-pointer",
-          "bg-foreground/15 hover:bg-foreground/20",
-          "text-foreground md:text-foreground/85 hover:text-foreground",
-          "dark:bg-foreground/70 dark:hover:bg-foreground",
-          "dark:text-background/70 dark:hover:text-background",
-          "transition-colors duration-400"
-        )}
-        mains={platform.social}
-        Children={<platform.icon className="size-full" fill />}
+Logo.displayName = "Logo";
+
+const NavItem = memo<{
+  item: MenuItem;
+  index: number;
+  isActive: boolean;
+  onClick: () => void;
+  fontsLoaded: boolean;
+}>(({ item, index, isActive, onClick, fontsLoaded }) => (
+  <div
+    className={cn(
+      "link w-max inline-flex items-center gap-3 text-5xl lg:text-7xl font-extrabold opacity-0 cursor-pointer font-robo !font-var group/link transition-colors duration-400",
+      "perspective-distant will-change-transform",
+      isActive
+        ? "text-accent"
+        : "text-foreground/40 hover:text-foreground dark:hover:text-background dark:text-background/30"
+    )}
+    onClick={onClick}
+  >
+    <div>{index + 1}.</div>
+    <div className="leading-0 cursor-pointer overflow-hidden">
+      <AnimatedText
+        linkText1={item.text}
+        linkText2={item.text}
+        className="link_text tracking-wide lg:tracking-normal leading-0 whitespace-nowrap"
+        fontsLoaded={fontsLoaded}
       />
-    </a>
-  )
-);
+    </div>
+  </div>
+));
 
-const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
-  const { scrollToElement } = useScrollTo();
-  const { isDark } = useTheme();
-  const [isExpanded, setIsExpanded] = useState(false);
-  const drawerRef = useRef<HTMLDivElement>(null);
-  const menuContainerRef = useRef<HTMLDivElement>(null);
-  const logoRef = useRef<SVGSVGElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  // const scrollTimerRef = useRef<number | null>(null);
-  const morphTimelineRef = useRef<gsap.core.Timeline | null>(null);
+NavItem.displayName = "NavItem";
 
-  // Create custom ease once
-  const ease = useMemo(() => CustomEase.create("custom", CUSTOM_EASE), []);
+const SocialIcon = memo<{
+  platform: SocialPlatform;
+  index: number;
+}>(({ platform, index }) => (
+  <a
+    href={platform.href}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="size-16 relative rounded-2xl social_icon"
+  >
+    <AnimatedTooltip
+      id={index + 1}
+      className={cn(
+        "size-14 lg:size-16 p-3 lg:p-4 mask mask-squircle !aspect-square cursor-pointer",
+        "bg-foreground/15 hover:bg-foreground/20",
+        "text-foreground md:text-foreground/85 hover:text-foreground",
+        "dark:bg-foreground/70 dark:hover:bg-foreground",
+        "dark:text-background/70 dark:hover:text-background",
+        "transition-colors duration-400"
+      )}
+      mains={platform.social}
+      Children={<platform.icon className="size-full" fill />}
+    />
+  </a>
+));
 
-  // Track active section
-  const sectionIds = useMemo(
-    () => MENU_ITEMS.map((item) => item.href.replace("#", "")),
-    []
-  );
-  const activeSection = useActiveSection(sectionIds);
+SocialIcon.displayName = "SocialIcon";
 
-  const toggleMenu = useCallback(() => {
-    setIsExpanded((prev) => !prev);
-  }, []);
-
-  useClickOutside(drawerRef, () => {
-    if (isExpanded) toggleMenu();
-  });
-  // In your Header component, replace the existing scroll effect with this:
-
-  // Optimized scroll handler with immediate initial state application
-  useLayoutEffect(() => {
-    let lastKnownScrollY = 0;
-    let ticking = false;
-    let animationState: "small" | "full" =
-      window.scrollY >= 150 ? "small" : "full";
-
-    const mm = gsap.matchMedia();
-
-    mm.add(
-      {
-        xs: "(max-width: 639px)",
-        sm: "(min-width: 640px) and (max-width: 767px)",
-        md: "(min-width: 768px)",
-      },
-      (context) => {
-        const { md } = context.conditions as Record<string, boolean>;
-        // Responsive target widths for the compressed (small) state
-        const smallWidth = md ? 420 : "100%";
-
-        // Apply initial state instantly (no animation flash)
-        const applyImmediateState = (state: "small" | "full") => {
-          if (!menuContainerRef.current) return;
-          if (state === "small") {
-            gsap.set(menuContainerRef.current, { width: smallWidth });
-            gsap.set("#r_letter", { morphSVG: "#full-rounded-square" });
-            gsap.set("#e_letter", { morphSVG: "#triangle" });
-            gsap.set("#m_letter", { morphSVG: "#parallelogram" });
-            gsap.set("#i_letter", { morphSVG: "#half-rounded-square" });
-          } else {
-            gsap.set(menuContainerRef.current, { width: "100%" });
-            gsap.set("#r_letter", { morphSVG: "#r_letter" });
-            gsap.set("#e_letter", { morphSVG: "#e_letter" });
-            gsap.set("#m_letter", { morphSVG: "#m_letter" });
-            gsap.set("#i_letter", { morphSVG: "#i_letter" });
-          }
-        };
-
-        applyImmediateState(animationState);
-
-        const handleScroll = () => {
-          lastKnownScrollY = window.scrollY;
-          if (!ticking) {
-            window.requestAnimationFrame(() => {
-              const newState: "small" | "full" =
-                lastKnownScrollY >= 150 ? "small" : "full";
-              if (newState !== animationState) {
-                animationState = newState;
-                if (morphTimelineRef.current) morphTimelineRef.current.kill();
-                const morphTl = gsap.timeline();
-                morphTimelineRef.current = morphTl;
-
-                if (animationState === "small" && menuContainerRef.current) {
-                  morphTl
-                    .to(menuContainerRef.current, {
-                      width: smallWidth,
-                      duration: 1,
-                      ease: "power3.out",
-                    })
-                    .to(
-                      "#r_letter",
-                      {
-                        morphSVG: "#full-rounded-square",
-                        duration: 1.5,
-                        ease: "power2.out",
-                      },
-                      "<"
-                    )
-                    .to(
-                      "#e_letter",
-                      {
-                        morphSVG: "#triangle",
-                        duration: 1.5,
-                        ease: "power2.out",
-                      },
-                      "<0.05"
-                    )
-                    .to(
-                      "#m_letter",
-                      {
-                        morphSVG: "#parallelogram",
-                        duration: 1.5,
-                        ease: "power2.out",
-                      },
-                      "<0.05"
-                    )
-                    .to(
-                      "#i_letter",
-                      {
-                        morphSVG: "#half-rounded-square",
-                        duration: 1.5,
-                        ease: "power2.out",
-                      },
-                      "<0.05"
-                    );
-                } else if (menuContainerRef.current) {
-                  morphTl
-                    .to(menuContainerRef.current, {
-                      width: "100%",
-                      duration: 1,
-                      ease: "power3.out",
-                    })
-                    .to(
-                      "#r_letter",
-                      {
-                        morphSVG: "#r_letter",
-                        duration: 1.5,
-                        ease: "power2.out",
-                      },
-                      "<"
-                    )
-                    .to(
-                      "#e_letter",
-                      {
-                        morphSVG: "#e_letter",
-                        duration: 1.5,
-                        ease: "power2.out",
-                      },
-                      "<0.05"
-                    )
-                    .to(
-                      "#m_letter",
-                      {
-                        morphSVG: "#m_letter",
-                        duration: 1.5,
-                        ease: "power2.out",
-                      },
-                      "<0.05"
-                    )
-                    .to(
-                      "#i_letter",
-                      {
-                        morphSVG: "#i_letter",
-                        duration: 1.5,
-                        ease: "power2.out",
-                      },
-                      "<0.05"
-                    );
-                }
-              }
-              ticking = false;
-            });
-            ticking = true;
-          }
-        };
-
-        window.addEventListener("scroll", handleScroll, { passive: true });
-        return () => {
-          window.removeEventListener("scroll", handleScroll);
-        };
-      }
-    );
-
-    return () => {
-      morphTimelineRef.current?.kill();
-      mm.kill();
-    };
-  }, []);
-
-  // Menu animation with performance optimization
-  useGSAP(() => {
-    const mm = gsap.matchMedia();
-
-    mm.add(
-      {
-        xs: "(max-width: 639px)",
-        sm: "(min-width: 640px) and (max-width: 767px)",
-        md: "(min-width: 768px) and (max-width: 991px)",
-        lg: "(min-width: 992px)",
-      },
-      (context) => {
-        const { sm, md, lg } = context.conditions as Record<string, boolean>;
-
-        // Heights per breakpoint (adjust as needed)
-        const openHeight = sm ? 500 : md ? 540 : lg ? 640 : 480;
-        const closedHeight = 64;
-
-        // Build timeline per state
-        const tl = gsap.timeline({ paused: true, immediateRender: false });
-
-        if (isExpanded) {
-          tl.addLabel("start")
-            .to(
-              menuContainerRef.current,
-              {
-                height: openHeight,
-                opacity: 1,
-                backgroundColor: isDark ? "#030711cc" : "#ffffff8a",
-                duration: 0.8,
-                ease: CUSTOM_EASE,
-                force3D: true,
-              },
-              "start"
-            )
-            .to(
-              menuContainerRef.current,
-              {
-                borderRadius: 2,
-                duration: 0.5,
-                ease: "power1.in",
-              },
-              "<"
-            )
-            .to(
-              ".menu_button",
-              {
-                padding: "24px 32px",
-                duration: 0.4,
-              },
-              "<"
-            )
-            .to(
-              ".nav-links-container .link",
-              {
-                ease: CUSTOM_EASE,
-                opacity: 1,
-                stagger: 0.1,
-                rotationX: 0,
-                z: 0,
-                force3D: true,
-              },
-              "-=0.1"
-            )
-            .to(
-              ".nav-links-heading",
-              {
-                opacity: 1,
-                y: 0,
-                duration: 0.4,
-                ease: CUSTOM_EASE,
-              },
-              "-=0.7"
-            )
-            .to(
-              [".social_icon", ".theme_icon"],
-              {
-                opacity: 1,
-                xPercent: 0,
-                scale: 1,
-                duration: 0.8,
-                stagger: 0.2,
-                ease: CUSTOM_EASE,
-              },
-              "-=0.5"
-            );
-        } else {
-          tl.addLabel("start")
-            .to(
-              [".social_icon", ".theme_icon"],
-              {
-                opacity: 0,
-                scale: 0.85,
-                xPercent: -10,
-                duration: 0.4,
-                stagger: -0.2,
-                ease: ANIMATION_EASE_IN,
-              },
-              "start"
-            )
-            .to(
-              ".nav-links-heading",
-              {
-                opacity: 0,
-                y: -10,
-                duration: 0.4,
-                ease: CUSTOM_EASE,
-              },
-              "-=0.3"
-            )
-            .to(
-              ".nav-links-container .link",
-              {
-                willChange: "opacity, transform",
-                transformOrigin: "50% 0%",
-                opacity: 0,
-                rotationX: -90,
-                z: -200,
-                stagger: 0.1,
-                duration: 0.3,
-                ease: ANIMATION_EASE_IN,
-                force3D: true,
-              },
-              "-=0.3"
-            )
-            .to(
-              ".menu_button",
-              {
-                padding: "17.20px 32px",
-                duration: 0.4,
-              },
-              "<"
-            )
-            .to(
-              menuContainerRef.current,
-              {
-                height: closedHeight,
-                borderRadius: "1.5rem",
-                backgroundColor: isDark ? "#030711cc" : "#ffffff8a",
-                duration: 0.6,
-                ease: ANIMATION_EASE_IN,
-                force3D: true,
-              },
-              "<"
-            );
-        }
-
-        tl.play();
-        return () => tl.kill();
-      }
-    );
-
-    return () => {
-      mm.kill();
-    };
-  }, [isExpanded, isDark]);
-
-  // Memoize scroll handler for menu items
-  const handleNavItemClick = useCallback(
-    (elementId: string) => {
-      scrollToElement(elementId, {
-        offset: -100,
-        duration: 2.5,
-        easing: (t: number): number => ease(t),
-      });
-      setIsExpanded(false);
-    },
-    [scrollToElement, ease]
-  );
-
-  // Memoize social platform data
-  const socialPlatforms = useMemo(
-    () => [
-      {
-        social: "Instagram",
-        href: "https://fronus.com",
-        icon: IconInstagram,
-      },
-      {
-        social: "Linked In",
-        href: "https://discord.com",
-        icon: IconLinkedIn,
-      },
-    ],
-    []
-  );
-
-  return (
-    <header ref={headerRef} className="sticky right-0 top-0 p-4 z-[99] h-24">
-      <div
-        ref={drawerRef}
-        className="flex items-center justify-center group/button relative w-full h-full"
-      >
-        <div
-          ref={menuContainerRef}
-          className={cn(
-            "absolute top-0 border w-full h-16 rounded-3xl z-[100] overflow-hidden origin-top-right space-y-3 backdrop-blur-2xl",
-            "bg-nav-background/10 dark:bg-nav-foreground/70",
-            "border-black/10 dark:border-background/12",
-            "will-change-[width,height,borderRadius]"
-          )}
-        >
-          <div className="menu_button flex justify-between items-center py-[17.20px] px-8 !m-0 will-change-[padding]">
-            <a href="/">
-              <Logo ref={logoRef} />
-            </a>
-
-            <div
-              className={`nav-wrapper !h-6 !w-6 ${isExpanded ? "open" : ""}`}
-              onClick={toggleMenu}
-            >
-              <div className="line-menu !w-1/2"></div>
-              <div className="line-menu !w-full"></div>
-              <div className="line-menu !w-1/2"></div>
-            </div>
-          </div>
-          <div className="space-y-6 md:space-y-8 px-6 md:px-8">
-            <div className="nav-links-container flex flex-col gap-2">
-              <h4
-                className={cn(
-                  "nav-links-heading select-none",
-                  "font-mono tracking-widest",
-                  "text-foreground/30 dark:text-background/40",
-                  "sm:text-base text-xs",
-                  "will-change-[opacity,transform]"
-                )}
-              >
-                MENU
-              </h4>
-              {MENU_ITEMS.map((item, index) => {
-                const isActive = activeSection === item.href.replace("#", "");
-                return (
-                  <NavItem
-                    key={item.href}
-                    item={item}
-                    index={index}
-                    isActive={isActive}
-                    onClick={() =>
-                      handleNavItemClick(item.href.replace("#", ""))
-                    }
-                    fontsLoaded={fontsLoaded}
-                  />
-                );
-              })}
-            </div>
-            <div className="flex gap-4 sm:gap-10 md:gap-14 lg:gap-20">
-              <div className="space-y-2 lg:space-y-3">
-                <h4
-                  className={cn(
-                    "nav-links-heading select-none",
-                    "font-mono tracking-widest",
-                    "text-foreground/30 dark:text-background/40",
-                    "sm:text-base text-xs",
-                    "will-change-[opacity,transform]"
-                  )}
-                >
-                  SOCIALS
-                </h4>
-                <div className="social_icons flex items-center lg:gap-6 relative">
-                  {socialPlatforms.map((platform, index) => (
-                    <SocialIcon
-                      key={platform.social}
-                      platform={platform}
-                      index={index}
-                    />
-                  ))}
-                </div>
-              </div>
-              <div className="space-y-2 lg:space-y-3">
-                <h4
-                  className={cn(
-                    "nav-links-heading select-none",
-                    "font-mono tracking-widest",
-                    "text-foreground/30 dark:text-background/40",
-                    "sm:text-base text-xs",
-                    "will-change-[opacity,transform]"
-                  )}
-                >
-                  THEME
-                </h4>
-                <div className="theme_icon will-change-[opacity,transform]">
-                  <AnimatedTooltip
-                    id={3}
-                    className={cn(
-                      "size-14 lg:size-16 p-3 lg:p-4 mask mask-squircle !aspect-square cursor-pointer",
-                      "bg-foreground/15 hover:bg-foreground/20",
-                      "text-foreground md:text-foreground/85 hover:text-foreground",
-                      "dark:bg-foreground/70 dark:hover:bg-foreground",
-                      "dark:text-background/70 dark:hover:text-background",
-                      "transition-colors duration-400"
-                    )}
-                    mains={isDark ? "Dark Mode" : "Light Mode"}
-                    Children={<ThemeIcon className="size-full !text-inherit" />}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="flex items-end justify-between font-mono tracking-widest text-foreground/70 dark:text-background/50 text-xs md:pt-4">
-              <TimeDisplay
-                timeType="time"
-                className="nav-links-heading"
-                mode="single"
-                length="medium"
-              />
-              <div className="nav-links-heading">Version 1.13</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
-  );
-};
-
-export default memo(Header);
-
-// Memoize ThemeIcon for better performance
-const ThemeIcon = memo(({ className }: { className?: string }) => {
+const ThemeIcon = memo<{ className?: string }>(({ className }) => {
   const { toggleThemeMode, isDark } = useTheme();
   const iconSun = useRef<SVGPathElement>(null);
-  const iconSunInner = useRef<SVGPathElement>(null);
   const iconMoon = useRef<SVGPathElement>(null);
   const starsContainerRef = useRef<SVGGElement>(null);
   const iconStarLarge = useRef<SVGPathElement>(null);
@@ -669,42 +214,26 @@ const ThemeIcon = memo(({ className }: { className?: string }) => {
     sun: null,
   });
 
-  // Optimize theme change animation
   useEffect(() => {
     if (!(iconSun.current && iconMoon.current)) return;
 
-    // Kill any existing animations to prevent conflicts
-    if (animationTimelineRef.current.moon)
-      animationTimelineRef.current.moon.kill();
-    if (animationTimelineRef.current.sun)
-      animationTimelineRef.current.sun.kill();
+    // Cleanup existing animations
+    animationTimelineRef.current.moon?.kill();
+    animationTimelineRef.current.sun?.kill();
 
-    // Create new timelines
-    const tlMoon = gsap.timeline({
-      defaults: {
-        ease: "power2.inOut",
-        force3D: true, // Force GPU acceleration
-      },
-    });
+    const tlDefaults = { ease: "power2.inOut", force3D: true };
+    const tlMoon = gsap.timeline({ defaults: tlDefaults });
+    const tlSun = gsap.timeline({ defaults: tlDefaults });
 
-    const tlSun = gsap.timeline({
-      defaults: {
-        ease: "power2.inOut",
-        force3D: true, // Force GPU acceleration
-      },
-    });
+    animationTimelineRef.current = { moon: tlMoon, sun: tlSun };
 
-    animationTimelineRef.current.moon = tlMoon;
-    animationTimelineRef.current.sun = tlSun;
-
-    // Moon animation
+    // Moon animations
     tlMoon.to(iconMoon.current, {
       opacity: isDark ? 1 : 0,
       duration: 0.3,
       rotateZ: isDark ? 0 : 180,
     });
 
-    // Stars animation
     if (starsContainerRef.current) {
       const smallStars = starsContainerRef.current.querySelectorAll("circle");
       tlMoon.to(
@@ -713,7 +242,7 @@ const ThemeIcon = memo(({ className }: { className?: string }) => {
           opacity: isDark ? 1 : 0,
           duration: 0.3,
           scale: isDark ? 1 : 0,
-          stagger: 0.08, // Slightly faster for better performance
+          stagger: 0.08,
           transformOrigin: "center center",
         },
         "<0.1"
@@ -731,7 +260,7 @@ const ThemeIcon = memo(({ className }: { className?: string }) => {
       "<0.05"
     );
 
-    // Sun animation
+    // Sun animations
     tlSun.to(
       iconSun.current,
       {
@@ -742,7 +271,6 @@ const ThemeIcon = memo(({ className }: { className?: string }) => {
       "<"
     );
 
-    // Sun rays animation
     if (sunRaysRef.current) {
       const rays = sunRaysRef.current.querySelectorAll("path");
       tlSun.to(
@@ -753,11 +281,16 @@ const ThemeIcon = memo(({ className }: { className?: string }) => {
           opacity: isDark ? 0 : 0.7,
           transformOrigin: "center center",
           duration: 0.4,
-          stagger: 0.04, // Slightly faster for better performance
+          stagger: 0.04,
         },
         "<0.1"
       );
     }
+
+    return () => {
+      tlMoon.kill();
+      tlSun.kill();
+    };
   }, [isDark]);
 
   return (
@@ -770,7 +303,6 @@ const ThemeIcon = memo(({ className }: { className?: string }) => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* ICON SUN */}
       <g ref={iconSun} style={{ transformOrigin: "center center" }}>
         <g ref={sunRaysRef} className="sun-rays" opacity={0.5}>
           <path
@@ -807,13 +339,11 @@ const ThemeIcon = memo(({ className }: { className?: string }) => {
           />
         </g>
         <path
-          ref={iconSunInner}
           style={{ transformOrigin: "center center" }}
           d="M17,12c0-3.41-1.59-5-5-5s-5,1.59-5,5,1.59,5,5,5,5-1.59,5-5Z"
           fill="currentColor"
         />
       </g>
-      {/* ICON MOON */}
       <g ref={iconMoon} style={{ transformOrigin: "center center" }}>
         <path
           fill="currentColor"
@@ -833,3 +363,434 @@ const ThemeIcon = memo(({ className }: { className?: string }) => {
     </svg>
   );
 });
+
+ThemeIcon.displayName = "ThemeIcon";
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+const createMorphAnimation = (
+  target: HTMLElement,
+  letters: typeof MORPH_TARGETS.COMPRESSED | typeof MORPH_TARGETS.EXPANDED,
+  width: string | number
+) => {
+  const tl = gsap.timeline();
+
+  tl.to(target, {
+    width,
+    duration: 1,
+    ease: "power3.out",
+  });
+
+  Object.entries(letters).forEach(([key, morphTarget], index) => {
+    tl.to(
+      `#${key}_letter`,
+      {
+        morphSVG: morphTarget,
+        duration: 1.5,
+        ease: "power2.out",
+      },
+      index === 0 ? "<" : "<0.05"
+    );
+  });
+
+  return tl;
+};
+
+const applyMorphState = (
+  target: HTMLElement,
+  state: "small" | "full",
+  width: string | number
+) => {
+  const letters = state === "small" ? MORPH_TARGETS.COMPRESSED : MORPH_TARGETS.EXPANDED;
+
+  gsap.set(target, { width });
+  Object.entries(letters).forEach(([key, morphTarget]) => {
+    gsap.set(`#${key}_letter`, { morphSVG: morphTarget });
+  });
+};
+
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
+
+const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
+  const { scrollToElement } = useScrollTo();
+  const { isDark } = useTheme();
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const menuContainerRef = useRef<HTMLDivElement>(null);
+  const logoRef = useRef<SVGSVGElement>(null);
+  const morphTimelineRef = useRef<gsap.core.Timeline | null>(null);
+
+  const ease = useMemo(() => CustomEase.create("custom", CUSTOM_EASE), []);
+
+  const sectionIds = useMemo(
+    () => MENU_ITEMS.map((item) => item.href.replace("#", "")),
+    []
+  );
+  const activeSection = useActiveSection(sectionIds);
+
+  const socialPlatforms = useMemo<SocialPlatform[]>(
+    () => [
+      {
+        social: "Instagram",
+        href: "https://fronus.com",
+        icon: IconInstagram,
+      },
+      {
+        social: "LinkedIn",
+        href: "https://discord.com",
+        icon: IconLinkedIn,
+      },
+    ],
+    []
+  );
+
+  const toggleMenu = useCallback(() => {
+    setIsExpanded((prev) => !prev);
+  }, []);
+
+  const handleNavItemClick = useCallback(
+    (elementId: string) => {
+      scrollToElement(elementId, {
+        offset: -100,
+        duration: 2.5,
+        easing: (t: number): number => ease(t),
+      });
+      setIsExpanded(false);
+    },
+    [scrollToElement, ease]
+  );
+
+  useClickOutside(drawerRef, () => {
+    if (isExpanded) toggleMenu();
+  });
+
+  // Logo morph animation on scroll
+  useLayoutEffect(() => {
+    let lastKnownScrollY = 0;
+    let ticking = false;
+    let animationState: "small" | "full" =
+      window.scrollY >= SCROLL_THRESHOLD ? "small" : "full";
+
+    const mm = gsap.matchMedia();
+
+    mm.add(BREAKPOINTS.SCROLL, (context) => {
+      const { md } = context.conditions as Record<string, boolean>;
+      const smallWidth = md ? 420 : "100%";
+
+      if (!menuContainerRef.current) return;
+
+      applyMorphState(menuContainerRef.current, animationState, animationState === "small" ? smallWidth : "100%");
+
+      const handleScroll = () => {
+        lastKnownScrollY = window.scrollY;
+        if (!ticking) {
+          window.requestAnimationFrame(() => {
+            const newState: "small" | "full" =
+              lastKnownScrollY >= SCROLL_THRESHOLD ? "small" : "full";
+
+            if (newState !== animationState && menuContainerRef.current) {
+              animationState = newState;
+              morphTimelineRef.current?.kill();
+
+              const targetWidth = animationState === "small" ? smallWidth : "100%";
+              const targetLetters = animationState === "small" ? MORPH_TARGETS.COMPRESSED : MORPH_TARGETS.EXPANDED;
+
+              morphTimelineRef.current = createMorphAnimation(
+                menuContainerRef.current,
+                targetLetters,
+                targetWidth
+              );
+            }
+            ticking = false;
+          });
+          ticking = true;
+        }
+      };
+
+      window.addEventListener("scroll", handleScroll, { passive: true });
+      return () => window.removeEventListener("scroll", handleScroll);
+    });
+
+    return () => {
+      morphTimelineRef.current?.kill();
+      mm.kill();
+    };
+  }, []);
+
+  // Menu expand/collapse animation
+  useGSAP(() => {
+    const mm = gsap.matchMedia();
+
+    mm.add(BREAKPOINTS.MENU, (context) => {
+      const { sm, md, lg } = context.conditions as Record<string, boolean>;
+
+      const openHeight = sm ? MENU_HEIGHTS.SM : md ? MENU_HEIGHTS.MD : lg ? MENU_HEIGHTS.LG : MENU_HEIGHTS.XS;
+      const closedHeight = MENU_HEIGHTS.CLOSED;
+
+      const tl = gsap.timeline({ paused: true, immediateRender: false });
+
+      if (isExpanded) {
+        tl.addLabel("start")
+          .to(
+            menuContainerRef.current,
+            {
+              height: openHeight,
+              opacity: 1,
+              backgroundColor: isDark ? "#030711cc" : "#ffffff8a",
+              duration: 0.8,
+              ease: CUSTOM_EASE,
+              force3D: true,
+            },
+            "start"
+          )
+          .to(
+            menuContainerRef.current,
+            {
+              borderRadius: 2,
+              duration: 0.5,
+              ease: "power1.in",
+            },
+            "<"
+          )
+          .to(
+            ".menu_button",
+            {
+              padding: "24px 32px",
+              duration: 0.4,
+            },
+            "<"
+          )
+          .to(
+            ".nav-links-container .link",
+            {
+              ease: CUSTOM_EASE,
+              opacity: 1,
+              stagger: 0.1,
+              rotationX: 0,
+              z: 0,
+              force3D: true,
+            },
+            "-=0.1"
+          )
+          .to(
+            ".nav-links-heading",
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.4,
+              ease: CUSTOM_EASE,
+            },
+            "-=0.7"
+          )
+          .to(
+            [".social_icon", ".theme_icon"],
+            {
+              opacity: 1,
+              xPercent: 0,
+              scale: 1,
+              duration: 0.8,
+              stagger: 0.2,
+              ease: CUSTOM_EASE,
+            },
+            "-=0.5"
+          );
+      } else {
+        tl.addLabel("start")
+          .to(
+            [".social_icon", ".theme_icon"],
+            {
+              opacity: 0,
+              scale: 0.85,
+              xPercent: -10,
+              duration: 0.4,
+              stagger: -0.2,
+              ease: ANIMATION_EASE_IN,
+            },
+            "start"
+          )
+          .to(
+            ".nav-links-heading",
+            {
+              opacity: 0,
+              y: -10,
+              duration: 0.4,
+              ease: CUSTOM_EASE,
+            },
+            "-=0.3"
+          )
+          .to(
+            ".nav-links-container .link",
+            {
+              willChange: "opacity, transform",
+              transformOrigin: "50% 0%",
+              opacity: 0,
+              rotationX: -90,
+              z: -200,
+              stagger: 0.1,
+              duration: 0.3,
+              ease: ANIMATION_EASE_IN,
+              force3D: true,
+            },
+            "-=0.3"
+          )
+          .to(
+            ".menu_button",
+            {
+              padding: "17.20px 32px",
+              duration: 0.4,
+            },
+            "<"
+          )
+          .to(
+            menuContainerRef.current,
+            {
+              height: closedHeight,
+              borderRadius: "1.5rem",
+              backgroundColor: isDark ? "#030711cc" : "#ffffff8a",
+              duration: 0.6,
+              ease: ANIMATION_EASE_IN,
+              force3D: true,
+            },
+            "<"
+          );
+      }
+
+      tl.play();
+      return () => tl.kill();
+    });
+
+    return () => mm.kill();
+  }, [isExpanded, isDark]);
+
+  return (
+    <header className="sticky right-0 top-0 p-4 z-[99] h-24">
+      <div
+        ref={drawerRef}
+        className="flex items-center justify-center group/button relative w-full h-full"
+      >
+        <div
+          ref={menuContainerRef}
+          className={cn(
+            "absolute top-0 border w-full h-16 rounded-3xl z-[100] overflow-hidden origin-top-right space-y-3 backdrop-blur-2xl",
+            "bg-nav-background/10 dark:bg-nav-foreground/70",
+            "border-black/10 dark:border-background/12",
+            "will-change-[width,height,borderRadius]"
+          )}
+        >
+          <div className="menu_button flex justify-between items-center py-[17.20px] px-8 !m-0 will-change-[padding]">
+            <a href="/" aria-label="Home">
+              <Logo ref={logoRef} />
+            </a>
+
+            <button
+              className={`nav-wrapper !h-6 !w-6 ${isExpanded ? "open" : ""}`}
+              onClick={toggleMenu}
+              aria-label={isExpanded ? "Close menu" : "Open menu"}
+              aria-expanded={isExpanded}
+            >
+              <div className="line-menu !w-1/2" />
+              <div className="line-menu !w-full" />
+              <div className="line-menu !w-1/2" />
+            </button>
+          </div>
+
+          <div className="space-y-6 md:space-y-8 px-6 md:px-8">
+            <nav className="nav-links-container flex flex-col gap-2">
+              <h4
+                className={cn(
+                  "nav-links-heading select-none",
+                  "font-mono tracking-widest",
+                  "text-foreground/30 dark:text-background/40",
+                  "sm:text-base text-xs",
+                  "will-change-[opacity,transform]"
+                )}
+              >
+                MENU
+              </h4>
+              {MENU_ITEMS.map((item, index) => {
+                const isActive = activeSection === item.href.replace("#", "");
+                return (
+                  <NavItem
+                    key={item.href}
+                    item={item}
+                    index={index}
+                    isActive={isActive}
+                    onClick={() => handleNavItemClick(item.href.replace("#", ""))}
+                    fontsLoaded={fontsLoaded}
+                  />
+                );
+              })}
+            </nav>
+
+            <div className="flex gap-4 sm:gap-10 md:gap-14 lg:gap-20">
+              <div className="space-y-2 lg:space-y-3">
+                <h4
+                  className={cn(
+                    "nav-links-heading select-none",
+                    "font-mono tracking-widest",
+                    "text-foreground/30 dark:text-background/40",
+                    "sm:text-base text-xs",
+                    "will-change-[opacity,transform]"
+                  )}
+                >
+                  SOCIALS
+                </h4>
+                <div className="social_icons flex items-center lg:gap-6 relative">
+                  {socialPlatforms.map((platform, index) => (
+                    <SocialIcon key={platform.social} platform={platform} index={index} />
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2 lg:space-y-3">
+                <h4
+                  className={cn(
+                    "nav-links-heading select-none",
+                    "font-mono tracking-widest",
+                    "text-foreground/30 dark:text-background/40",
+                    "sm:text-base text-xs",
+                    "will-change-[opacity,transform]"
+                  )}
+                >
+                  THEME
+                </h4>
+                <div className="theme_icon will-change-[opacity,transform]">
+                  <AnimatedTooltip
+                    id={3}
+                    className={cn(
+                      "size-14 lg:size-16 p-3 lg:p-4 mask mask-squircle !aspect-square cursor-pointer",
+                      "bg-foreground/15 hover:bg-foreground/20",
+                      "text-foreground md:text-foreground/85 hover:text-foreground",
+                      "dark:bg-foreground/70 dark:hover:bg-foreground",
+                      "dark:text-background/70 dark:hover:text-background",
+                      "transition-colors duration-400"
+                    )}
+                    mains={isDark ? "Dark Mode" : "Light Mode"}
+                    Children={<ThemeIcon className="size-full !text-inherit" />}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-end justify-between font-mono tracking-widest text-foreground/70 dark:text-background/50 text-xs md:pt-4">
+              <TimeDisplay
+                timeType="time"
+                className="nav-links-heading"
+                mode="single"
+                length="medium"
+              />
+              <div className="nav-links-heading">Version 1.13</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+};
+
+export default memo(Header);

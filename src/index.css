@@ -572,7 +572,7 @@ body {
 }
 
 .custom-shadow {
-  --shadow-color: 0deg 0% 55%;
+  --shadow-color: 0deg 255% 0%;
   --shadow-elevation-high: 0px -0.2px 0.2px hsl(var(--shadow-color) / 0.32),
     -0.1px -1.3px 1.5px -0.3px hsl(var(--shadow-color) / 0.32),
     -0.1px -2.3px 2.6px -0.6px hsl(var(--shadow-color) / 0.32),
@@ -584,8 +584,4 @@ body {
     -1.1px -20.1px 22.6px -2.2px hsl(var(--shadow-color) / 0.32),
     -1.5px -27.2px 30.6px -2.5px hsl(var(--shadow-color) / 0.32);
   box-shadow: var(--shadow-elevation-high);
-}
-
-.dark .custom-shadow {
-  --shadow-color: 0deg 255% 0%;
 }

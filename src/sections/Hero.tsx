@@ -171,59 +171,81 @@ const TestimonialsMarqueeItem = memo(
     const handleMouseLeave = useCallback(() => tlRef.current?.play(), []);
 
     // Memoized animation parameters factory
-    const createAnimParams = useCallback((isMobile: boolean) => ({
-      duration: 0.7,
-      holdDuration: 4,
-      ease: { in: "power3.in", out: "power3.out" },
-      positions: {
-        top: isMobile ? "-2.8em" : "-3.8em",
-        bottom: isMobile ? "-1.3em" : "-1.7em",
-        exit: "-5.8em",
-        enter: "0.1em",
-      },
-      scales: { active: 1, inactive: 0.9, transition: 0.95 },
-    }), []);
+    const createAnimParams = useCallback(
+      (isMobile: boolean) => ({
+        duration: 0.7,
+        holdDuration: 4,
+        ease: { in: "power3.in", out: "power3.out" },
+        positions: {
+          top: isMobile ? "-2.8em" : "-3.8em",
+          bottom: isMobile ? "-1.3em" : "-1.7em",
+          exit: "-5.8em",
+          enter: "0.1em",
+        },
+        scales: { active: 1, inactive: 0.9, transition: 0.95 },
+      }),
+      []
+    );
 
     // Reusable transition animation function
-    const createTransition = useCallback((
-      tl: gsap.core.Timeline,
-      fromEl: HTMLElement,
-      toEl: HTMLElement,
-      params: ReturnType<typeof createAnimParams>,
-      label: string
-    ) => {
-      // Exit and enter simultaneously
-      tl.to(fromEl, {
-        top: params.positions.exit,
-        scale: params.scales.transition,
-        duration: params.duration,
-        ease: params.ease.in,
-      }, label)
-        .to(toEl, {
-          top: params.positions.enter,
-          scale: params.scales.transition,
-          duration: params.duration,
-          ease: params.ease.in,
-        }, label)
-        // Swap z-index mid-transition
-        .add(() => {
-          gsap.set(fromEl, { zIndex: 0 });
-          gsap.set(toEl, { zIndex: 1 });
-        })
-        // Settle to final positions
-        .to(fromEl, {
-          top: params.positions.bottom,
-          scale: params.scales.inactive,
-          duration: params.duration,
-          ease: params.ease.out,
-        }, `${label}+`)
-        .to(toEl, {
-          top: params.positions.top,
-          scale: params.scales.active,
-          duration: params.duration,
-          ease: params.ease.out,
-        }, `${label}+`);
-    }, []);
+    const createTransition = useCallback(
+      (
+        tl: gsap.core.Timeline,
+        fromEl: HTMLElement,
+        toEl: HTMLElement,
+        params: ReturnType<typeof createAnimParams>,
+        label: string
+      ) => {
+        // Exit and enter simultaneously
+        tl.to(
+          fromEl,
+          {
+            top: params.positions.exit,
+            scale: params.scales.transition,
+            duration: params.duration,
+            ease: params.ease.in,
+          },
+          label
+        )
+          .to(
+            toEl,
+            {
+              top: params.positions.enter,
+              scale: params.scales.transition,
+              duration: params.duration,
+              ease: params.ease.in,
+            },
+            label
+          )
+          // Swap z-index mid-transition
+          .add(() => {
+            gsap.set(fromEl, { zIndex: 0 });
+            gsap.set(toEl, { zIndex: 1 });
+          })
+          // Settle to final positions
+          .to(
+            fromEl,
+            {
+              top: params.positions.bottom,
+              scale: params.scales.inactive,
+              duration: params.duration,
+              ease: params.ease.out,
+            },
+            `${label}+`
+          )
+          .to(
+            toEl,
+            {
+              top: params.positions.top,
+              scale: params.scales.active,
+              duration: params.duration,
+              ease: params.ease.out,
+            },
+            `${label}+`
+          );
+      },
+      []
+    );
 
     useGSAP(() => {
       const [firstEl, secondEl] = testimonialRefs.current;
@@ -274,12 +296,23 @@ const TestimonialsMarqueeItem = memo(
       testimonialContainer.addEventListener("mouseleave", handleMouseLeave);
 
       return () => {
-        testimonialContainer.removeEventListener("mouseenter", handleMouseEnter);
-        testimonialContainer.removeEventListener("mouseleave", handleMouseLeave);
+        testimonialContainer.removeEventListener(
+          "mouseenter",
+          handleMouseEnter
+        );
+        testimonialContainer.removeEventListener(
+          "mouseleave",
+          handleMouseLeave
+        );
         tlRef.current?.kill();
         mm.kill();
       };
-    }, [handleMouseEnter, handleMouseLeave, createAnimParams, createTransition]);
+    }, [
+      handleMouseEnter,
+      handleMouseLeave,
+      createAnimParams,
+      createTransition,
+    ]);
 
     return (
       <div
@@ -394,44 +427,52 @@ const EnhancedGalleryMarqueeItem = memo(() => {
 });
 
 // Skills Pills Marquee Item Component
-const PillsMarqueeItem = memo(() => (
-  <div
-    className={cn(
-      "flex items-center justify-center marquee-item rounded-xl",
-      "md:px-8 md:py-4",
-      "min-w-[350px] md:min-w-[450px]",
-      "text-foreground dark:text-background"
-    )}
-  >
-    <div className="space-y-2">
-      <div className="flex items-center gap-2">
-        <Pill text="Design" />
-        <Pill text="Development" />
-        <Pill text="Animation" />
+const PillsMarqueeItem = memo(
+  ({ onSkillClick }: { onSkillClick: (id: string) => void }) => {
+    return (
+      <div
+        className={cn(
+          "flex items-center justify-center marquee-item rounded-xl",
+          "md:px-8 md:py-4",
+          "min-w-[350px] md:min-w-[450px]",
+          "text-foreground dark:text-background"
+        )}
+      >
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Pill text="Design" />
+            <Pill text="Development" />
+            <Pill text="Animation" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Pill text="User Interface" />
+            <Pill text="GSAP" />
+            <span
+              className={cn(
+                "text-xs md:text-sm leading-snug whitespace-nowrap relative",
+                "px-3 md:px-5 py-0.5 md:py-1.5",
+                "border rounded-full border-foreground/20 dark:border-background/20",
+                "select-none",
+                "hover:border-accent hover:bg-accent hover:text-background",
+                "pill5 group/arrow relative overflow-hidden min-w-max",
+                "transition-all duration-300 cursor-pointer group/arrow"
+              )}
+              onClick={() => onSkillClick("skills")}
+            >
+              <span className="relative z-10 inline-flex items-center gap-[0.4vw] group-hover/arrow:gap-[1vw] transition-all duration-300">
+                More{" "}
+                <IconArrowRight
+                  className="size-3.5 md:size-4"
+                  duotone={false}
+                />
+              </span>
+            </span>
+          </div>
+        </div>
       </div>
-      <div className="flex items-center gap-2">
-        <Pill text="User Interface" />
-        <Pill text="GSAP" />
-        <span
-          className={cn(
-            "text-xs md:text-sm leading-snug whitespace-nowrap relative",
-            "px-3 md:px-5 py-0.5 md:py-1.5",
-            "border rounded-full border-foreground/20 dark:border-background/20",
-            "select-none",
-            "hover:border-accent hover:bg-accent hover:text-background",
-            "pill5 group/arrow relative overflow-hidden min-w-max",
-            "transition-all duration-300 cursor-pointer group/arrow"
-          )}
-        >
-          <span className="relative z-10 inline-flex items-center gap-[0.4vw] group-hover/arrow:gap-[1vw] transition-all duration-300">
-            More{" "}
-            <IconArrowRight className="size-3.5 md:size-4" duotone={false} />
-          </span>
-        </span>
-      </div>
-    </div>
-  </div>
-));
+    );
+  }
+);
 
 const ContactIconItem = memo(() => {
   const contactIconRef = useRef<HTMLDivElement>(null);
@@ -477,7 +518,14 @@ const ContactIconItem = memo(() => {
       openLine1: Element | null;
       openLine2: Element | null;
     }) => {
-      const { closedBase, closedPaper, openBase, openPaper, openLine1, openLine2 } = elements;
+      const {
+        closedBase,
+        closedPaper,
+        openBase,
+        openPaper,
+        openLine1,
+        openLine2,
+      } = elements;
 
       // Kill ongoing animations
       gsap.killTweensOf(Object.values(elements).filter(Boolean));
@@ -487,21 +535,41 @@ const ContactIconItem = memo(() => {
       const tl = gsap.timeline();
 
       // Morph shapes
-      if (closedBase instanceof SVGPathElement && openBase instanceof SVGPathElement) {
+      if (
+        closedBase instanceof SVGPathElement &&
+        openBase instanceof SVGPathElement
+      ) {
         createMorphAnimation(tl, closedBase, openBase, 0);
       }
-      if (closedPaper instanceof SVGPathElement && openPaper instanceof SVGPathElement) {
+      if (
+        closedPaper instanceof SVGPathElement &&
+        openPaper instanceof SVGPathElement
+      ) {
         createMorphAnimation(tl, closedPaper, openPaper, 0);
       }
 
       // Animate lines
       if (openLine1) {
-        tl.to(openLine1, { opacity: 1, duration: 0.1 }, "+=0.1")
-          .to(openLine1, { drawSVG: "0% 100%", duration: animConfig.lineDuration, ease: "power2.out" }, "<");
+        tl.to(openLine1, { opacity: 1, duration: 0.1 }, "+=0.1").to(
+          openLine1,
+          {
+            drawSVG: "0% 100%",
+            duration: animConfig.lineDuration,
+            ease: "power2.out",
+          },
+          "<"
+        );
       }
       if (openLine2) {
-        tl.to(openLine2, { opacity: 1, duration: 0.1 }, "-=0.3")
-          .to(openLine2, { drawSVG: "100% 0%", duration: animConfig.lineDuration, ease: "power2.out" }, "<");
+        tl.to(openLine2, { opacity: 1, duration: 0.1 }, "-=0.3").to(
+          openLine2,
+          {
+            drawSVG: "100% 0%",
+            duration: animConfig.lineDuration,
+            ease: "power2.out",
+          },
+          "<"
+        );
       }
     };
 
@@ -522,24 +590,35 @@ const ContactIconItem = memo(() => {
 
       // Hide lines
       if (openLine1 && openLine2) {
-        tl.to([openLine1, openLine2], { drawSVG: "0%", duration: 0.4, ease: animConfig.ease })
-          .to([openLine1, openLine2], { opacity: 0, duration: 0.1 }, "-=0.1");
+        tl.to([openLine1, openLine2], {
+          drawSVG: "0%",
+          duration: 0.4,
+          ease: animConfig.ease,
+        }).to([openLine1, openLine2], { opacity: 0, duration: 0.1 }, "-=0.1");
       }
 
       // Morph back
       if (closedPaper instanceof SVGPathElement) {
-        tl.to(closedPaper, {
-          morphSVG: { shape: closedPaper, shapeIndex: 0 },
-          duration: animConfig.morphDuration,
-          ease: animConfig.ease,
-        }, "+=0.1");
+        tl.to(
+          closedPaper,
+          {
+            morphSVG: { shape: closedPaper, shapeIndex: 0 },
+            duration: animConfig.morphDuration,
+            ease: animConfig.ease,
+          },
+          "+=0.1"
+        );
       }
       if (closedBase instanceof SVGPathElement) {
-        tl.to(closedBase, {
-          morphSVG: { shape: closedBase, shapeIndex: 0 },
-          duration: animConfig.morphDuration,
-          ease: animConfig.ease,
-        }, "<");
+        tl.to(
+          closedBase,
+          {
+            morphSVG: { shape: closedBase, shapeIndex: 0 },
+            duration: animConfig.morphDuration,
+            ease: animConfig.ease,
+          },
+          "<"
+        );
       }
     };
 
@@ -561,8 +640,14 @@ const ContactIconItem = memo(() => {
     };
 
     // Set initial states
-    gsap.set([elements.openPaper, elements.openBase], { visibility: "hidden", opacity: 0 });
-    gsap.set([elements.openLine1, elements.openLine2], { drawSVG: "0%", opacity: 0 });
+    gsap.set([elements.openPaper, elements.openBase], {
+      visibility: "hidden",
+      opacity: 0,
+    });
+    gsap.set([elements.openLine1, elements.openLine2], {
+      drawSVG: "0%",
+      opacity: 0,
+    });
 
     // Event handlers with captured elements
     const onEnter = () => handleMouseEnter(elements);
@@ -703,7 +788,7 @@ const Hero = () => {
   const handleTestimonialClick = useCallback(
     (testimonialId: string) => {
       // First scroll to the testimonials section
-      scrollToElement("testimonials", {
+      scrollToElement(testimonialId, {
         offset: -100,
         duration: 2.5,
         easing: (t: number): number => ease(t),
@@ -715,7 +800,7 @@ const Hero = () => {
           detail: { id: testimonialId },
         });
         window.dispatchEvent(event);
-      }, 2600); // Slightly after the scroll duration
+      }, 2600);
     },
     [scrollToElement, ease]
   );
@@ -797,19 +882,19 @@ const Hero = () => {
           ref={uiContainerRef}
           className="relative flex items-center min-h-full overflow-hidden"
         >
-          <PillsMarqueeItem />
+          <PillsMarqueeItem onSkillClick={handleTestimonialClick} />
           <TestimonialsMarqueeItem
             onTestimonialClick={handleTestimonialClick}
           />
           <EnhancedGalleryMarqueeItem />
           <ContactIconItem />
-          <PillsMarqueeItem />
+          <PillsMarqueeItem onSkillClick={handleTestimonialClick} />
           <TestimonialsMarqueeItem
             onTestimonialClick={handleTestimonialClick}
           />
           <EnhancedGalleryMarqueeItem />
           <ContactIconItem />
-          <PillsMarqueeItem />
+          <PillsMarqueeItem onSkillClick={handleTestimonialClick} />
           <TestimonialsMarqueeItem
             onTestimonialClick={handleTestimonialClick}
           />
