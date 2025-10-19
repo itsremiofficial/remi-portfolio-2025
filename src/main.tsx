@@ -5,6 +5,7 @@ import "./index.css";
 import "./styles/lenis.css";
 import App from "./App.tsx";
 import ProjectDetail from "./pages/ProjectDetail.tsx";
+import Projects from "./pages/Projects.tsx";
 import { LenisProvider } from "./context/LenisContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import FluidCursor from "./components/ui/fluidCursor.tsx";
@@ -30,6 +31,7 @@ createRoot(document.getElementById("root")!).render(
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<App />} />
+            <Route path="/projects" element={<Projects />} />
             <Route path="/work/:slug" element={<ProjectDetail />} />
           </Routes>
           <FluidCursor />

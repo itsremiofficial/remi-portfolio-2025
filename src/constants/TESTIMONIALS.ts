@@ -9,15 +9,6 @@ export interface Testimonial {
 
 export const TESTIMONIALS: Testimonial[] = [
   {
-    id: "jack-moss",
-    name: "Jack",
-    subname: "Moss",
-    designation: "CEO Zonow Network",
-    quote:
-      "I have worked with Remi for couple of years. His designs are amazing and high detailed, with the fastest turnaround time I have seen. As for his websites, they are extremely well made and astonishingly fast. Zero corners are cut and he goes above and beyond to make my requests with 100% perfection.",
-    src: "testimonials/JackMoss.avif",
-  },
-  {
     id: "murtaza-memon",
     name: "Murtaza",
     subname: "Memon",
@@ -27,13 +18,13 @@ export const TESTIMONIALS: Testimonial[] = [
     src: "testimonials/MurtazaMemon.avif",
   },
   {
-    id: "chriss-pregler",
-    name: "Chriss.",
-    subname: "Pregler",
-    designation: "CEO Mivator Development",
+    id: "jack-moss",
+    name: "Jack",
+    subname: "Moss",
+    designation: "CEO Zonow Network",
     quote:
-      "Shining Yam is a hidden gem! From the moment I walked in, I knew I was in for a treat. The impeccable service and overall attention to detail created a memorable experience. I highly recommend it!",
-    src: "testimonials/ChrissPregler.avif",
+      "I have worked with Remi for couple of years. His designs are amazing and high detailed, with the fastest turnaround time I have seen. As for his websites, they are extremely well made and astonishingly fast. Zero corners are cut and he goes above and beyond to make my requests with 100% perfection.",
+    src: "testimonials/JackMoss.avif",
   },
   {
     id: "zeshan-nawaz",
@@ -43,6 +34,15 @@ export const TESTIMONIALS: Testimonial[] = [
     quote:
       "An absolutely outstanding experience from start to finish! The quality of service and attention to detail is unmatched. Every interaction felt personalized and genuine. This is what excellence looks like!",
     src: "testimonials/ZeeshanNawaz.avif",
+  },
+  {
+    id: "chriss-pregler",
+    name: "Chriss.",
+    subname: "Pregler",
+    designation: "CEO Mivator Development",
+    quote:
+      "Remi has always helped me out for over half a decade, creating stunning designs and memorable birthday giftcards. His creativity and attention to detail continually impress me, and he always delivers exceptional results quickly. Whenever I needed something special, Remi went above and beyond to make it perfect.",
+    src: "testimonials/ChrissPregler.avif",
   },
   {
     id: "sarah-williams",

@@ -1,11 +1,19 @@
-import React, { type ReactNode, useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import gsap from "gsap";
 import { SplitText } from "gsap/SplitText";
 
-// Register the SplitText plugin
+// ===== PLUGIN REGISTRATION =====
 gsap.registerPlugin(SplitText);
 
-// Define types for the icon props
+// ===== CONSTANTS =====
+const ANIMATION_CONFIG = {
+  DURATION: 0.6,
+  STAGGER_AMOUNT: 0.1,
+  Y_PERCENT_OUT: -120,
+  Y_PERCENT_IN: 140,
+} as const;
+
+// ===== TYPES =====
 interface IconProps {
   className?: string;
   fill?: string | boolean;
@@ -23,28 +31,25 @@ interface AnimatedTextProps {
   fontsLoaded?: boolean;
 }
 
-const AnimatedText: React.FC<AnimatedTextProps> = ({
+// ===== COMPONENT =====
+const AnimatedText = ({
   linkText1,
   id,
   linkText2,
   className,
   Icon,
   fontsLoaded,
-}) => {
+}: AnimatedTextProps) => {
   const linkRef = useRef<HTMLButtonElement | null>(null);
 
-  // Second effect that runs after fonts are loaded
   useEffect(() => {
-    // Only proceed if fonts are loaded and element exists
     if (!fontsLoaded || !linkRef.current) return;
 
     const linkElement = linkRef.current;
     const textElements = linkElement.querySelectorAll("[hoverstagger='text']");
-
-    // Create an array to store our SplitText instances for cleanup
     const splitTextInstances: SplitText[] = [];
 
-    // Split each text element using GSAP's SplitText
+    // Split text into characters
     textElements.forEach((el) => {
       const split = new SplitText(el as HTMLElement, {
         type: "chars,words",
@@ -53,39 +58,41 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
       splitTextInstances.push(split);
     });
 
+    const [text1Split, text2Split] = splitTextInstances;
+
+    // Create animation timeline
     const tl = gsap.timeline({ paused: true });
 
-    const [text1Split, text2Split] = splitTextInstances;
     if (text1Split && text2Split) {
       tl.to(text1Split.chars, {
-        yPercent: -120,
-        duration: 0.6,
-        stagger: { amount: 0.1 },
+        yPercent: ANIMATION_CONFIG.Y_PERCENT_OUT,
+        duration: ANIMATION_CONFIG.DURATION,
+        stagger: { amount: ANIMATION_CONFIG.STAGGER_AMOUNT },
       }).from(
         text2Split.chars,
         {
-          yPercent: 140,
-          duration: 0.6,
-          stagger: { amount: 0.1 },
+          yPercent: ANIMATION_CONFIG.Y_PERCENT_IN,
+          duration: ANIMATION_CONFIG.DURATION,
+          stagger: { amount: ANIMATION_CONFIG.STAGGER_AMOUNT },
         },
         0
       );
     }
 
+    // Event handlers
     const handleMouseEnter = () => tl.restart();
     const handleMouseLeave = () => tl.reverse();
 
     linkElement.addEventListener("mouseenter", handleMouseEnter);
     linkElement.addEventListener("mouseleave", handleMouseLeave);
 
+    // Cleanup
     return () => {
       linkElement.removeEventListener("mouseenter", handleMouseEnter);
       linkElement.removeEventListener("mouseleave", handleMouseLeave);
-
-      // Revert all splits to clean up the DOM
       splitTextInstances.forEach((split) => split.revert());
     };
-  }, [fontsLoaded]); // Depend on fontsLoaded
+  }, [fontsLoaded]);
 
   return (
     <button
@@ -102,7 +109,7 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
           {linkText1}
         </div>
         <div hoverstagger="text" className="absolute inset-y-0 leading-[0.8]">
-          {linkText2 ? linkText2 : linkText1}
+          {linkText2 ?? linkText1}
         </div>
       </div>
       {Icon && Icon}
@@ -112,6 +119,7 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
 
 export default AnimatedText;
 
+// ===== TYPE AUGMENTATION =====
 declare module "react" {
   interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
     hoverstagger?: string;

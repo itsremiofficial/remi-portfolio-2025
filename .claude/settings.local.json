@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(npm run dev:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(ffprobe -v quiet -print_format json -show_format -show_streams \"d:\\Development Projects\\remi-portfolio-2025\\public\\projects_page.mp4\")",
+      "Bash(npm install three @react-three/fiber @react-three/drei)"
     ],
     "deny": [],
     "ask": []

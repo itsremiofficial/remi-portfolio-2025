@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useRef, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import WORKS from "../constants/WORKS";
@@ -109,196 +109,8 @@ const WorksCards = () => {
       );
   }, []);
 
-  useEffect(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    let cancelled = false;
-    const imgs = Array.from(el.querySelectorAll("img"));
-    if (imgs.length === 0) {
-      imagesReadyRef.current = true;
-      tryInit();
-      return;
-    }
-    const waits = imgs.map((img) => {
-      if (img.complete) return Promise.resolve();
-      if (typeof img.decode === "function") {
-        return img.decode().catch(() => undefined);
-      }
-      return new Promise<void>((res) =>
-        img.addEventListener("load", () => res(), { once: true })
-      );
-    });
-    Promise.all(waits).then(() => {
-      if (cancelled) return;
-      imagesReadyRef.current = true;
-      tryInit();
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-  /* ---------- Intersection Observer (outer container) ---------- */
-  useEffect(() => {
-    const el = outerRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        const visible = entries[0].isIntersecting;
-        inViewRef.current = visible;
-        if (visible) tryInit();
-      },
-      {
-        threshold: 0,
-        rootMargin: "200px 0px 200px 0px", // trigger early
-      }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
-  /* ---------- Fonts Ready (guard older browsers) ---------- */
-  useEffect(() => {
-    let cancelled = false;
-    if ((document as any).fonts?.ready) {
-      (document as any).fonts.ready.then(() => {
-        if (cancelled) return;
-        fontsReadyRef.current = true;
-        tryInit();
-      });
-    } else {
-      // Fallback: assume fonts are fine after short delay
-      setTimeout(() => {
-        if (!cancelled) {
-          fontsReadyRef.current = true;
-          tryInit();
-        }
-      }, 300);
-    }
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  /* ---------- Safety Fallback (init anyway after 1.2s) ---------- */
-  useEffect(() => {
-    fallbackTimerRef.current = setTimeout(() => {
-      if (!initializedRef.current) {
-        fontsReadyRef.current = true;
-        inViewRef.current = true;
-        tryInit();
-      }
-    }, 1200);
-    return () => {
-      if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
-    };
-  }, []);
-
-  /* ---------- Initialization ---------- */
-  /* ---------- Initialization ---------- */
-  const tryInit = useCallback(() => {
-    if (initializedRef.current) return;
-    if (!fontsReadyRef.current || !inViewRef.current || !imagesReadyRef.current)
-      return; // include images
-    if (!trackRef.current || cardRefs.current.length === 0) return;
-
-    initializedRef.current = true;
-    if (fallbackTimerRef.current) {
-      clearTimeout(fallbackTimerRef.current);
-      fallbackTimerRef.current = null;
-    }
-
-    // NEW: Disable animations on mobile or if reduced motion is preferred
-    if (disableAnimations) {
-      cardRefs.current.forEach((c) =>
-        gsap.set(c, { transform: "none", clearProps: "all" })
-      );
-      return;
-    }
-
-    // Build the loop using the actual elements in on-screen order
-    loopRef.current = horizontalLoop(getOrderedCards(), {
-      repeat: -1,
-      speed: 1.5,
-    });
-
-    // Collect images marked for parallax and prepare setters (position-based)
-    if (trackRef.current) {
-      const imgs = Array.from(
-        trackRef.current.querySelectorAll<HTMLImageElement>(
-          'img[data-parallax="true"]'
-        )
-      );
-      parallaxTargetsRef.current = imgs.map((img) => {
-        const depthAttr = parseFloat(img.getAttribute("data-depth") || "0.25");
-        const depth = Number.isFinite(depthAttr) ? depthAttr : 0.25;
-        // host: the card or nearest container that moves with the loop
-        const host =
-          (img.closest(".menu--item") as HTMLElement) ||
-          (img.parentElement as HTMLElement) ||
-          img;
-        // quickSetter for immediate transform updates (perf)
-        const setX = gsap.quickSetter(img, "x", "px") as (v: number) => void;
-        return { img, host, depth, setX };
-      });
-    }
-
-    loopRef.current.timeScale(directionRef.current).play();
-    currentTimeRef.current = loopRef.current.time();
-    targetTimeRef.current = currentTimeRef.current;
-    prevTimeRef.current = currentTimeRef.current;
-
-    attachDesktopWheel();
-    attachPointer();
-
-    startRAF();
-  }, [disableAnimations, lerp, getOrderedCards]);
-
-  // Rebuild loop on resize to keep spacing consistent after layout changes
-  useEffect(() => {
-    const onResize = () => {
-      if (!loopRef.current || cardRefs.current.length === 0) return;
-      // preserve current visual position
-      const prevTime = loopRef.current.time();
-      const wasPlaying =
-        !!loopRef.current.isActive() ||
-        (!isDraggingRef.current &&
-          !inertiaRef.current &&
-          !wheelActiveRef.current);
-
-      loopRef.current.kill();
-      loopRef.current = horizontalLoop(getOrderedCards(), {
-        repeat: -1,
-        speed: 1.5,
-      });
-
-      const dur = loopRef.current.totalDuration();
-      const wrapped = ((prevTime % dur) + dur) % dur;
-      loopRef.current.time(wrapped);
-      if (wasPlaying) {
-        loopRef.current.timeScale(directionRef.current).play();
-      } else {
-        loopRef.current.pause();
-      }
-    };
-
-    // debounce to avoid thrashing
-    let raf = 0;
-    const debounced = () => {
-      if (raf) cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(onResize);
-    };
-
-    window.addEventListener("resize", debounced);
-    window.addEventListener("orientationchange", debounced);
-    return () => {
-      window.removeEventListener("resize", debounced);
-      window.removeEventListener("orientationchange", debounced);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, []);
-
   /* ---------- Wheel (desktop only) ---------- */
-  const attachDesktopWheel = () => {
+  const attachDesktopWheel = useCallback(() => {
     if (isTouch) return; // skip wheel logic on touch devices
     Observer.create({
       target: window,
@@ -324,9 +136,9 @@ const WorksCards = () => {
         directionRef.current = factor;
       },
     });
-  };
+  }, [isTouch]);
 
-  const resumeAutoplay = () => {
+  const resumeAutoplay = useCallback(() => {
     if (!loopRef.current) return;
     // Smoothly animate back to autoplay with the last interaction direction
     gsap.timeline().to(loopRef.current, {
@@ -335,10 +147,10 @@ const WorksCards = () => {
       ease: "power2.out",
       onStart: () => loopRef.current?.play(),
     });
-  };
+  }, []);
 
   /* ---------- Pointer / Drag ---------- */
-  const attachPointer = () => {
+  const attachPointer = useCallback(() => {
     const el = trackRef.current;
     if (!el) return;
 
@@ -432,10 +244,10 @@ const WorksCards = () => {
     el.addEventListener("click", () => {
       if (!isDraggingRef.current && !inertiaRef.current) resumeAutoplay();
     });
-  };
+  }, [isTouch, resumeAutoplay]);
 
   /* ---------- RAF Loop ---------- */
-  const startRAF = () => {
+  const startRAF = useCallback(() => {
     const render = () => {
       rafIdRef.current = requestAnimationFrame(render);
       if (!loopRef.current) return;
@@ -588,7 +400,195 @@ const WorksCards = () => {
       }
     };
     render();
-  };
+  }, [lerp, resumeAutoplay]);
+
+  /* ---------- Initialization ---------- */
+  const tryInit = useCallback(() => {
+    if (initializedRef.current) return;
+    if (!fontsReadyRef.current || !inViewRef.current || !imagesReadyRef.current)
+      return; // include images
+    if (!trackRef.current || cardRefs.current.length === 0) return;
+
+    initializedRef.current = true;
+    if (fallbackTimerRef.current) {
+      clearTimeout(fallbackTimerRef.current);
+      fallbackTimerRef.current = null;
+    }
+
+    // NEW: Disable animations on mobile or if reduced motion is preferred
+    if (disableAnimations) {
+      cardRefs.current.forEach((c) =>
+        gsap.set(c, { transform: "none", clearProps: "all" })
+      );
+      return;
+    }
+
+    // Build the loop using the actual elements in on-screen order
+    loopRef.current = horizontalLoop(getOrderedCards(), {
+      repeat: -1,
+      speed: 1.5,
+    });
+
+    // Collect images marked for parallax and prepare setters (position-based)
+    if (trackRef.current) {
+      const imgs = Array.from(
+        trackRef.current.querySelectorAll<HTMLImageElement>(
+          'img[data-parallax="true"]'
+        )
+      );
+      parallaxTargetsRef.current = imgs.map((img) => {
+        const depthAttr = parseFloat(img.getAttribute("data-depth") || "0.25");
+        const depth = Number.isFinite(depthAttr) ? depthAttr : 0.25;
+        // host: the card or nearest container that moves with the loop
+        const host =
+          (img.closest(".menu--item") as HTMLElement) ||
+          (img.parentElement as HTMLElement) ||
+          img;
+        // quickSetter for immediate transform updates (perf)
+        const setX = gsap.quickSetter(img, "x", "px") as (v: number) => void;
+        return { img, host, depth, setX };
+      });
+    }
+
+    loopRef.current.timeScale(directionRef.current).play();
+    currentTimeRef.current = loopRef.current.time();
+    targetTimeRef.current = currentTimeRef.current;
+    prevTimeRef.current = currentTimeRef.current;
+
+    attachDesktopWheel();
+    attachPointer();
+
+    startRAF();
+  }, [disableAnimations, getOrderedCards, attachDesktopWheel, attachPointer, startRAF]);
+
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    let cancelled = false;
+    const imgs = Array.from(el.querySelectorAll("img"));
+    if (imgs.length === 0) {
+      imagesReadyRef.current = true;
+      tryInit();
+      return;
+    }
+    const waits = imgs.map((img) => {
+      if (img.complete) return Promise.resolve();
+      if (typeof img.decode === "function") {
+        return img.decode().catch(() => undefined);
+      }
+      return new Promise<void>((res) =>
+        img.addEventListener("load", () => res(), { once: true })
+      );
+    });
+    Promise.all(waits).then(() => {
+      if (cancelled) return;
+      imagesReadyRef.current = true;
+      tryInit();
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [tryInit]);
+
+  /* ---------- Intersection Observer (outer container) ---------- */
+  useEffect(() => {
+    const el = outerRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries[0].isIntersecting;
+        inViewRef.current = visible;
+        if (visible) tryInit();
+      },
+      {
+        threshold: 0,
+        rootMargin: "200px 0px 200px 0px", // trigger early
+      }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [tryInit]);
+
+  /* ---------- Fonts Ready (guard older browsers) ---------- */
+  useEffect(() => {
+    let cancelled = false;
+    if ((document as any).fonts?.ready) {
+      (document as any).fonts.ready.then(() => {
+        if (cancelled) return;
+        fontsReadyRef.current = true;
+        tryInit();
+      });
+    } else {
+      // Fallback: assume fonts are fine after short delay
+      setTimeout(() => {
+        if (!cancelled) {
+          fontsReadyRef.current = true;
+          tryInit();
+        }
+      }, 300);
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [tryInit]);
+
+  /* ---------- Safety Fallback (init anyway after 1.2s) ---------- */
+  useEffect(() => {
+    fallbackTimerRef.current = setTimeout(() => {
+      if (!initializedRef.current) {
+        fontsReadyRef.current = true;
+        inViewRef.current = true;
+        tryInit();
+      }
+    }, 1200);
+    return () => {
+      if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
+    };
+  }, [tryInit]);
+
+  // Rebuild loop on resize to keep spacing consistent after layout changes
+  useEffect(() => {
+    const onResize = () => {
+      if (!loopRef.current || cardRefs.current.length === 0) return;
+      // preserve current visual position
+      const prevTime = loopRef.current.time();
+      const wasPlaying =
+        !!loopRef.current.isActive() ||
+        (!isDraggingRef.current &&
+          !inertiaRef.current &&
+          !wheelActiveRef.current);
+
+      loopRef.current.kill();
+      loopRef.current = horizontalLoop(getOrderedCards(), {
+        repeat: -1,
+        speed: 1.5,
+      });
+
+      const dur = loopRef.current.totalDuration();
+      const wrapped = ((prevTime % dur) + dur) % dur;
+      loopRef.current.time(wrapped);
+      if (wasPlaying) {
+        loopRef.current.timeScale(directionRef.current).play();
+      } else {
+        loopRef.current.pause();
+      }
+    };
+
+    // debounce to avoid thrashing
+    let raf = 0;
+    const debounced = () => {
+      if (raf) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(onResize);
+    };
+
+    window.addEventListener("resize", debounced);
+    window.addEventListener("orientationchange", debounced);
+    return () => {
+      window.removeEventListener("resize", debounced);
+      window.removeEventListener("orientationchange", debounced);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [getOrderedCards]);
 
   /* ---------- Cleanup on Unmount ---------- */
   useEffect(

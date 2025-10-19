@@ -30,11 +30,11 @@ export const useResponsiveVars = (
       let width = maxWidth;
 
       if (w >= 1536) width = Math.round(maxWidth * 0.9);
-      else if (w >= 1440) width = Math.round(maxWidth * 0.8);
-      else if (w >= 1366) width = Math.round(maxWidth * 0.7);
-      else if (w >= 1280) width = Math.round(maxWidth * 0.65);
-      else if (w >= 1024) width = Math.round(maxWidth * 0.6);
-      else width = Math.round(maxWidth * 0.45);
+      else if (w >= 1440) width = Math.round(maxWidth * 0.85);
+      else if (w >= 1366) width = Math.round(maxWidth * 0.83);
+      else if (w >= 1280) width = Math.round(maxWidth * 0.80);
+      else if (w >= 1024) width = Math.round(maxWidth * 0.75);
+      else width = Math.round(maxWidth * 0.8);
 
       const height = Math.round(width / baseRatio);
       const ratio = +(width / height).toFixed(3);

@@ -61,7 +61,6 @@
   --color-500: oklch(98.129% 0.004 84.566);
   --color-600: oklch(97.206% 0.006 88.643);
   --color-700: oklch(96.276% 0.008 91.484);
-  --color-800: oklch(94.923% 0.009 93.572);
   --color-800: oklch(93.414% 0.011 89.725);
   --color-900: oklch(67.98% 0.009 84.577);
   --color-1000: oklch(46.145% 0.007 88.665);
@@ -205,15 +204,13 @@ body {
 
 .open .line-menu:nth-child(1) {
   transform: rotate(-90deg) translateX(2px);
-  /* transition: transform 800ms cubic-bezier(0.54, -0.81, 0.57, 0.57); */
 }
+
 .open .line-menu:nth-child(3) {
   transform: rotate(-90deg) translateX(-2px);
-  /* transition: transform 800ms cubic-bezier(0.54, -0.81, 0.57, 0.57); */
 }
 
 .open .line-menu {
-  @apply bg-dark;
   @apply bg-foreground dark:bg-background;
 }
 
@@ -247,7 +244,7 @@ body {
   font-size: clamp(1.8rem, calc(1vw + 1rem), 5rem);
 }
 
-/* AESTERISK SYMBOL */
+/* ASTERISK SYMBOL */
 .asterisk-container {
   position: relative;
 }
@@ -261,7 +258,6 @@ body {
   transform-origin: center bottom;
 }
 
-/* Each line rotated by 360/13 = 27.69 degrees */
 .asterisk-line:nth-child(1) {
   transform: translate(-50%, -100%) rotate(0deg);
 }
@@ -301,14 +297,13 @@ body {
 .asterisk-line:nth-child(13) {
   transform: translate(-50%, -100%) rotate(332.28deg);
 }
-/* AESTERISK SYMBOL */
 
 /* VIDEO CAROUSEL LOOP */
 .div-block-100 {
   aspect-ratio: 1 !important;
-  border-radius: var(--radius--round);
   flex: none;
   width: 4.6em;
+  @apply rounded-full;
 }
 
 .div-block-100.jack-moss {
@@ -329,7 +324,6 @@ body {
     height: 3em;
   }
 }
-/* VIDEO CAROUSEL LOOP */
 
 /* TESTIMONIALS HIGHLIGHTS */
 .testimonials_highlights {
@@ -342,39 +336,15 @@ body {
 }
 
 .testimonial_hero {
-  --space--6: var(--size--2rem);
-  --size--0-5rem: 0.5rem;
-  --size--1rem: 1rem;
-  --space--2: var(--size--0-5rem);
-  --space--1: var(--size--0-25rem);
-  --container--main: 0px;
-  --section-space--main: var(--size--7rem);
-  --size--3-5rem: 3.5rem;
-  --container--small: 0px;
-  --container--full: 0px;
+  --space--2: 0.5rem;
+  --space--3: 0.75rem;
+  --space--4: 1rem;
   --site--gutter: 1rem;
-  --size--0rem: 0rem;
-  --space--3: var(--size--0-75rem);
-  --space--4: var(--size--1rem);
-  --space--7: var(--size--3rem);
-  --space--8: var(--size--4rem);
-  --radius--small: 0.5rem;
-  --radius--main: 1rem;
-  --radius--round: 100vw;
-  --border-width--main: 0.094rem;
-  --theme--border: white;
-  --size--0-75rem: 0.75rem;
-  --line-height--1em: 1em;
-  --swatch--transparent: #fff0;
-  --size--1-5rem: 1.5rem;
-  --swatch--brand: #f45926;
-  --size--3rem: 3rem;
   padding: var(--space--2) var(--space--4) var(--space--2) var(--space--2);
   grid-column-gap: var(--site--gutter);
   grid-row-gap: var(--site--gutter);
   justify-content: flex-start;
   align-items: stretch;
-  /* width: 363.781px; */
   display: flex;
   position: absolute;
 }
@@ -435,7 +405,6 @@ body {
   transition: width 300ms var(--ease-fluid), color 300ms var(--ease-fluid);
   @apply text-accent;
 }
-/* TESTIMONIALS HIGHLIGHTS */
 
 /* WORKS CARDS */
 .works-card-clip {
@@ -467,11 +436,6 @@ body {
 .is-dragging {
   cursor: grabbing;
 }
-/* WORKS CARDS */
-
-/* * {
-  outline: 1px solid rgba(255, 0, 0, 0.5);
-} */
 
 .section-heading {
   @apply text-[clamp(2rem,18vw,350px)] leading-[clamp(2rem,15vw,300px)] font-grandbold;
@@ -487,17 +451,17 @@ body {
 }
 
 .service-card {
-  --ratio-services: 314 / 438;
-  --width-services: 450px;
+  --ratio: 314 / 438;
+  --width: 450px;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   perspective: 1000px;
   width: 100%;
-  aspect-ratio: var(--ratio-services);
-  max-width: var(--width-services);
-  height: var(--height-services);
+  aspect-ratio: var(--ratio);
+  max-width: var(--width);
+  height: var(--height);
 }
 
 .service-card-wrapper {
@@ -507,7 +471,6 @@ body {
   transform: translate(-50%, -50%);
   width: 100%;
   height: 100%;
-  @apply flex items-center gap-10;
 }
 
 .flip-service-card-inner {
@@ -523,6 +486,8 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
+  border-radius: 10rem;
+  corner-shape: squircle;
   backface-visibility: hidden;
 }
 
@@ -554,14 +519,12 @@ body {
   width: 240px;
   max-height: 320px;
   object-fit: cover;
-  border-radius: 1.5rem;
+  border-radius: 10rem;
+  corner-shape: squircle;
   transform-style: preserve-3d;
   will-change: transform, filter;
   filter: blur(0px) drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
   transition: filter 0.8s cubic-bezier(0.215, 0.61, 0.355, 1);
-  clip-path: path(
-    "M0 120c0-51.62 0-77.43 13.833-95.087a65 65 0 0 1 11.08-11.08C42.57 0 68.38 0 120 0s77.43 0 95.087 13.833a65 65 0 0 1 11.08 11.08C240 42.57 240 68.38 240 120v80c0 51.62 0 77.43-13.833 95.087a65 65 0 0 1-11.08 11.08C197.43 320 171.62 320 120 320s-77.43 0-95.087-13.833a65 65 0 0 1-11.08-11.08C0 277.43 0 251.62 0 200z"
-  );
 }
 
 .quote .word {

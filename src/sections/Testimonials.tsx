@@ -233,11 +233,8 @@ const Testimonials = () => {
       end: `+=${scrollDistance}`,
       pin: true,
       pinSpacing: false,
-      scrub: true,
+      scrub: 0.5,
       anticipatePin: 1,
-      fastScrollEnd: false,
-      preventOverlaps: false,
-      normalizeScroll: true, // Smooth normalize scrolling
       snap: {
         snapTo: 1 / TESTIMONIALS.length,
         duration: { min: 0.2, max: 0.5 },
@@ -346,13 +343,13 @@ const Testimonials = () => {
       id="testimonials"
     >
       <div className="w-full max-w-7xl p-8">
-        <div className="grid gap-20 md:grid-cols-5 !h-96 w-full">
+        <div className="grid gap-20 grid-cols-1 md:grid-cols-5 !h-96 w-full">
           <div
             className="relative w-60 !h-full col-span-2 mt-14 place-self-center flex items-center justify-center"
             ref={imageContainerRef}
           />
 
-          <div className="flex flex-col justify-start col-span-3 h-full w-full">
+          <div className="flex flex-col mt-28 md:mt-0 justify-start col-span-3 h-full w-full text-center md:text-left">
             <div>
               <h3
                 className="text-8xl leading-[0.8] font-grandbold bg-gradient-to-b from-accent via-accent to-foreground bg-clip-text text-transparent mb-1"

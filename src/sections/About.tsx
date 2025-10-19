@@ -87,13 +87,10 @@ const About = () => {
           trigger: sectionEl,
           start: "top top",
           end: `+=${SCROLL_DISTANCE}%`,
-          scrub: true,
+          scrub: 0.5,
           pin: true,
           pinSpacing: true,
           anticipatePin: 1,
-          fastScrollEnd: false,
-          preventOverlaps: false,
-          normalizeScroll: true, // Smooth normalize scrolling
           refreshPriority: 1,
           onLeave: () => {
             gsap.set(sectionEl, { willChange: "auto" });

@@ -1,8 +1,33 @@
-import React, { useEffect, useRef, useState } from "react";
-import { gsap } from "gsap";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
+import gsap from "gsap";
 import { cn } from "../utils";
 import { useIsMobile } from "../hooks/useIsMobile";
 
+// ===== CONSTANTS =====
+const ANIMATION_CONFIG = {
+  DURATION: 0.5,
+  EASE: "power2.out",
+} as const;
+
+const GALLERY_CONFIG = {
+  ROTATION_INTERVAL: 5000,
+  DEFAULT_ACTIVE_INDEX: 2,
+  MOBILE_SPACING: 110,
+  DESKTOP_SPACING: 150,
+  OPACITY_THRESHOLD: 2,
+  VISIBLE_RANGE: 1,
+} as const;
+
+const VIDEO_SOURCES = [
+  { src: "videos/video01.mp4", title: "Video 1" },
+  { src: "videos/video02.mp4", title: "Video 2" },
+  { src: "videos/video03.mp4", title: "Video 3" },
+  { src: "videos/video01.mp4", title: "Video 1" },
+  { src: "videos/video02.mp4", title: "Video 2" },
+  { src: "videos/video03.mp4", title: "Video 3" },
+] as const;
+
+// ===== TYPES =====
 interface VideoItem {
   src: string;
   title: string;
@@ -15,227 +40,222 @@ interface GalleryProps {
   playsInline?: boolean;
 }
 
-const Gallery: React.FC<GalleryProps> = ({
+// ===== COMPONENT =====
+const Gallery = ({
   className,
   autoPlay = false,
   muted = true,
   playsInline = true,
-}) => {
+}: GalleryProps) => {
   const isMobile = useIsMobile();
   const galleryRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLUListElement>(null);
-  const [activeIndex, setActiveIndex] = useState(2);
-  const [userHasInteracted, setUserHasInteracted] = useState(false);
+  const [activeIndex, setActiveIndex] = useState<number>(
+    GALLERY_CONFIG.DEFAULT_ACTIVE_INDEX
+  );
+  const [userHasInteracted, setUserHasInteracted] = useState<boolean>(false);
   const interactionListenerRef = useRef<boolean>(false);
 
-  // Create unique ID for this gallery instance
-  const galleryId = useRef(
-    `gallery-${Math.random().toString(36).substring(2, 9)}`
+  // Generate unique gallery ID
+  const galleryId = useMemo(
+    () => `gallery-${Math.random().toString(36).substring(2, 9)}`,
+    []
   );
 
-  const videos: VideoItem[] = [
-    {
-      src: "videos/video01.mp4",
-      title: "Video 1",
-    },
-    {
-      src: "videos/video02.mp4",
-      title: "Video 2",
-    },
-    {
-      src: "videos/video03.mp4",
-      title: "Video 3",
-    },
-    {
-      src: "videos/video01.mp4",
-      title: "Video 1",
-    },
-    {
-      src: "videos/video02.mp4",
-      title: "Video 2",
-    },
-    {
-      src: "videos/video03.mp4",
-      title: "Video 3",
-    },
-  ];
+  const videos = useMemo<VideoItem[]>(() => [...VIDEO_SOURCES], []);
 
-  // Set up global document interaction listener (once)
+  // Calculate scale based on distance from active item
+  const getScale = useCallback((distance: number): number => {
+    if (distance === 0) return 1;
+    if (distance === 1 || distance === -1) return 0.75;
+    return 0.5;
+  }, []);
+
+  // Calculate circular distance between items
+  const getCircularDistance = useCallback(
+    (index: number, activeIdx: number, total: number): number => {
+      let distance = index - activeIdx;
+      if (distance > total / 2) distance -= total;
+      if (distance < -total / 2) distance += total;
+      return distance;
+    },
+    []
+  );
+
+  // Setup global document interaction listener
   useEffect(() => {
     if (interactionListenerRef.current) return;
 
-    const handleUserInteraction = () => {
+    const handleUserInteraction = (): void => {
       setUserHasInteracted(true);
 
-      // Attempt to play videos now that user has interacted
       if (galleryRef.current) {
-        // Scope query to this gallery instance
-        const activeVideos = galleryRef.current.querySelectorAll("video");
+        const activeVideos =
+          galleryRef.current.querySelectorAll<HTMLVideoElement>("video");
         activeVideos.forEach((video) => {
           if (video.paused) {
             video.play().catch(() => {
-              console.log("Still couldn't autoplay video after interaction");
+              // Video autoplay prevented - normal browser behavior
             });
           }
         });
       }
 
-      // Clean up listeners after successful interaction
-      document.removeEventListener("click", handleUserInteraction);
-      document.removeEventListener("touchstart", handleUserInteraction);
-      document.removeEventListener("keydown", handleUserInteraction);
-      document.removeEventListener("scroll", handleUserInteraction);
+      // Cleanup listeners after first interaction
+      events.forEach((event) =>
+        document.removeEventListener(event, handleUserInteraction)
+      );
     };
 
-    document.addEventListener("click", handleUserInteraction);
-    document.addEventListener("touchstart", handleUserInteraction);
-    document.addEventListener("keydown", handleUserInteraction);
-    document.addEventListener("scroll", handleUserInteraction);
+    const events: Array<keyof DocumentEventMap> = [
+      "click",
+      "touchstart",
+      "keydown",
+      "scroll",
+    ];
+
+    events.forEach((event) =>
+      document.addEventListener(event, handleUserInteraction, { once: true })
+    );
 
     interactionListenerRef.current = true;
 
     return () => {
-      document.removeEventListener("click", handleUserInteraction);
-      document.removeEventListener("touchstart", handleUserInteraction);
-      document.removeEventListener("keydown", handleUserInteraction);
-      document.removeEventListener("scroll", handleUserInteraction);
+      events.forEach((event) =>
+        document.removeEventListener(event, handleUserInteraction)
+      );
     };
   }, []);
 
-  // Main gallery positioning and video playback logic
-  useEffect(() => {
-    if (!galleryRef.current || !cardsRef.current) return;
+  // Position cards and manage video playback
+  const positionCards = useCallback(() => {
+    const videoItems = cardsRef.current?.querySelectorAll<HTMLLIElement>("li");
+    if (!videoItems) return;
 
-    // Configure all videos with required attributes for maximum compatibility
-    const allVideos = galleryRef.current.querySelectorAll("video");
-    allVideos.forEach((video) => {
-      // Always mute videos for autoplay compatibility
-      video.muted = muted;
+    const totalItems = videoItems.length;
+    const spacing = isMobile
+      ? GALLERY_CONFIG.MOBILE_SPACING
+      : GALLERY_CONFIG.DESKTOP_SPACING;
 
-      // Add playsinline attribute (especially needed for iOS)
-      video.setAttribute("playsinline", "");
+    videoItems.forEach((item, index) => {
+      const distance = getCircularDistance(index, activeIndex, totalItems);
+      const scale = getScale(distance);
+      const opacity =
+        Math.abs(distance) > GALLERY_CONFIG.OPACITY_THRESHOLD ? 0.5 : 1;
 
-      // Set preload attribute to improve playback readiness
-      video.setAttribute("preload", "auto");
-    });
-
-    // Function to position all cards and manage video playback
-    const positionCards = () => {
-      // IMPORTANT: Scope to this gallery instance's cards only
-      const videoItems = cardsRef.current?.querySelectorAll("li");
-      if (!videoItems) return;
-
-      const totalItems = videoItems.length;
-
-      // Position each video based on its distance from active video
-      videoItems.forEach((item, index) => {
-        // Calculate distance from active item (handle wrapping)
-        let distance = index - activeIndex;
-
-        // Adjust for wrapping (to make it circular)
-        if (distance > totalItems / 2) distance -= totalItems;
-        if (distance < -totalItems / 2) distance += totalItems;
-
-        // Apply transform based on distance - scopped to this item only
-        gsap.to(item, {
-          zIndex: 100 - Math.abs(distance),
-          scale:
-            distance === 0 ? 1 : distance === 1 || distance === -1 ? 0.75 : 0.5,
-          x: distance * (isMobile ? 110 : 150), // Adjust spacing between videos
-          opacity: Math.abs(distance) > 2 ? 0.5 : 1,
-          duration: 0.5,
-          ease: "power2.out",
-        });
-
-        // Adjust video playback - only play the active and adjacent videos if autoPlay is enabled
-        const video = item.querySelector("video") as HTMLVideoElement;
-        if (video) {
-          // Only try to play videos if autoPlay is true AND either:
-          // 1. The user has interacted with the page, OR
-          // 2. The video is muted (browsers allow muted autoplay)
-          const shouldPlay =
-            Math.abs(distance) <= 1 && autoPlay && (userHasInteracted || muted);
-
-          if (shouldPlay) {
-            // Use play() with proper error handling
-            if (video.paused) {
-              video.play().catch((error) => {
-                console.log("Video play prevented:", error);
-              });
-            }
-          } else {
-            video.pause();
-          }
-        }
+      // Animate card position
+      gsap.to(item, {
+        zIndex: 100 - Math.abs(distance),
+        scale,
+        x: distance * spacing,
+        opacity,
+        duration: ANIMATION_CONFIG.DURATION,
+        ease: ANIMATION_CONFIG.EASE,
       });
-    };
 
-    // Initial positioning
-    positionCards();
+      // Manage video playback
+      const video = item.querySelector("video");
+      if (video) {
+        const shouldPlay =
+          Math.abs(distance) <= GALLERY_CONFIG.VISIBLE_RANGE &&
+          autoPlay &&
+          (userHasInteracted || muted);
 
-    // Set up interval to rotate videos only if autoPlay is enabled
-    let cardInterval: number | undefined;
-    if (autoPlay) {
-      cardInterval = window.setInterval(() => {
-        setActiveIndex((prevIndex) => (prevIndex + 1) % videos.length);
-      }, 5000); // Longer interval for videos
-    }
-
-    // Use ResizeObserver instead of MutationObserver for better performance
-    const resizeObserver = new ResizeObserver(() => {
-      positionCards();
-    });
-
-    if (cardsRef.current) {
-      resizeObserver.observe(cardsRef.current);
-    }
-
-    // Clean up
-    return () => {
-      if (cardInterval) {
-        clearInterval(cardInterval);
+        if (shouldPlay && video.paused) {
+          video.play().catch(() => {
+            // Video play prevented - normal browser behavior
+          });
+        } else if (!shouldPlay && !video.paused) {
+          video.pause();
+        }
       }
-      resizeObserver.disconnect();
-    };
+    });
   }, [
     activeIndex,
-    videos.length,
     autoPlay,
     muted,
-    playsInline,
     userHasInteracted,
-    isMobile, // added to satisfy react-hooks/exhaustive-deps
+    isMobile,
+    getCircularDistance,
+    getScale,
   ]);
 
-  // Add click handler to make cards interactive
-  const handleCardClick = (index: number) => {
+  // Configure video attributes
+  useEffect(() => {
+    if (!galleryRef.current) return;
+
+    const allVideos =
+      galleryRef.current.querySelectorAll<HTMLVideoElement>("video");
+
+    allVideos.forEach((video) => {
+      video.muted = muted;
+      video.playsInline = playsInline;
+      video.preload = "auto";
+    });
+  }, [muted, playsInline]);
+
+  // Main gallery positioning and rotation logic
+  useEffect(() => {
+    positionCards();
+
+    // Setup auto-rotation interval
+    if (!autoPlay) return;
+
+    const cardInterval = window.setInterval(() => {
+      setActiveIndex((prevIndex) => (prevIndex + 1) % videos.length);
+    }, GALLERY_CONFIG.ROTATION_INTERVAL);
+
+    return () => clearInterval(cardInterval);
+  }, [positionCards, autoPlay, videos.length]);
+
+  // Observe resize events
+  useEffect(() => {
+    if (!cardsRef.current) return;
+
+    const resizeObserver = new ResizeObserver(positionCards);
+    resizeObserver.observe(cardsRef.current);
+
+    return () => resizeObserver.disconnect();
+  }, [positionCards]);
+
+  // Handle card click
+  const handleCardClick = useCallback((index: number): void => {
     setActiveIndex(index);
-  };
+  }, []);
 
   return (
-    <div ref={galleryRef} className={className} id={galleryId.current}>
+    <div ref={galleryRef} className={className} id={galleryId}>
       <ul
         ref={cardsRef}
         className="cards relative w-full h-full flex !justify-center !items-center"
       >
         {videos.map(({ src, title }, index) => (
           <li
-            key={index}
+            key={`${galleryId}-video-${index}`}
             className={cn(
-              "list-none p-0 m-0 w-28 h-16 md:w-40 md:h-24 absolute flex items-center justify-center rounded-xl md:rounded-2xl overflow-hidden cursor-pointer",
-              index === activeIndex
-                ? "dark:shadow-[0_0_50px_rgba(0,0,0,0.9)] shadow-[0_0_15px_rgba(0,0,0,0.2)]"
-                : ""
+              "list-none p-0 m-0 w-28 h-16 md:w-40 md:h-24 absolute flex items-center justify-center [corner-shape:squircle] rounded-2xl supports-[corner-shape]:rounded-[2rem] overflow-hidden cursor-pointer transition-shadow duration-300",
+              index === activeIndex &&
+                "dark:shadow-[0_0_50px_rgba(0,0,0,0.9)] shadow-[0_0_15px_rgba(0,0,0,0.2)]"
             )}
             onClick={() => handleCardClick(index)}
+            aria-label={`${title} - Video ${index + 1}`}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                handleCardClick(index);
+              }
+            }}
           >
             <video
               loop
-              muted={true}
-              playsInline={true}
+              muted
+              playsInline
               className="video-marquee w-full h-full object-cover pointer-events-none select-none"
               src={src}
               title={title}
+              aria-hidden="true"
             />
           </li>
         ))}

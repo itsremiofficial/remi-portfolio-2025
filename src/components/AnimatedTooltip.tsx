@@ -1,82 +1,94 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, type ReactNode } from "react";
 import gsap from "gsap";
 import { cn } from "../utils";
 
+// ===== CONSTANTS =====
+const ANIMATION_CONFIG = {
+  SHOW: {
+    duration: 0.3,
+    ease: "back.out(1.7)",
+    from: { opacity: 0, y: 20, scale: 0.6 },
+    to: { opacity: 1, y: 0, scale: 1 },
+  },
+  HIDE: {
+    duration: 0.2,
+    ease: "power2.in",
+    to: { opacity: 0, y: 20, scale: 0.6 },
+  },
+  POSITION: {
+    duration: 0.4,
+    ease: "elastic.out(1, 0.8)",
+  },
+} as const;
+
+// ===== TYPES =====
 type AnimatedTooltipProps = {
   id: number;
   className?: string;
   mains: string;
   subs?: string;
-  Children: React.ReactNode;
+  Children: ReactNode;
 };
 
-const AnimatedTooltip: React.FC<AnimatedTooltipProps> = ({
+// ===== COMPONENT =====
+const AnimatedTooltip = ({
   id,
   mains,
   subs,
   className,
   Children,
-}) => {
+}: AnimatedTooltipProps) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [shouldRenderTooltip, setShouldRenderTooltip] = useState(false);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Handle showing and hiding the tooltip
+  // Handle tooltip visibility with animations
   useEffect(() => {
     if (hoveredIndex === id) {
-      // Show tooltip
       setShouldRenderTooltip(true);
     } else if (tooltipRef.current) {
-      // Hide tooltip with animation, then unmount
       gsap.to(tooltipRef.current, {
-        opacity: 0,
-        y: 20,
-        scale: 0.6,
-        duration: 0.2,
-        ease: "power2.in",
+        ...ANIMATION_CONFIG.HIDE.to,
+        duration: ANIMATION_CONFIG.HIDE.duration,
+        ease: ANIMATION_CONFIG.HIDE.ease,
         onComplete: () => setShouldRenderTooltip(false),
       });
     }
   }, [hoveredIndex, id]);
 
-  // Animate in when tooltip is rendered
+  // Animate tooltip entrance
   useEffect(() => {
     if (shouldRenderTooltip && tooltipRef.current) {
       gsap.fromTo(
         tooltipRef.current,
-        { opacity: 0, y: 20, scale: 0.6 },
+        ANIMATION_CONFIG.SHOW.from,
         {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.3,
-          ease: "back.out(1.7)",
+          ...ANIMATION_CONFIG.SHOW.to,
+          duration: ANIMATION_CONFIG.SHOW.duration,
+          ease: ANIMATION_CONFIG.SHOW.ease,
         }
       );
     }
   }, [shouldRenderTooltip]);
 
-  // Handle mouse movement for tooltip position
+  // Handle mouse movement for tooltip positioning
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
     if (!tooltipRef.current) return;
 
     const halfWidth = event.currentTarget.offsetWidth / 2;
     const offsetX = event.nativeEvent.offsetX - halfWidth;
-
-    // Map the mouse position to translate value
     const translateX = offsetX / 2;
 
     gsap.to(tooltipRef.current, {
       x: translateX,
-      duration: 0.4,
-      ease: "elastic.out(1, 0.8)", // Similar to spring effect
+      duration: ANIMATION_CONFIG.POSITION.duration,
+      ease: ANIMATION_CONFIG.POSITION.ease,
     });
   };
 
   return (
     <div
-      // className={`-mr-4 relative group`}
       onMouseEnter={() => setHoveredIndex(id)}
       onMouseLeave={() => setHoveredIndex(null)}
     >
@@ -109,7 +121,7 @@ const AnimatedTooltip: React.FC<AnimatedTooltipProps> = ({
       )}
       <div
         ref={contentRef}
-        className={`${className}`}
+        className={className}
         onMouseMove={handleMouseMove}
       >
         {Children}

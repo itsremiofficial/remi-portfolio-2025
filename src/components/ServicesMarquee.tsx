@@ -49,7 +49,7 @@ const ServicesMarquee = () => {
       )}
     >
       {Array.from({ length: REPEAT }).flatMap((_, i) =>
-        SERVICES_MARQUEE.map(({ icon: Icon, title, subtitle }, j) => (
+        SERVICES_MARQUEE.map(({ icon: Icon, title, subtitle }) => (
           <div className="marquee-services" key={`${i}-${title}`}>
             <div className="px-[8vw] lg:px-[8vw]">
               <Icon className={ICON_CLASSES} />

@@ -18,7 +18,6 @@ import {
 import gsap from "gsap";
 import Services from "./sections/Services";
 import ServicesMarquee from "./components/ServicesMarquee";
-import FluidCursor from "./components/ui/fluidCursor";
 import Testimonials from "./sections/Testimonials";
 import Skills from "./sections/Skills";
 import { useScrollTo } from "./hooks/useLenis";
@@ -150,24 +149,6 @@ const App = () => {
         <Skills />
         <ServicesMarquee />
         <Testimonials />
-        <section
-          className="w-full min-h-screen flex items-center justify-center"
-          id="contact"
-        >
-          Contact
-        </section>
-        <section
-          className="w-full min-h-screen flex items-center justify-center"
-          id="contact"
-        >
-          Contact
-        </section>
-        <section
-          className="w-full min-h-screen flex items-center justify-center"
-          id="contact"
-        >
-          Contact
-        </section>
         <section
           className="w-full min-h-screen flex items-center justify-center"
           id="contact"

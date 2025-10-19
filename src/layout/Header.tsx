@@ -7,6 +7,7 @@ import React, {
   useMemo,
   useLayoutEffect,
 } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "../utils";
 import { useClickOutside } from "../hooks/outsideClick";
 import AnimatedText from "../components/AnimatedText";
@@ -403,7 +404,8 @@ const applyMorphState = (
   state: "small" | "full",
   width: string | number
 ) => {
-  const letters = state === "small" ? MORPH_TARGETS.COMPRESSED : MORPH_TARGETS.EXPANDED;
+  const letters =
+    state === "small" ? MORPH_TARGETS.COMPRESSED : MORPH_TARGETS.EXPANDED;
 
   gsap.set(target, { width });
   Object.entries(letters).forEach(([key, morphTarget]) => {
@@ -418,6 +420,8 @@ const applyMorphState = (
 const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
   const { scrollToElement } = useScrollTo();
   const { isDark } = useTheme();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isExpanded, setIsExpanded] = useState(false);
 
   const drawerRef = useRef<HTMLDivElement>(null);
@@ -428,7 +432,10 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
   const ease = useMemo(() => CustomEase.create("custom", CUSTOM_EASE), []);
 
   const sectionIds = useMemo(
-    () => MENU_ITEMS.map((item) => item.href.replace("#", "")),
+    () =>
+      MENU_ITEMS.filter((item) => !item.isRoute).map((item) =>
+        item.href.replace("#", "")
+      ),
     []
   );
   const activeSection = useActiveSection(sectionIds);
@@ -454,15 +461,37 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
   }, []);
 
   const handleNavItemClick = useCallback(
-    (elementId: string) => {
-      scrollToElement(elementId, {
-        offset: -100,
-        duration: 2.5,
-        easing: (t: number): number => ease(t),
-      });
-      setIsExpanded(false);
+    (item: { text: string; href: string; isRoute?: boolean }) => {
+      if (item.isRoute) {
+        // Navigate to route
+        navigate(item.href);
+        setIsExpanded(false);
+      } else {
+        // Scroll to element
+        const elementId = item.href.replace("#", "");
+
+        // If we're not on the home page, navigate first
+        if (location.pathname !== "/") {
+          navigate("/");
+          // Wait a bit for navigation, then scroll
+          setTimeout(() => {
+            scrollToElement(elementId, {
+              offset: -100,
+              duration: 2.5,
+              easing: (t: number): number => ease(t),
+            });
+          }, 500);
+        } else {
+          scrollToElement(elementId, {
+            offset: -100,
+            duration: 2.5,
+            easing: (t: number): number => ease(t),
+          });
+        }
+        setIsExpanded(false);
+      }
     },
-    [scrollToElement, ease]
+    [scrollToElement, ease, navigate, location.pathname]
   );
 
   useClickOutside(drawerRef, () => {
@@ -484,7 +513,11 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
 
       if (!menuContainerRef.current) return;
 
-      applyMorphState(menuContainerRef.current, animationState, animationState === "small" ? smallWidth : "100%");
+      applyMorphState(
+        menuContainerRef.current,
+        animationState,
+        animationState === "small" ? smallWidth : "100%"
+      );
 
       const handleScroll = () => {
         lastKnownScrollY = window.scrollY;
@@ -497,8 +530,12 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               animationState = newState;
               morphTimelineRef.current?.kill();
 
-              const targetWidth = animationState === "small" ? smallWidth : "100%";
-              const targetLetters = animationState === "small" ? MORPH_TARGETS.COMPRESSED : MORPH_TARGETS.EXPANDED;
+              const targetWidth =
+                animationState === "small" ? smallWidth : "100%";
+              const targetLetters =
+                animationState === "small"
+                  ? MORPH_TARGETS.COMPRESSED
+                  : MORPH_TARGETS.EXPANDED;
 
               morphTimelineRef.current = createMorphAnimation(
                 menuContainerRef.current,
@@ -529,7 +566,13 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
     mm.add(BREAKPOINTS.MENU, (context) => {
       const { sm, md, lg } = context.conditions as Record<string, boolean>;
 
-      const openHeight = sm ? MENU_HEIGHTS.SM : md ? MENU_HEIGHTS.MD : lg ? MENU_HEIGHTS.LG : MENU_HEIGHTS.XS;
+      const openHeight = sm
+        ? MENU_HEIGHTS.SM
+        : md
+        ? MENU_HEIGHTS.MD
+        : lg
+        ? MENU_HEIGHTS.LG
+        : MENU_HEIGHTS.XS;
       const closedHeight = MENU_HEIGHTS.CLOSED;
 
       const tl = gsap.timeline({ paused: true, immediateRender: false });
@@ -551,9 +594,9 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
           .to(
             menuContainerRef.current,
             {
-              borderRadius: 2,
+              borderRadius: "5rem",
               duration: 0.5,
-              ease: "power1.in",
+              // ease: "power1.in",
             },
             "<"
           )
@@ -650,7 +693,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
             menuContainerRef.current,
             {
               height: closedHeight,
-              borderRadius: "1.5rem",
+              borderRadius: "5rem",
               backgroundColor: isDark ? "#030711cc" : "#ffffff8a",
               duration: 0.6,
               ease: ANIMATION_EASE_IN,
@@ -676,10 +719,10 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
         <div
           ref={menuContainerRef}
           className={cn(
-            "absolute top-0 border w-full h-16 rounded-3xl z-[100] overflow-hidden origin-top-right space-y-3 backdrop-blur-2xl",
+            "absolute top-0 border w-full h-16 z-[100] overflow-hidden origin-top-right space-y-3 backdrop-blur-2xl",
             "bg-nav-background/10 dark:bg-nav-foreground/70",
             "border-black/10 dark:border-background/12",
-            "will-change-[width,height,borderRadius]"
+            "will-change-[width,height,borderRadius] [corner-shape:squircle] rounded-3xl supports-[corner-shape]:rounded-[15rem]"
           )}
         >
           <div className="menu_button flex justify-between items-center py-[17.20px] px-8 !m-0 will-change-[padding]">
@@ -713,14 +756,16 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
                 MENU
               </h4>
               {MENU_ITEMS.map((item, index) => {
-                const isActive = activeSection === item.href.replace("#", "");
+                const isActive = item.isRoute
+                  ? location.pathname === item.href
+                  : activeSection === item.href.replace("#", "");
                 return (
                   <NavItem
                     key={item.href}
                     item={item}
                     index={index}
                     isActive={isActive}
-                    onClick={() => handleNavItemClick(item.href.replace("#", ""))}
+                    onClick={() => handleNavItemClick(item)}
                     fontsLoaded={fontsLoaded}
                   />
                 );
@@ -742,7 +787,11 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
                 </h4>
                 <div className="social_icons flex items-center lg:gap-6 relative">
                   {socialPlatforms.map((platform, index) => (
-                    <SocialIcon key={platform.social} platform={platform} index={index} />
+                    <SocialIcon
+                      key={platform.social}
+                      platform={platform}
+                      index={index}
+                    />
                   ))}
                 </div>
               </div>

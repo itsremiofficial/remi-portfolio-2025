@@ -384,7 +384,7 @@ const EnhancedGalleryMarqueeItem = memo(() => {
       )}
     >
       <div className="inline-flex gap-4 items-center">
-        <div className="rounded-3xl md:rounded-4xl dark:bg-background/10 bg-foreground/10 overflow-hidden h-24 md:h-32 w-40 md:w-52 inline-flex justify-center">
+        <div className="dark:bg-background/10 bg-foreground/10 overflow-hidden h-24 md:h-32 w-40 md:w-52 inline-flex justify-center [corner-shape:squircle] rounded-4xl supports-[corner-shape]:rounded-[3rem]">
           <div
             ref={videoMarqueeRef}
             className="flex !justify-center !items-center h-24 md:h-32"
@@ -812,10 +812,8 @@ const Hero = () => {
 
       let timeline: gsap.core.Timeline | null = null;
 
-      // Handlers defined inside useGSAP to have access to timeline
       const handleMouseEnter = () => {
         if (!timeline) return;
-        // Smoothly slow down to 0 (pause) using timeScale
         gsap.to(timeline, {
           timeScale: 0,
           duration: 0.5,
@@ -825,7 +823,6 @@ const Hero = () => {
 
       const handleMouseLeave = () => {
         if (!timeline) return;
-        // Smoothly speed up to 1 (resume) using timeScale
         gsap.to(timeline, {
           timeScale: 1,
           duration: 0.5,
@@ -834,14 +831,12 @@ const Hero = () => {
       };
 
       document.fonts.ready.then(() => {
-        // Create and store the timeline reference
         timeline = horizontalLoop(".marquee-item", {
           repeat: -1,
           speed: 0.3,
         });
         marqueeTimelineRef.current = timeline;
 
-        // Add event listeners after timeline is created
         container.addEventListener("mouseenter", handleMouseEnter);
         container.addEventListener("mouseleave", handleMouseLeave);
       });
