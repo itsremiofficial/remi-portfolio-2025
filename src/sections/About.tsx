@@ -79,28 +79,17 @@ const About = () => {
         fullOpacityTargets = [...others, ...arrowGroup, ...lastSpanWords];
       }
 
-      // Enable smooth scrolling
-      gsap.set(sectionEl, { willChange: "transform" });
-
       const entranceTl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionEl,
           start: "top top",
           end: `+=${SCROLL_DISTANCE}%`,
-          scrub: 0.5,
+          scrub: true,
           pin: true,
           pinSpacing: true,
           anticipatePin: 1,
           refreshPriority: 1,
-          onLeave: () => {
-            gsap.set(sectionEl, { willChange: "auto" });
-          },
-          onEnterBack: () => {
-            gsap.set(sectionEl, { willChange: "transform" });
-          },
-          onLeaveBack: () => {
-            gsap.set(sectionEl, { willChange: "auto" });
-          },
+          invalidateOnRefresh: true,
         },
       });
 

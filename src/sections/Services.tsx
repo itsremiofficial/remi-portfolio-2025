@@ -264,9 +264,6 @@ const Services = () => {
         });
       });
 
-      // Enable GPU acceleration
-      gsap.set(parentPin, { willChange: "transform" });
-
       // Main timeline
       const tl = gsap.timeline({
         defaults: { ease: "none" },
@@ -276,17 +273,12 @@ const Services = () => {
           end: () => `+=${SCROLL_DISTANCE}`,
           pin: true,
           pinSpacing: false,
-          scrub: ANIMATION_CONFIG.CARD.SCRUB,
+          scrub: true,
           invalidateOnRefresh: true,
           anticipatePin: ANIMATION_CONFIG.CARD.ANTICIPATE_PIN,
           refreshPriority: ANIMATION_CONFIG.CARD.REFRESH_PRIORITY,
           onEnter: () => setInit(true),
-          onLeave: () => gsap.set(parentPin, { willChange: "auto" }),
-          onEnterBack: () => gsap.set(parentPin, { willChange: "transform" }),
-          onLeaveBack: () => {
-            setInit(false);
-            gsap.set(parentPin, { willChange: "auto" });
-          },
+          onLeaveBack: () => setInit(false),
           onRefreshInit: () => updateSpacer(),
         },
       });

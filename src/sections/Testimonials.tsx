@@ -216,7 +216,11 @@ const Testimonials = () => {
       .to(imageContainer, { opacity: 1, x: 0, duration: 0.8 })
       .call(() => updateTestimonial(0), [], 0.4);
 
-    const scrollDistance = window.innerHeight * TESTIMONIALS.length;
+    const scrollDistance = window.innerHeight * (TESTIMONIALS.length / 2);
+
+    console.log(scrollDistance);
+    console.log(window.innerHeight);
+    console.log(TESTIMONIALS.length / 2);
 
     const spacer = document.createElement("div");
     spacer.style.height = `${scrollDistance}px`;
@@ -224,22 +228,15 @@ const Testimonials = () => {
     section.insertAdjacentElement("afterend", spacer);
     spacerRef.current = spacer;
 
-    // Enable smooth scrolling
-    gsap.set(section, { willChange: "transform" });
-
     const st = ScrollTrigger.create({
       trigger: section,
       start: "top top",
       end: `+=${scrollDistance}`,
       pin: true,
       pinSpacing: false,
-      scrub: 0.5,
+      scrub: true,
       anticipatePin: 1,
-      snap: {
-        snapTo: 1 / TESTIMONIALS.length,
-        duration: { min: 0.2, max: 0.5 },
-        ease: "power1.inOut",
-      },
+      invalidateOnRefresh: true,
       onUpdate: (self) => {
         const slideIndex = Math.min(
           Math.floor(self.progress * TESTIMONIALS.length),
@@ -249,15 +246,6 @@ const Testimonials = () => {
         if (slideIndex !== currentIndexRef.current) {
           updateTestimonial(slideIndex);
         }
-      },
-      onLeave: () => {
-        gsap.set(section, { willChange: "auto" });
-      },
-      onEnterBack: () => {
-        gsap.set(section, { willChange: "transform" });
-      },
-      onLeaveBack: () => {
-        gsap.set(section, { willChange: "auto" });
       },
     });
 
@@ -311,7 +299,7 @@ const Testimonials = () => {
               top: targetScroll,
               behavior: "smooth",
             });
-            targetTestimonialIdRef.current = null; // Clear after scrolling
+            targetTestimonialIdRef.current = null;
           }, 100);
         }
       }
