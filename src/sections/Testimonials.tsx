@@ -218,10 +218,6 @@ const Testimonials = () => {
 
     const scrollDistance = window.innerHeight * (TESTIMONIALS.length / 2);
 
-    console.log(scrollDistance);
-    console.log(window.innerHeight);
-    console.log(TESTIMONIALS.length / 2);
-
     const spacer = document.createElement("div");
     spacer.style.height = `${scrollDistance}px`;
     spacer.style.pointerEvents = "none";

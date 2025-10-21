@@ -24,8 +24,8 @@ const Pill = memo(({ text }: { text: string }) => (
     className={cn(
       "text-xs md:text-sm leading-snug whitespace-nowrap",
       "px-3 md:px-5 py-0.5 md:py-1.5",
-      "border rounded-full border-foreground/20 dark:border-background/20",
-      "pointer-events-none select-none"
+      "border rounded-full border-foreground/15 dark:border-background/20",
+      "pointer-events-none select-none bg-white/50 dark:bg-transparent"
     )}
   >
     {text}
@@ -121,23 +121,30 @@ const AnimatedArrow = memo(() => {
 // Testimonial item component for better code organization
 const TestimonialItem = memo(
   ({
-    name,
+    src,
     text,
     testimonialId,
     forwardedRef,
     onClick,
   }: {
-    name: string;
+    src: string;
     text: string;
     testimonialId: string;
     forwardedRef: React.Ref<HTMLDivElement>;
     onClick: () => void;
   }) => (
     <div
-      className={`testimonial_hero ${testimonialId} w-[270px] md:w-[363.781px] w-inline-block bg-background/10 dark:bg-foreground/70 rounded-full border border-foreground/10 dark:border-background/10 backdrop-blur-md group/learnmore cursor-pointer`}
+      className={`testimonial_hero ${testimonialId} w-[270px] md:w-[363.781px] w-inline-block bg-white/40 dark:bg-foreground/70 rounded-full border border-foreground/10 dark:border-background/10 backdrop-blur-md group/learnmore cursor-pointer`}
       ref={forwardedRef}
     >
-      <div className={`div-block-100 ${name}`}></div>
+      <img
+        src={src}
+        className={cn(
+          `div-block-100 bg-cover bg-center border border-background/15 shadow-lg`
+          // testimonialId === "jack-moss" && "z-10 top-[-5.8em]",
+          // testimonialId === "murtaza-memon" && "z-0 top-[0.1em]"
+        )}
+      />
       <div className="flex flex-col items-start justify-center gap-2">
         <p className="m-0 relative text-balance text-xs">
           <span className="quote_mark">"</span>
@@ -147,7 +154,7 @@ const TestimonialItem = memo(
           className="relative text-decoration-none leading-none text-xs"
           onClick={onClick}
         >
-          <div className="font-medium group-hover/learnmore:text-accent transition-colors duration-300">
+          <div className="font-medium text-background/50 group-hover/learnmore:text-accent transition-colors duration-300">
             Learn more
           </div>
           <div className="w-0 h-[1px] left-0 absolute bg-accent group-hover/learnmore:w-full transition-all duration-300"></div>
@@ -324,14 +331,14 @@ const TestimonialsMarqueeItem = memo(
         )}
       >
         <div
-          className="testimonials_highlights flex items-center justify-center w-80 md:w-90 h-28 md:h-28"
+          className="testimonials_highlights flex items-center justify-center w-80 md:w-90 h-28 md:h-28 "
           ref={testimonialContainerRef}
         >
           <div className="absolute flex items-center justify-center w-full h-0">
             {displayTestimonials.map((testimonial, index) => (
               <TestimonialItem
                 key={testimonial.id}
-                name={testimonial.id}
+                src={testimonial.shortSrc as string}
                 text={testimonial.quote.substring(0, 70) + "..."}
                 testimonialId={testimonial.id}
                 forwardedRef={(el) => {
@@ -384,7 +391,7 @@ const EnhancedGalleryMarqueeItem = memo(() => {
       )}
     >
       <div className="inline-flex gap-4 items-center">
-        <div className="dark:bg-background/10 bg-foreground/10 overflow-hidden h-24 md:h-32 w-40 md:w-52 inline-flex justify-center [corner-shape:squircle] rounded-4xl supports-[corner-shape]:rounded-[3rem]">
+        <div className="dark:bg-foreground bg-white/60 border border-foreground/15 dark:border-background/10 overflow-hidden h-24 md:h-32 w-40 md:w-52 inline-flex justify-center [corner-shape:squircle] rounded-4xl supports-[corner-shape]:rounded-[3rem]">
           <div
             ref={videoMarqueeRef}
             className="flex !justify-center !items-center h-24 md:h-32"
@@ -451,8 +458,8 @@ const PillsMarqueeItem = memo(
               className={cn(
                 "text-xs md:text-sm leading-snug whitespace-nowrap relative",
                 "px-3 md:px-5 py-0.5 md:py-1.5",
-                "border rounded-full border-foreground/20 dark:border-background/20",
-                "select-none",
+                "border rounded-full border-foreground/15 dark:border-background/20",
+                "select-none bg-white/50 dark:bg-transparent",
                 "hover:border-accent hover:bg-accent hover:text-background",
                 "pill5 group/arrow relative overflow-hidden min-w-max",
                 "transition-all duration-300 cursor-pointer group/arrow"

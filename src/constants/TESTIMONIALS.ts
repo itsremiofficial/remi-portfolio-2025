@@ -5,6 +5,7 @@ export interface Testimonial {
   subname: string;
   designation: string;
   src: string;
+  shortSrc?: string;
 }
 
 export const TESTIMONIALS: Testimonial[] = [
@@ -16,6 +17,7 @@ export const TESTIMONIALS: Testimonial[] = [
     quote:
       "Working with Rehman was amazing! He’s great at web design and development, turning ideas into reality with skill and creativity. His clear communication and attention to detail made everything easy. Highly recommend him!",
     src: "testimonials/MurtazaMemon.avif",
+    shortSrc: "testimonials/MurtazaMemonSmall.avif",
   },
   {
     id: "jack-moss",
@@ -25,6 +27,7 @@ export const TESTIMONIALS: Testimonial[] = [
     quote:
       "I have worked with Remi for couple of years. His designs are amazing and high detailed, with the fastest turnaround time I have seen. As for his websites, they are extremely well made and astonishingly fast. Zero corners are cut and he goes above and beyond to make my requests with 100% perfection.",
     src: "testimonials/JackMoss.avif",
+    shortSrc: "testimonials/JackMossSmall.avif",
   },
   {
     id: "zeshan-nawaz",

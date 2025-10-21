@@ -125,7 +125,8 @@ body {
 }
 
 body {
-  @apply bg-background dark:bg-foreground transition-colors duration-300 ease-in-out font-robo;
+  text-rendering: optimizeLegibility;
+  @apply antialiased  bg-background dark:bg-foreground transition-colors duration-300 ease-in-out font-robo;
 }
 
 .grain {
@@ -306,18 +307,6 @@ body {
   @apply rounded-full;
 }
 
-.div-block-100.jack-moss {
-  background-image: url("/testimonials/JackMossSmall.avif");
-  background-position: 50%;
-  background-size: cover;
-}
-
-.div-block-100.murtaza-memon {
-  background-image: url("/testimonials/MurtazaMemonSmall.avif");
-  background-position: 50%;
-  background-size: cover;
-}
-
 @media (max-width: 768px) {
   .div-block-100 {
     width: 3em;
@@ -347,17 +336,6 @@ body {
   align-items: stretch;
   display: flex;
   position: absolute;
-}
-
-.testimonial_hero.jack-moss {
-  z-index: 1;
-  display: flex;
-  top: -5.8em;
-}
-
-.testimonial_hero.murtaza-memon {
-  z-index: 0;
-  top: 0.1em;
 }
 
 .div-block-101 {
@@ -525,6 +503,7 @@ body {
   will-change: transform, filter;
   filter: blur(0px) drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
   transition: filter 0.8s cubic-bezier(0.215, 0.61, 0.355, 1);
+  @apply border border-foreground/30;
 }
 
 .quote .word {
