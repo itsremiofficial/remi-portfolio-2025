@@ -594,7 +594,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
           .to(
             menuContainerRef.current,
             {
-              borderRadius: "5rem",
+              // borderRadius: "3rem",
               duration: 0.5,
               // ease: "power1.in",
             },
@@ -693,7 +693,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
             menuContainerRef.current,
             {
               height: closedHeight,
-              borderRadius: "5rem",
+              // borderRadius: "5rem",
               backgroundColor: isDark ? "#030711cc" : "#ffffff8a",
               duration: 0.6,
               ease: ANIMATION_EASE_IN,
@@ -714,7 +714,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
     <header className="sticky right-0 top-0 p-4 z-[99] h-24">
       <div
         ref={drawerRef}
-        className="flex items-center justify-center group/button relative w-full h-full"
+        className="flex items-center justify-center group/headerbutton relative size-full"
       >
         <div
           ref={menuContainerRef}
@@ -722,9 +722,14 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
             "absolute top-0 border w-full h-16 z-[100] overflow-hidden origin-top-right space-y-3 backdrop-blur-2xl",
             "bg-nav-background/10 dark:bg-nav-foreground/70",
             "border-black/10 dark:border-background/12",
-            "will-change-[width,height,borderRadius] [corner-shape:squircle] rounded-3xl supports-[corner-shape]:rounded-[15rem]"
+            "will-change-[width,height,borderRadius] squircle rounded-3xl"
           )}
         >
+          {/* <div
+            className={cn(
+              "absolute left-1 top-1 !h-13.5 w-0 group-hover/headerbutton:w-[calc(100%-0.5rem)] group-hover/headerbutton:transition-[width] duration-1000 bg-white/5 rounded-3xl squircle z-[101] pointer-events-none"
+            )}
+          /> */}
           <div className="menu_button flex justify-between items-center py-[17.20px] px-8 !m-0 will-change-[padding]">
             <a href="/" aria-label="Home">
               <Logo ref={logoRef} />

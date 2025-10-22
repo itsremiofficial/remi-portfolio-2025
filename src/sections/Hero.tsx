@@ -141,8 +141,6 @@ const TestimonialItem = memo(
         src={src}
         className={cn(
           `div-block-100 bg-cover bg-center border border-background/15 shadow-lg`
-          // testimonialId === "jack-moss" && "z-10 top-[-5.8em]",
-          // testimonialId === "murtaza-memon" && "z-0 top-[0.1em]"
         )}
       />
       <div className="flex flex-col items-start justify-center gap-2">
@@ -154,7 +152,7 @@ const TestimonialItem = memo(
           className="relative text-decoration-none leading-none text-xs"
           onClick={onClick}
         >
-          <div className="font-medium text-background/50 group-hover/learnmore:text-accent transition-colors duration-300">
+          <div className="font-medium text-foreground/70 dark:text-background/50 group-hover/learnmore:text-accent transition-colors duration-300">
             Learn more
           </div>
           <div className="w-0 h-[1px] left-0 absolute bg-accent group-hover/learnmore:w-full transition-all duration-300"></div>
@@ -391,7 +389,7 @@ const EnhancedGalleryMarqueeItem = memo(() => {
       )}
     >
       <div className="inline-flex gap-4 items-center">
-        <div className="dark:bg-foreground bg-white/60 border border-foreground/15 dark:border-background/10 overflow-hidden h-24 md:h-32 w-40 md:w-52 inline-flex justify-center [corner-shape:squircle] rounded-4xl supports-[corner-shape]:rounded-[3rem]">
+        <div className="dark:bg-foreground bg-white/60 border border-foreground/15 dark:border-background/10 overflow-hidden h-24 md:h-32 w-40 md:w-52 inline-flex justify-center squircle rounded-3xl">
           <div
             ref={videoMarqueeRef}
             className="flex !justify-center !items-center h-24 md:h-32"

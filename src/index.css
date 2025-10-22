@@ -527,3 +527,16 @@ body {
     -1.5px -27.2px 30.6px -2.5px hsl(var(--shadow-color) / 0.32);
   box-shadow: var(--shadow-elevation-high);
 }
+
+@supports (corner-shape: squircle) {
+  .squircle {
+    corner-shape: squircle;
+  }
+
+  .squircle.rounded-2xl {
+    border-radius: 2rem;
+  }
+  .squircle.rounded-3xl {
+    border-radius: 3rem;
+  }
+}

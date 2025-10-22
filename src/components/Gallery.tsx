@@ -233,7 +233,7 @@ const Gallery = ({
           <li
             key={`${galleryId}-video-${index}`}
             className={cn(
-              "list-none p-0 m-0 w-28 h-16 md:w-40 md:h-24 absolute flex items-center justify-center [corner-shape:squircle] rounded-2xl supports-[corner-shape]:rounded-[2rem] overflow-hidden cursor-pointer transition-shadow duration-300",
+              "list-none p-0 m-0 w-28 h-16 md:w-40 md:h-24 absolute flex items-center justify-center squircle rounded-2xl overflow-hidden cursor-pointer transition-shadow duration-300",
               index === activeIndex &&
                 "dark:shadow-[0_0_50px_rgba(0,0,0,0.9)] shadow-[0_0_15px_rgba(0,0,0,0.2)]"
             )}
