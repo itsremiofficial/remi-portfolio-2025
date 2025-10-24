@@ -540,3 +540,35 @@ body {
     border-radius: 3rem;
   }
 }
+
+/* 3D GALLERY CAROUSEL */
+.gallery_box_in a {
+  display: flex;
+  align-items: center;
+  justify-items: center;
+  font-size: 1.5rem;
+  margin: auto;
+  color: #ffffff;
+  font-family: var(--font-robo);
+}
+
+.gallery_box_in h3 {
+  margin: auto;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.gallery_box {
+  transform-style: preserve-3d;
+}
+
+.gallery_box_outer {
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.gallery_box_in {
+  position: absolute;
+  background-position: center center;
+  background-size: cover;
+  will-change: transform;
+}

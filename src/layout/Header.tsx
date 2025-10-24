@@ -423,11 +423,14 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isExpanded, setIsExpanded] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   const drawerRef = useRef<HTMLDivElement>(null);
   const menuContainerRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<SVGSVGElement>(null);
   const morphTimelineRef = useRef<gsap.core.Timeline | null>(null);
+  const scrollProgressRef = useRef<HTMLDivElement>(null);
+  const scrollProgressMaskRef = useRef<HTMLDivElement>(null);
 
   const ease = useMemo(() => CustomEase.create("custom", CUSTOM_EASE), []);
 
@@ -592,9 +595,18 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
             "start"
           )
           .to(
+            scrollProgressMaskRef.current,
+            {
+              height: 68, // 56px base + 10px extra when expanded
+              duration: 0.8,
+              ease: CUSTOM_EASE,
+            },
+            "start"
+          )
+          .to(
             menuContainerRef.current,
             {
-              // borderRadius: "3rem",
+              borderRadius: "3rem",
               duration: 0.5,
               // ease: "power1.in",
             },
@@ -700,6 +712,15 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               force3D: true,
             },
             "<"
+          )
+          .to(
+            scrollProgressMaskRef.current,
+            {
+              height: 54,
+              duration: 0.6,
+              ease: ANIMATION_EASE_IN,
+            },
+            "<"
           );
       }
 
@@ -709,6 +730,54 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
 
     return () => mm.kill();
   }, [isExpanded, isDark]);
+
+  // Scroll progress animation
+  useLayoutEffect(() => {
+    let ticking = false;
+    const progressBar = scrollProgressRef.current;
+    const progressMask = scrollProgressMaskRef.current;
+    const menuContainer = menuContainerRef.current;
+
+    if (!progressBar || !progressMask || !menuContainer) return;
+
+    const updateScrollProgress = () => {
+      const scrollTop = window.scrollY;
+      const docHeight =
+        document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPercent = Math.min((scrollTop / docHeight) * 100, 100);
+
+      setScrollProgress(scrollPercent);
+
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const menuWidth = menuContainer.offsetWidth;
+          const padding = 8; // 4px left + 4px right = 8px total
+          const availableWidth = menuWidth - padding;
+          const targetWidth = (scrollPercent / 100) * availableWidth;
+
+          gsap.to(progressBar, {
+            width: targetWidth,
+            duration: 0.3,
+            ease: "power2.out",
+          });
+
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    // Initial calculation
+    updateScrollProgress();
+
+    window.addEventListener("scroll", updateScrollProgress, { passive: true });
+    window.addEventListener("resize", updateScrollProgress, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", updateScrollProgress);
+      window.removeEventListener("resize", updateScrollProgress);
+    };
+  }, [isExpanded]);
 
   return (
     <header className="sticky right-0 top-0 p-4 z-[99] h-24">
@@ -725,12 +794,21 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
             "will-change-[width,height,borderRadius] squircle rounded-3xl"
           )}
         >
-          {/* <div
-            className={cn(
-              "absolute left-1 top-1 !h-13.5 w-0 group-hover/headerbutton:w-[calc(100%-0.5rem)] group-hover/headerbutton:transition-[width] duration-1000 bg-white/5 rounded-3xl squircle z-[101] pointer-events-none"
-            )}
-          /> */}
-          <div className="menu_button flex justify-between items-center py-[17.20px] px-8 !m-0 will-change-[padding]">
+          {/* Scroll Progress Bar - Clipping Mask Container */}
+          <div
+            ref={scrollProgressMaskRef}
+            className="absolute left-[4px] top-[4px] right-[4px] bottom-[4px] rounded-3xl squircle z-[0] pointer-events-none overflow-hidden will-change-[height]"
+          >
+            {/* Inner Progress Fill */}
+            <div
+              ref={scrollProgressRef}
+              className="absolute left-0 top-0 h-full bg-accent/20 dark:bg-background/5 rounded-3xl squircle will-change-[width]"
+              style={{ width: 0 }}
+            />
+          </div>
+
+          {/* MAIN MENU CONTENT */}
+          <div className="menu_button relative z-[1] flex justify-between items-center py-[17.20px] px-8 !m-0 will-change-[padding]">
             <a href="/" aria-label="Home">
               <Logo ref={logoRef} />
             </a>
@@ -748,7 +826,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
           </div>
 
           <div className="space-y-6 md:space-y-8 px-6 md:px-8">
-            <nav className="nav-links-container flex flex-col gap-2">
+            <nav className="nav-links-container flex flex-col gap-2 mt-4">
               <h4
                 className={cn(
                   "nav-links-heading select-none",
@@ -831,7 +909,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               </div>
             </div>
 
-            <div className="flex items-end justify-between font-mono tracking-widest text-foreground/70 dark:text-background/50 text-xs md:pt-4">
+            <div className="flex items-end justify-between font-mono tracking-widest text-foreground/70 dark:text-background/50 text-xs md:pt-1">
               <TimeDisplay
                 timeType="time"
                 className="nav-links-heading"

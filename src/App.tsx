@@ -20,6 +20,7 @@ import Services from "./sections/Services";
 import ServicesMarquee from "./components/ServicesMarquee";
 import Testimonials from "./sections/Testimonials";
 import Skills from "./sections/Skills";
+import ProjectsGallery from "./sections/ProjectsGallery";
 import { useScrollTo } from "./hooks/useLenis";
 
 gsap.registerPlugin(
@@ -145,6 +146,7 @@ const App = () => {
         <WelcomeMarquee />
         <About />
         <Works />
+        <ProjectsGallery />
         <Services />
         <Skills />
         <ServicesMarquee />
