@@ -141,7 +141,7 @@ const App = () => {
       <Header fontsLoaded={fontsLoaded} />
 
       <main className="overflow-x-hidden text-foreground dark:text-background relative">
-        {/* <Skills /> */}
+        {/* <Scene /> */}
         <Hero />
         <WelcomeMarquee />
         <About />

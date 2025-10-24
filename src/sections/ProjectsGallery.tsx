@@ -1,197 +1,318 @@
-import { useRef } from "react";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/all";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useRef, useState, useEffect } from "react";
+import { Canvas, useFrame, extend } from "@react-three/fiber";
+import { Image, useTexture } from "@react-three/drei";
+import * as THREE from "three";
+import { damp3, damp } from "maath/easing";
 
-gsap.registerPlugin(ScrollTrigger);
+// Global scroll progress tracker
+let scrollProgress = 0;
 
-interface Project {
-  title: string;
-  image: string;
-  href: string;
+// Custom Bent Plane Geometry
+class BentPlaneGeometry extends THREE.PlaneGeometry {
+  constructor(
+    radius: number,
+    ...args: ConstructorParameters<typeof THREE.PlaneGeometry>
+  ) {
+    super(...args);
+
+    const width = this.parameters.width;
+    const halfWidth = width * 0.5;
+
+    const p1 = new THREE.Vector2(-halfWidth, 0);
+    const p2 = new THREE.Vector2(0, radius);
+    const p3 = new THREE.Vector2(halfWidth, 0);
+
+    const v1 = new THREE.Vector2().subVectors(p1, p2);
+    const v2 = new THREE.Vector2().subVectors(p2, p3);
+    const v3 = new THREE.Vector2().subVectors(p1, p3);
+
+    const circleRadius =
+      (v1.length() * v2.length() * v3.length()) / (2 * Math.abs(v1.cross(v2)));
+
+    const center = new THREE.Vector2(0, radius - circleRadius);
+    const angleTotal =
+      2 * (new THREE.Vector2().subVectors(p1, center).angle() - 0.5 * Math.PI);
+
+    const uvAttr = this.attributes.uv;
+    const posAttr = this.attributes.position;
+    const point = new THREE.Vector2();
+
+    for (let i = 0; i < uvAttr.count; i++) {
+      const u = 1 - uvAttr.getX(i);
+      const y = posAttr.getY(i);
+
+      point.copy(p3).rotateAround(center, angleTotal * u);
+      posAttr.setXYZ(i, point.x, y, -point.y);
+    }
+
+    posAttr.needsUpdate = true;
+  }
 }
 
-const projects: Project[] = [
-  {
-    title: "Brand Identity",
-    image:
-      "https://images.unsplash.com/photo-1526413232644-8a40f03cc03b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80",
-    href: "/works",
-  },
-  {
-    title: "Web Design",
-    image: "https://source.unsplash.com/HtUBBdNDxpQ",
-    href: "/works",
-  },
-  {
-    title: "Lead Generation",
-    image: "https://source.unsplash.com/D6odQjxbAjA",
-    href: "/works",
-  },
-  {
-    title: "Digital Marketing",
-    image: "https://source.unsplash.com/-heLWtuAN3c",
-    href: "/works",
-  },
-  {
-    title: "Interactive Ads",
-    image: "https://source.unsplash.com/PP8Escz15d8",
-    href: "/works",
-  },
-  {
-    title: "Video Production",
-    image: "https://source.unsplash.com/D6odQjxbAjA",
-    href: "/works",
-  },
-  {
-    title: "E-Commerce",
-    image:
-      "https://images.unsplash.com/photo-1531727991582-cfd25ce79613?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80",
-    href: "/works",
-  },
-  {
-    title: "3D Design",
-    image:
-      "https://images.unsplash.com/photo-1580215935060-a5adc57c5157?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80",
-    href: "/works",
-  },
-  {
-    title: "Motion Design",
-    image:
-      "https://images.unsplash.com/photo-1505201372024-aedc618d47c3?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80",
-    href: "/works",
-  },
-];
+// Sine-Wave Animated Material
+class MeshSineMaterial extends THREE.MeshBasicMaterial {
+  time: { value: number };
 
+  constructor(params: THREE.MeshBasicMaterialParameters = {}) {
+    super(params);
+    this.setValues(params);
+    this.time = { value: 0 };
+  }
+
+  onBeforeCompile(shader: any) {
+    shader.uniforms.time = this.time;
+    shader.vertexShader = `
+      uniform float time;
+      ${shader.vertexShader}
+    `;
+
+    shader.vertexShader = shader.vertexShader.replace(
+      "#include <begin_vertex>",
+      `vec3 transformed = vec3(position.x, position.y + sin(time + uv.x * PI * 4.0) / 4.0, position.z);`
+    );
+  }
+}
+
+// Extend Three.js objects
+extend({ BentPlaneGeometry, MeshSineMaterial });
+
+// Declare module for TypeScript
+declare module "@react-three/fiber" {
+  interface ThreeElements {
+    bentPlaneGeometry: any;
+    meshSineMaterial: any;
+  }
+}
+
+// Carousel Container Component
+function CarouselContainer({ children, count = 8, ...props }: any) {
+  const groupRef = useRef<THREE.Group>(null!);
+  const targetRotation = useRef(0);
+
+  useFrame((state, delta) => {
+    if (groupRef.current) {
+      // Calculate target rotation based on scroll progress
+      const fullRotation = Math.PI * 2;
+      const rotationToShowAllImages = fullRotation * ((count - 1) / count);
+      targetRotation.current = -scrollProgress * rotationToShowAllImages;
+
+      // Smoothly interpolate to target rotation
+      groupRef.current.rotation.y +=
+        (targetRotation.current - groupRef.current.rotation.y) * 0.1;
+    }
+
+    // Camera follow mouse with damp3
+    damp3(
+      state.camera.position,
+      [-(state.pointer.x * 2), state.pointer.y + 1.5, 10],
+      0.3,
+      delta
+    );
+    state.camera.lookAt(0, 0, 0);
+  });
+
+  return (
+    <group ref={groupRef} {...props}>
+      {children}
+    </group>
+  );
+}
+
+// Individual Card Component
+function ProjectCard({
+  url,
+  position,
+  rotation,
+}: {
+  url: string;
+  position: [number, number, number];
+  rotation: [number, number, number];
+}) {
+  const ref = useRef<any>(null);
+  const [hovered, setHovered] = useState(false);
+
+  useFrame((state, delta) => {
+    if (ref.current) {
+      // Scale animation on hover
+      damp3(ref.current.scale, hovered ? 1.15 : 1, 0.1, delta);
+
+      // Radius animation on hover
+      damp(ref.current.material, "radius", hovered ? 0.25 : 0.1, 0.2, delta);
+
+      // Zoom animation on hover
+      damp(ref.current.material, "zoom", hovered ? 0.75 : 0.85, 0.2, delta);
+    }
+  });
+
+  return (
+    <Image
+      ref={ref}
+      url={url}
+      transparent
+      side={THREE.DoubleSide}
+      position={position}
+      rotation={rotation}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        setHovered(true);
+      }}
+      onPointerOut={() => setHovered(false)}
+    >
+      <bentPlaneGeometry args={[0.1, 1, 1, 20, 20]} />
+    </Image>
+  );
+}
+
+// Carousel of Images
+function Carousel({
+  radius = 1.4,
+  count = 8,
+}: {
+  radius?: number;
+  count?: number;
+}) {
+  return (
+    <>
+      {Array.from({ length: count }, (_, i) => (
+        <ProjectCard
+          key={i}
+          url={`/flip/img${Math.floor(i % 10) + 1}.png`}
+          position={[
+            Math.sin((i / count) * Math.PI * 2) * radius,
+            0,
+            Math.cos((i / count) * Math.PI * 2) * radius,
+          ]}
+          rotation={[0, Math.PI + (i / count) * Math.PI * 2, 0]}
+        />
+      ))}
+    </>
+  );
+}
+
+// Cylindrical Ribbon Component
+function Ribbon({
+  position,
+  count = 8,
+}: {
+  position: [number, number, number];
+  count?: number;
+}) {
+  const meshRef = useRef<THREE.Mesh>(null!);
+  const timeRef = useRef(0);
+  const targetRotation = useRef(0);
+
+  // Load SVG texture
+  const texture = useTexture("/guri0.svg");
+  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+
+  useFrame((_state, delta) => {
+    if (meshRef.current) {
+      // Calculate target rotation based on scroll progress (same as carousel)
+      const fullRotation = Math.PI * 2;
+      const rotationToShowAllImages = fullRotation * ((count - 1) / count);
+      targetRotation.current = -scrollProgress * rotationToShowAllImages;
+
+      // Smoothly interpolate to target rotation (same as carousel for sync)
+      meshRef.current.rotation.y +=
+        (targetRotation.current - meshRef.current.rotation.y) * 0.1;
+
+      // Animate material
+      if (meshRef.current.material) {
+        const material = meshRef.current.material as MeshSineMaterial;
+
+        // Animate time for wave effect - slower animation
+        timeRef.current += 0.5 * delta;
+        material.time.value = timeRef.current;
+
+        // Animate texture offset - slower scrolling
+        if (material.map) {
+          material.map.offset.x += delta / 4;
+        }
+      }
+    }
+  });
+
+  return (
+    <mesh ref={meshRef} position={position}>
+      <cylinderGeometry args={[1.56, 1.56, 0.14, 128, 16, true]} />
+      <meshSineMaterial
+        map={texture}
+        map-anisotropy={16}
+        map-repeat={[20, 1]}
+        side={THREE.DoubleSide}
+        toneMapped={false}
+      />
+    </mesh>
+  );
+}
+
+// Main 3D Scene
+function Scene() {
+  const imageCount = 8;
+
+  return (
+    <>
+      <CarouselContainer rotation={[0, 0, 0.15]} count={imageCount}>
+        <Carousel count={imageCount} />
+      </CarouselContainer>
+      <Ribbon position={[0, -0.15, 0]} count={imageCount} />
+    </>
+  );
+}
+
+// Main Component
 const ProjectsGallery = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  const galleryBoxRef = useRef<HTMLDivElement>(null);
-  const galleryOuterRef = useRef<HTMLDivElement>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null);
 
-  useGSAP(
-    () => {
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!sectionRef.current) return;
+
       const section = sectionRef.current;
-      const galleryBox = galleryBoxRef.current;
-      const galleryOuter = galleryOuterRef.current;
-      const heading = headingRef.current;
+      const rect = section.getBoundingClientRect();
+      const sectionHeight = section.offsetHeight;
+      const viewportHeight = window.innerHeight;
 
-      if (!section || !galleryBox || !galleryOuter || !heading) return;
+      // Calculate scroll progress through the section
+      // When section top hits viewport top, progress = 0
+      // When section bottom hits viewport top, progress = 1
+      const scrollableDistance = sectionHeight - viewportHeight;
+      const scrolled = -rect.top;
 
-      const mm = gsap.matchMedia();
+      // Clamp between 0 and 1
+      scrollProgress = Math.max(0, Math.min(1, scrolled / scrollableDistance));
+    };
 
-      // Reduced motion - static display
-      mm.add("(prefers-reduced-motion: reduce)", () => {
-        gsap.set([galleryOuter, heading], {
-          autoAlpha: 1,
-          clearProps: "transform",
-        });
-      });
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // Initial calculation
 
-      // Full motion - animated
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
-        // Heading fade in animation
-        gsap.fromTo(
-          heading,
-          {
-            autoAlpha: 0,
-            y: 50,
-          },
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: 1,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: heading,
-              start: "top 80%",
-              end: "top 60%",
-              scrub: 0.5,
-            },
-          }
-        );
-
-        // 3D carousel rotation animation with pinning
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: section,
-            start: "top top",
-            end: "+=4000",
-            scrub: 1.5,
-            pin: galleryBox,
-            anticipatePin: 1,
-          },
-        });
-
-        tl.to(galleryOuter, {
-          rotateY: -360,
-          rotateX: 30,
-          ease: "none",
-        });
-
-        return () => tl.kill();
-      });
-
-      return () => mm.revert();
-    },
-    { scope: sectionRef }
-  );
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   return (
     <section
       id="projects-gallery"
       ref={sectionRef}
-      className="w-full relative py-20 md:py-32"
-      style={{ minHeight: "100vh" }}
+      className="relative w-full"
+      style={{ height: "300vh" }}
       aria-label="Projects Gallery"
     >
-      <div className="container mx-auto px-4 md:px-6 lg:px-8 mb-20 md:mb-32">
-        <h2
-          ref={headingRef}
-          className="section-heading text-foreground dark:text-background text-center md:text-left"
-        >
-          Featured <span className="text-accent">Projects</span>
-        </h2>
-      </div>
-
-      <div
-        ref={galleryBoxRef}
-        className="gallery_box w-full flex items-center justify-center"
-        style={{
-          transformStyle: "preserve-3d",
-          minHeight: "60vh"
-        }}
-      >
-        <div
-          ref={galleryOuterRef}
-          className="gallery_box_outer w-[280px] h-[180px] sm:w-[320px] sm:h-[200px] md:w-[400px] md:h-[260px] lg:w-[500px] lg:h-[320px] relative"
-          style={{
-            transform: "perspective(1200px) rotateX(-8deg)",
-            transformStyle: "preserve-3d",
+      <div className="sticky top-0 left-0 h-screen w-screen z-10">
+        <Canvas
+          camera={{ position: [0, 0, 100], fov: 15 }}
+          gl={{
+            antialias: true,
+            alpha: true,
+            premultipliedAlpha: false,
           }}
+          style={{ background: "transparent" }}
+          dpr={[1, 2]}
         >
-          {projects.map((project, index) => (
-            <div
-              key={index}
-              className="gallery_box_in group w-full h-full absolute bg-center bg-cover rounded-3xl bg-gray-300/50 dark:bg-gray-700/50 transition-transform duration-300 ease-out hover:scale-110"
-              style={{
-                backgroundImage: `url(${project.image})`,
-                transform: `rotateY(${index * 40}deg) translateZ(400px)`,
-              }}
-            >
-              <a
-                href={project.href}
-                className="flex items-center justify-center w-full h-full text-white font-robo relative overflow-hidden"
-                aria-label={`View ${project.title} project`}
-              >
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <h3 className="relative text-xl sm:text-2xl lg:text-3xl font-bold text-center drop-shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-4 z-10">
-                  {project.title}
-                </h3>
-              </a>
-            </div>
-          ))}
-        </div>
+          <Scene />
+        </Canvas>
       </div>
     </section>
   );
