@@ -145,7 +145,7 @@ const App = () => {
         <Hero />
         <WelcomeMarquee />
         <About />
-        <Works />
+        {/* <Works /> */}
         <ProjectsGallery />
         <Services />
         <Skills />
