@@ -48,8 +48,8 @@ const BREAKPOINTS = {
 
 const MENU_HEIGHTS = {
   CLOSED: 64,
-  XS: 480,
-  SM: 500,
+  XS: 500,
+  SM: 540,
   MD: 540,
   LG: 640,
 } as const;

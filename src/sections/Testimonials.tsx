@@ -327,20 +327,20 @@ const Testimonials = () => {
       id="testimonials"
     >
       <div className="w-full max-w-7xl p-8">
-        <div className="grid gap-20 grid-cols-1 md:grid-cols-5 !h-96 w-full">
+        <div className="grid gap-20 grid-cols-1 lg:grid-cols-5 w-full">
           <div
-            className="relative w-60 !h-full col-span-2 mt-14 place-self-center flex items-center justify-center"
+            className="relative w-60 h-96 lg:h-full lg:col-span-2 mt-14 place-self-center flex items-end lg:items-center justify-center"
             ref={imageContainerRef}
           />
 
-          <div className="flex flex-col mt-28 md:mt-0 justify-start col-span-3 h-full w-full text-center md:text-left">
-            <div>
+          <div className="flex flex-col mt-28 md:mt-0 justify-center lg:justify-start lg:col-span-3 w-full text-center md:text-left h-96">
+            <div className="text-center lg:text-left">
               <h3
                 className="text-8xl leading-[0.8] font-grandbold bg-gradient-to-b from-accent via-accent to-foreground bg-clip-text text-transparent mb-1"
                 ref={nameRef}
               />
               <h3
-                className="text-8xl leading-[0.2] font-grandbold text-foreground dark:text-background mb-8 [-webkit-text-stroke:1.5px_var(--color-background)] dark:[-webkit-text-stroke:3px_var(--color-foreground)]"
+                className="text-8xl leading-[0.4] lg:leading-[0.2] font-grandbold text-foreground dark:text-background mb-8 [-webkit-text-stroke:1.5px_var(--color-background)] dark:[-webkit-text-stroke:3px_var(--color-foreground)]"
                 ref={subnameRef}
               />
               <p
@@ -349,9 +349,9 @@ const Testimonials = () => {
               />
             </div>
 
-            <div>
+            <div className="flex justify-center">
               <p
-                className="text-foreground text-balance dark:text-background/70 leading-loose mb-4"
+                className="text-foreground w-full text-balance dark:text-background/70 leading-loose mb-4 text-center lg:text-left"
                 ref={quoteRef}
               />
             </div>

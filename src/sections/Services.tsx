@@ -12,7 +12,6 @@ import { ScrollTrigger } from "gsap/all";
 import { cn } from "../utils";
 import { EXPERTIES } from "../constants/EXPERTIES";
 import { useResponsiveVars } from "../hooks/useResponsiveVars";
-import { useRadius } from "../hooks/useRadius";
 
 // ===== CONSTANTS =====
 const ANIMATION_CONFIG = {
@@ -98,7 +97,7 @@ interface BackSideProps {
 export const FrontSide = ({ children, className }: FrontSideProps) => (
   <div
     className={cn(
-      "flip-service-card-front absolute left-0 top-0 overflow-hidden",
+      "flip-service-card-front squircle rounded-[8rem] absolute left-0 top-0 overflow-hidden",
       className
     )}
   >
@@ -111,7 +110,7 @@ FrontSide.displayName = "FrontSide";
 export const BackSide = ({ children, className }: BackSideProps) => (
   <div
     className={cn(
-      "flip-service-card-back absolute left-0 top-0 overflow-hidden",
+      "flip-service-card-back squircle rounded-[8rem] absolute left-0 top-0 overflow-hidden",
       className
     )}
   >
@@ -438,19 +437,19 @@ const Services = () => {
               </FrontSide>
 
               <BackSide>
-                <div className="px-4 sm:px-6 md:px-8 py-6 sm:py-8 md:py-10 flex flex-col justify-between space-y-2 sm:space-y-3 md:space-y-4 size-full relative bg-white dark:bg-background">
+                <div className="p-6 sm:p-8 md:p-8 lg:p-10 flex flex-col justify-between space-y-2 sm:space-y-3 md:space-y-4 size-full relative bg-white dark:bg-background">
                   {/* Card Header */}
                   <h4 className="inline-flex justify-between items-center gap-2">
                     <div className="flex flex-col">
-                      <span className="text-[clamp(1.5rem,4vw,2.5rem)] sm:text-[clamp(2rem,3vw,2.5rem)] md:text-[clamp(2.5rem,1.5vw,2.5rem)] leading-[110%] sm:leading-[100%] md:leading-[90%] font-playground text-foreground relative z-10 mix-blend-darken">
+                      <span className="text-[clamp(2rem,4vw,5rem)] leading-[0.3] font-playground text-foreground relative z-10 mix-blend-darken">
                         {subtitle}
                       </span>
-                      <span className="text-[clamp(1.25rem,3.5vw,1.875rem)] sm:text-[clamp(1.5rem,2.5vw,1.875rem)] md:text-[clamp(1.875rem,1.5vw,1.875rem)] leading-tight font-grandbold text-accent">
+                      <span className="text-[clamp(1.3rem,1.5vw,1.875rem)] leading-none font-grandbold text-accent">
                         {title}
                       </span>
                     </div>
                     {Icon && (
-                      <Icon className="size-8 sm:size-10 md:size-12 text-accent flex-shrink-0" />
+                      <Icon className="size-8 sm:size-8 lg:size-12 text-accent flex-shrink-0" />
                     )}
                   </h4>
 
@@ -459,7 +458,7 @@ const Services = () => {
                     {skills.map((skill, skillIndex) => (
                       <li
                         key={skillIndex}
-                        className="text-[clamp(0.75rem,2.5vw,1rem)] sm:text-[clamp(0.875rem,2vw,1.125rem)] md:text-[clamp(1rem,1.3vw,1.25rem)] py-1 sm:py-1.5 md:py-2 grow border-b nth-of-type-[1]:border-t nth-last-of-type-[1]:border-t-0 border-dashed border-foreground/20 text-foreground font-mono flex items-center"
+                        className="text-[clamp(0.8rem,1.3vw,1.25rem)] py-1 sm:py-1.5 md:py-2 grow border-b nth-of-type-[1]:border-t nth-last-of-type-[1]:border-t-0 border-dashed border-foreground/20 text-foreground font-mono flex items-center"
                       >
                         {skill.li}
                       </li>

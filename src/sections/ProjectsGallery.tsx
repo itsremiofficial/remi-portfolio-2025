@@ -142,7 +142,7 @@ function CarouselContainer({ children, count = 8, ...props }: any) {
   );
 }
 
-// Create squircle alpha map texture for rounded corners
+// Create squircle alpha map texture for rounded corners with clipping mask
 const createSquircleAlphaMap = () => {
   const canvas = document.createElement("canvas");
   const size = 512;
@@ -151,11 +151,21 @@ const createSquircleAlphaMap = () => {
   const ctx = canvas.getContext("2d");
 
   if (ctx) {
-    // Draw squircle shape with rounded corners
-    const radius = size * 0.15; // CONFIG: 15% radius for squircle effect (higher = more rounded)
+    // Clear canvas to transparent
+    ctx.clearRect(0, 0, size, size);
+
+    // Draw squircle shape with rounded corners and padding for clean clipping
+    const padding = 2; // Small padding to ensure clean edges
+    const radius = size * 0.12; // CONFIG: 12% radius for rounded corners
     ctx.fillStyle = "white";
     ctx.beginPath();
-    ctx.roundRect(0, 0, size, size, radius);
+    ctx.roundRect(
+      padding,
+      padding,
+      size - padding * 2,
+      size - padding * 2,
+      radius
+    );
     ctx.fill();
   }
 
@@ -186,7 +196,12 @@ function ProjectCard({
 
   useFrame((state, delta) => {
     if (ref.current) {
-      // CONFIG: Hover scale (1.15 = 15% larger when hovered)
+      // ============================================================
+      // CARD SCALE-IN ANIMATION (INITIAL ZOOM)
+      // This damp3 function creates a smooth scale animation from 0 to 1
+      // when cards first render, giving the carousel a scale-in effect
+      // CONFIG: Hover scale (1.1 = 10% larger when hovered, 1 = normal size)
+      // ============================================================
       damp3(ref.current.scale, hovered ? 1.1 : 1, 0.1, delta);
 
       // CONFIG: Card curvature (0.25 = more curved, 0.1 = flatter)
@@ -219,22 +234,25 @@ function ProjectCard({
   };
 
   return (
-    <Image
-      ref={ref}
-      url={url}
-      transparent
-      side={THREE.DoubleSide}
-      position={position}
-      rotation={rotation}
-      onPointerOver={handlePointerOver}
-      onPointerOut={handlePointerOut}
-      onClick={handleClick}
-      material-alphaMap={alphaMap.current}
-      material-alphaTest={0.1}
-    >
-      {/* CONFIG: Card geometry [curvature, width, height, widthSegments, heightSegments] */}
-      <bentPlaneGeometry args={[0.1, 1.4, 1, 20, 20]} />
-    </Image>
+    <group position={position} rotation={rotation}>
+      <group scale={[1, 1, -1]}>
+        <Image
+          ref={ref}
+          url={url}
+          transparent
+          side={THREE.DoubleSide}
+          onPointerOver={handlePointerOver}
+          onPointerOut={handlePointerOut}
+          onClick={handleClick}
+          material-alphaMap={alphaMap.current}
+          material-alphaTest={0.5}
+        >
+          {/* CONFIG: Card geometry [curvature, width, height, widthSegments, heightSegments] */}
+          {/* Z-axis scale -1 inverts the curve depth while keeping face outward */}
+          <bentPlaneGeometry args={[0.1, 1.4, 1, 20, 20]} />
+        </Image>
+      </group>
+    </group>
   );
 }
 
@@ -263,7 +281,7 @@ function Carousel({
               0,
               Math.cos((i / count) * Math.PI * 2) * radius,
             ]}
-            rotation={[0, Math.PI + (i / count) * Math.PI * 2, 0]}
+            rotation={[0, (i / count) * Math.PI * 2, 0]}
             projectData={projectData}
             onHover={onHover}
             onHoverEnd={onHoverEnd}
@@ -381,27 +399,11 @@ function Scene({
     updateCamera();
   }, [size.width, camera]);
 
-  useEffect(() => {
-    if (isInView && !hasAnimated.current) {
-      hasAnimated.current = true;
-
-      // CONFIG: Zoom-in animation settings
-      // Calculate responsive zoom distances
-      const scaleFactor = Math.min(size.width / 1920, 1);
-      const initialZ = 150 / scaleFactor;
-      const finalZ = 100 / scaleFactor;
-
-      // Initial camera position (zoomed out)
-      gsap.set(camera.position, { z: initialZ });
-
-      // Animate to final position (zoomed in)
-      gsap.to(camera.position, {
-        z: finalZ, // Final zoom level (responsive)
-        duration: 1, // Animation duration in seconds
-        ease: "power2.out", // Smooth easing
-      });
-    }
-  }, [isInView, camera, size.width]);
+  // ============================================================
+  // NOTE: The carousel scale-in animation happens in the ProjectCard component's
+  // useFrame hook (line ~205), not here. Each card uses damp3() to smoothly
+  // animate from scale 0 to 1 when first rendered.
+  // ============================================================
 
   return (
     <>
@@ -532,11 +534,11 @@ const ProjectsGallery = () => {
 
       // CONFIG: Animation duration and easing for smooth following
       quickX.current = gsap.quickTo(panel, "x", {
-        duration: 0.8, // Slower = more lazy/smooth
+        duration: 1, // Slower = more lazy/smooth
         ease: "power3.out",
       });
       quickY.current = gsap.quickTo(panel, "y", {
-        duration: 0.8,
+        duration: 1,
         ease: "power3.out",
       });
     }

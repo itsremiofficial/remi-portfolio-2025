@@ -1,39 +1,39 @@
 "use client";
-
-import LogoShort from "../components/ui/LogoShort";
 import { cn } from "../utils";
 import AnimatedTooltip from "../components/AnimatedTooltip";
 import { Link } from "react-router-dom";
 import socialPlatforms from "../constants/SOCIALS";
+import LogoShort from "../components/ui/LogoShort";
 
 export const Footer = () => {
   return (
     <footer className="relative w-full flex flex-col items-center pt-12">
-      <div className="relative w-full text-center flex flex-col items-center pb-20">
+      <div className="relative w-full text-center flex flex-col items-center">
         {/* Large background text - FIXED */}
         <div
-          className="bg-gradient-to-b from-accent via-accent to-background dark:to-foreground bg-clip-text text-transparent leading-none font-extrabold tracking-widest pointer-events-none select-none px-4 font-grandbold"
+          className="bg-gradient-to-b from-accent via-accent to-background dark:to-foreground bg-clip-text text-transparent leading-none font-extrabold tracking-widest pointer-events-none select-none font-grandbold"
           style={{
-            fontSize: "clamp(5rem, 25vw, 30rem)",
+            fontSize: "clamp(7rem, 25vw, 30rem)",
             maxWidth: "95vw",
+            lineHeight: "0.75",
           }}
         >
           REMI
         </div>
 
         {/* Bottom logo */}
-        <div className="absolute squircle hover:border-background/20 duration-400 drop-shadow-[0_0px_30px_rgba(28,34,47,0.5)] dark:drop-shadow-[0_0px_20px_rgba(255,255,255,0.3)] backdrop-blur-lg rounded-4xl bg-background/10 dark:bg-foreground/10 left-1/2 border-2 border-background/20 dark:border-background/10 flex items-center justify-center p-3 -translate-x-1/2 z-10 bottom-16">
-          <div className="w-12 sm:w-16 md:w-24 h-12 sm:h-16 md:h-24 bg-gradient-to-br from-background dark:from-foreground to-background/80 dark:to-foreground/80 flex items-center justify-center shadow-lg squircle rounded-4xl">
+        <div className="absolute squircle hover:border-background/20 duration-400 drop-shadow-[0_0px_30px_rgba(28,34,47,0.5)] dark:drop-shadow-[0_0px_20px_rgba(255,255,255,0.3)] backdrop-blur-lg rounded-4xl bg-white/10 dark:bg-foreground/10 left-1/2 border-2 border-white/40 dark:border-background/10 flex items-center justify-center p-3 -translate-x-1/2 z-10 -bottom-14">
+          <div className="size-12 sm:size-16 md:size-24 bg-gradient-to-br from-white dark:from-foreground to-white/80 dark:to-foreground/80 flex items-center justify-center shadow-lg squircle rounded-4xl">
             <LogoShort className="size-8 text-accent" />
           </div>
         </div>
 
         {/* Bottom shadow */}
-        <div className="bg-gradient-to-t from-background via-background to-background/30 dark:from-foreground dark:via-foreground dark:to-foreground/30 absolute bottom-16 blur-lg w-full h-36"></div>
+        <div className="bg-gradient-to-t from-background via-background to-background/30 dark:from-foreground dark:via-foreground dark:to-foreground/30 absolute -bottom-16 blur-3xl w-full h-16 lg:h-36" />
         {/* Bottom line */}
-        <div className="absolute bottom-32 backdrop-blur-sm h-1 bg-gradient-to-r from-transparent via-foreground/5 dark:via-background/5 to-transparent w-full left-1/2 -translate-x-1/2"></div>
+        <div className="absolute bottom-0 backdrop-blur-sm h-1 bg-gradient-to-r from-transparent via-foreground/5 dark:via-background/5 to-transparent w-full left-1/2 -translate-x-1/2" />
       </div>
-      <div className="my-12 social_icons flex flex-col items-center lg:gap-6 relative">
+      <div className="pt-28 pb-16 social_icons flex flex-col items-center lg:gap-6 relative">
         <h4
           className={cn(
             "footer-links-heading select-none",
@@ -49,6 +49,7 @@ export const Footer = () => {
           {socialPlatforms.map((platform, index) => (
             <Link
               to={platform.href}
+              key={platform.social}
               target="_blank"
               rel="noopener noreferrer"
               className="size-16 relative rounded-2xl"

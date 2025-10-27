@@ -22,6 +22,7 @@ import Skills from "./sections/Skills";
 import ProjectsGallery from "./sections/ProjectsGallery";
 import { useScrollTo } from "./hooks/useLenis";
 import { Footer } from "./sections/Footer";
+import Preloader from "./components/Preloader";
 
 gsap.registerPlugin(
   ScrollTrigger,
@@ -35,6 +36,7 @@ gsap.registerPlugin(
 
 const App = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [preloaderComplete, setPreloaderComplete] = useState(false);
   const { scrollToElement, isReady, lenis } = useScrollTo();
   const location = useLocation();
 
@@ -136,6 +138,10 @@ const App = () => {
 
   return (
     <>
+      {!preloaderComplete && (
+        <Preloader onComplete={() => setPreloaderComplete(true)} />
+      )}
+
       <MacCursorAuto />
       <div className="grain"></div>
       <Header fontsLoaded={fontsLoaded} />
