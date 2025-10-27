@@ -9,7 +9,7 @@ import { WELCOME_TEXT } from "../constants/WELCOME";
 import IconStarish2 from "./icons/Starish2";
 import WelcomeScript from "./illustrations/WelcomScript";
 
-const WelcomeMarquee = () => {
+const ContactMarquee = () => {
   const welcomeRef = useRef<HTMLDivElement>(null);
 
   const REPEAT = 4;
@@ -61,7 +61,7 @@ const WelcomeMarquee = () => {
       <div
         ref={welcomeRef}
         className={cn(
-          "flex items-center font-extrabold bg-foreground dark:bg-background py-10"
+          "flex items-center font-extrabold bg-foreground dark:bg-background py-6"
         )}
       >
         {Array.from({ length: REPEAT }).flatMap((_, repeatIdx) =>
@@ -86,4 +86,4 @@ const WelcomeMarquee = () => {
     </>
   );
 };
-export default WelcomeMarquee;
+export default ContactMarquee;

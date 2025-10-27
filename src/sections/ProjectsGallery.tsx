@@ -5,90 +5,10 @@ import { Image, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { damp3, damp } from "maath/easing";
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import MagneticButton from "../components/MagneticButton";
-
-// Register GSAP plugins
-gsap.registerPlugin(ScrollTrigger, useGSAP);
-
-// Project Data Type
-interface ProjectData {
-  id: number;
-  title: string;
-  category: string;
-  techStack: string[];
-  imageUrl: string;
-  projectLink: string;
-}
-
-// CONFIG: Project data for each card
-const projectsData: ProjectData[] = [
-  {
-    id: 1,
-    title: "Project Alpha",
-    category: "Web Application",
-    techStack: ["React", "TypeScript", "Three.js"],
-    imageUrl: "/flip/img1.png",
-    projectLink: "/projects/alpha",
-  },
-  {
-    id: 2,
-    title: "Project Beta",
-    category: "Mobile App",
-    techStack: ["React Native", "Node.js", "MongoDB"],
-    imageUrl: "/flip/img2.png",
-    projectLink: "/projects/beta",
-  },
-  {
-    id: 3,
-    title: "Project Gamma",
-    category: "E-Commerce",
-    techStack: ["Next.js", "Tailwind", "Stripe"],
-    imageUrl: "/flip/img3.png",
-    projectLink: "/projects/gamma",
-  },
-  {
-    id: 4,
-    title: "Project Delta",
-    category: "Dashboard",
-    techStack: ["Vue.js", "D3.js", "Firebase"],
-    imageUrl: "/flip/img4.png",
-    projectLink: "/projects/delta",
-  },
-  {
-    id: 5,
-    title: "Project Epsilon",
-    category: "Portfolio",
-    techStack: ["Gatsby", "GraphQL", "Netlify"],
-    imageUrl: "/flip/img5.png",
-    projectLink: "/projects/epsilon",
-  },
-  {
-    id: 6,
-    title: "Project Zeta",
-    category: "Social Platform",
-    techStack: ["React", "WebSocket", "PostgreSQL"],
-    imageUrl: "/flip/img6.png",
-    projectLink: "/projects/zeta",
-  },
-  {
-    id: 7,
-    title: "Project Eta",
-    category: "Game",
-    techStack: ["Unity", "C#", "Photon"],
-    imageUrl: "/flip/img7.png",
-    projectLink: "/projects/eta",
-  },
-  {
-    id: 8,
-    title: "Project Theta",
-    category: "AI Tool",
-    techStack: ["Python", "TensorFlow", "Flask"],
-    imageUrl: "/flip/img8.png",
-    projectLink: "/projects/theta",
-  },
-];
+import { useTheme } from "../hooks/useTheme";
+import WORKS, { type Work } from "../constants/WORKS";
 
 // Global scroll progress and drag rotation trackers
 let scrollProgress = 0;
@@ -256,8 +176,8 @@ function ProjectCard({
   url: string;
   position: [number, number, number];
   rotation: [number, number, number];
-  projectData: ProjectData;
-  onHover: (data: ProjectData) => void;
+  projectData: Work;
+  onHover: (data: Work) => void;
   onHoverEnd: () => void;
 }) {
   const ref = useRef<any>(null);
@@ -295,7 +215,7 @@ function ProjectCard({
   const handleClick = (e: any) => {
     e.stopPropagation();
     // Navigate to project link
-    window.location.href = projectData.projectLink;
+    window.location.href = projectData.slug;
   };
 
   return (
@@ -313,27 +233,27 @@ function ProjectCard({
       material-alphaTest={0.1}
     >
       {/* CONFIG: Card geometry [curvature, width, height, widthSegments, heightSegments] */}
-      <bentPlaneGeometry args={[0.1, 1, 0.8, 20, 20]} />
+      <bentPlaneGeometry args={[0.1, 1.4, 1, 20, 20]} />
     </Image>
   );
 }
 
 // Carousel of Images
 function Carousel({
-  radius = 1.4, // CONFIG: Carousel radius (higher = wider circle)
+  radius = 2, // CONFIG: Carousel radius (higher = wider circle)
   count = 8, // CONFIG: Number of images in carousel
   onHover,
   onHoverEnd,
 }: {
   radius?: number;
   count?: number;
-  onHover: (data: ProjectData) => void;
+  onHover: (data: Work) => void;
   onHoverEnd: () => void;
 }) {
   return (
     <>
       {Array.from({ length: count }, (_, i) => {
-        const projectData = projectsData[i % projectsData.length];
+        const projectData = WORKS[i % WORKS.length];
         return (
           <ProjectCard
             key={i}
@@ -358,16 +278,20 @@ function Carousel({
 function Ribbon({
   position,
   count = 8,
+  isDark,
 }: {
   position: [number, number, number];
   count?: number;
+  isDark: boolean;
 }) {
   const meshRef = useRef<THREE.Mesh>(null!);
   const timeRef = useRef(0);
   const targetRotation = useRef(0);
 
-  // Load SVG texture
-  const texture = useTexture("/remi_ribbon.svg");
+  // Load SVG texture based on theme
+  // CONFIG: SVG paths for light and dark themes
+  const texturePath = isDark ? "/remi_ribbon.svg" : "/remi_ribbon_dark.svg";
+  const texture = useTexture(texturePath);
   texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 
   useFrame((_state, delta) => {
@@ -403,7 +327,7 @@ function Ribbon({
     <mesh ref={meshRef} position={position}>
       {/* CONFIG: Ribbon geometry [radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded] */}
       {/* 1.56 = radius to match carousel, 0.14 = ribbon thickness, 128 = smoothness */}
-      <cylinderGeometry args={[1.6, 1.6, 0.15, 360, 16, true]} />
+      <cylinderGeometry args={[2.2, 2.2, 0.2, 128, 16, true]} />
       <meshSineMaterial
         map={texture}
         map-anisotropy={16}
@@ -421,11 +345,13 @@ function Scene({
   onHoverEnd,
   isInView,
   fov,
+  isDark,
 }: {
-  onHover: (data: ProjectData) => void;
+  onHover: (data: Work) => void;
   onHoverEnd: () => void;
   isInView: boolean;
   fov: number;
+  isDark: boolean;
 }) {
   // CONFIG: Total number of images in the carousel
   const imageCount = 8;
@@ -479,8 +405,12 @@ function Scene({
 
   return (
     <>
+      {/* CONFIG: Fog effect matching ribbon color #a79 */}
+      {/* args: [color, near, far] - near: 8.5, far: 12 */}
+      <fog attach="fog" args={[isDark ? "#7a7977" : "#1c222f", 8.5, 12]} />
+
       {/* CONFIG: Carousel tilt [x, y, z] in radians (0.15 = slight tilt) */}
-      <CarouselContainer rotation={[0, 0, 0.15]} count={imageCount}>
+      <CarouselContainer rotation={[0, 0, 0.1]} count={imageCount}>
         <Carousel
           count={imageCount}
           onHover={onHover}
@@ -488,7 +418,7 @@ function Scene({
         />
       </CarouselContainer>
       {/* CONFIG: Ribbon position [x, y, z] - y should match carousel tilt for alignment */}
-      <Ribbon position={[0, -0.15, 0]} count={imageCount} />
+      <Ribbon position={[0, -0.1, 0]} count={imageCount} isDark={isDark} />
     </>
   );
 }
@@ -502,10 +432,11 @@ const ProjectsGallery = () => {
   const currentMouseX = useRef(0);
   const currentMouseY = useRef(0);
 
+  // Get theme state
+  const { isDark } = useTheme();
+
   // Hover state for floating panel
-  const [hoveredProject, setHoveredProject] = useState<ProjectData | null>(
-    null
-  );
+  const [hoveredProject, setHoveredProject] = useState<Work | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const [panelSide, setPanelSide] = useState<"left" | "right">("right");
   const [isActive, setIsActive] = useState(false);
@@ -523,31 +454,7 @@ const ProjectsGallery = () => {
   // Update FOV based on viewport width
   useEffect(() => {
     const updateFov = () => {
-      const width = window.innerWidth;
-
-      // CONFIG: Responsive FOV values
-      // Desktop (1920px+): FOV 15 (narrow/zoomed)
-      // Tablet (768px-1920px): FOV 20-30
-      // Mobile (<768px): FOV 35-45 (wider for better visibility)
-      let newFov = 15;
-
-      if (width < 768) {
-        // Mobile: wider FOV
-        newFov = 45;
-      } else if (width < 1024) {
-        // Small tablet
-        newFov = 35;
-      } else if (width < 1440) {
-        // Large tablet
-        newFov = 25;
-      } else if (width < 1920) {
-        // Small desktop
-        newFov = 20;
-      } else {
-        // Large desktop
-        newFov = 12.5;
-      }
-
+      const newFov = 15;
       setFov(newFov);
     };
 
@@ -659,7 +566,7 @@ const ProjectsGallery = () => {
     }
   }, [isActive]);
 
-  const handleProjectHover = (data: ProjectData) => {
+  const handleProjectHover = (data: Work) => {
     setHoveredProject(data);
     setIsActive(true);
   };
@@ -885,7 +792,14 @@ const ProjectsGallery = () => {
         </div>
       </div>
 
-      <div className="top-0 left-0 w-full z-10 h-[calc(100vh-200px)] min-h-[600px]">
+      <div
+        className="top-0 left-0 w-full z-10 "
+        style={{
+          aspectRatio: "16 / 9",
+          maxWidth: "2560px",
+          // maxHeight: "1440px",
+        }}
+      >
         <Canvas
           // CONFIG: Camera settings
           // position: [x, y, z] - z distance affects zoom (100 = far, lower = closer)
@@ -913,6 +827,7 @@ const ProjectsGallery = () => {
             onHoverEnd={handleProjectHoverEnd}
             isInView={isInView}
             fov={fov}
+            isDark={isDark}
           />
         </Canvas>
 
@@ -950,7 +865,7 @@ const ProjectsGallery = () => {
 
                 {/* Category */}
                 <p className="text-sm text-gray-400 mb-4 uppercase tracking-wider">
-                  {hoveredProject.category}
+                  {hoveredProject.type}
                 </p>
 
                 {/* Tech Stack */}
@@ -959,7 +874,7 @@ const ProjectsGallery = () => {
                     Tech Stack
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {hoveredProject.techStack.map((tech, index) => (
+                    {hoveredProject.technologies?.map((tech, index) => (
                       <span
                         key={index}
                         className="px-3 py-1 bg-white/10 rounded-full text-xs font-medium text-white/90 border border-white/20"

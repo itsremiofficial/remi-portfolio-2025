@@ -3,7 +3,6 @@ import { useLocation } from "react-router-dom";
 import Header from "./layout/Header";
 import Hero from "./sections/Hero";
 import WelcomeMarquee from "./components/WelcomeMarquee";
-import Works from "./sections/Works";
 import About from "./sections/About";
 import MacCursorAuto from "./components/ui/MacCursorAuto";
 import {
@@ -22,6 +21,7 @@ import Testimonials from "./sections/Testimonials";
 import Skills from "./sections/Skills";
 import ProjectsGallery from "./sections/ProjectsGallery";
 import { useScrollTo } from "./hooks/useLenis";
+import { Footer } from "./sections/Footer";
 
 gsap.registerPlugin(
   ScrollTrigger,
@@ -151,18 +151,7 @@ const App = () => {
         <Skills />
         <ServicesMarquee />
         <Testimonials />
-        <section
-          className="w-full min-h-screen flex items-center justify-center"
-          id="contact"
-        >
-          Contact
-        </section>
-        <section
-          className="w-full min-h-screen flex items-center justify-center"
-          id="contact"
-        >
-          Contact
-        </section>
+        <Footer />
       </main>
     </>
   );

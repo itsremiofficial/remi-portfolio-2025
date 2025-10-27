@@ -22,6 +22,7 @@ import IconInstagram from "../components/icons/Instagram";
 import TimeDisplay from "../components/DualTime";
 import IconLinkedIn from "../components/icons/Linkedin";
 import { MENU_ITEMS } from "../constants/MENU";
+import { socialPlatforms, type SocialPlatform } from "../constants/SOCIALS";
 
 // ============================================================================
 // CONSTANTS
@@ -75,12 +76,6 @@ const MORPH_TARGETS = {
 interface MenuItem {
   text: string;
   href: string;
-}
-
-interface SocialPlatform {
-  social: string;
-  href: string;
-  icon: React.ComponentType<{ className?: string; fill?: boolean }>;
 }
 
 // ============================================================================
@@ -140,6 +135,7 @@ const Logo = memo(
 );
 
 Logo.displayName = "Logo";
+export { Logo };
 
 const NavItem = memo<{
   item: MenuItem;
@@ -199,6 +195,7 @@ const SocialIcon = memo<{
 ));
 
 SocialIcon.displayName = "SocialIcon";
+export { SocialIcon };
 
 const ThemeIcon = memo<{ className?: string }>(({ className }) => {
   const { toggleThemeMode, isDark } = useTheme();
@@ -443,22 +440,6 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
   );
   const activeSection = useActiveSection(sectionIds);
 
-  const socialPlatforms = useMemo<SocialPlatform[]>(
-    () => [
-      {
-        social: "Instagram",
-        href: "https://fronus.com",
-        icon: IconInstagram,
-      },
-      {
-        social: "LinkedIn",
-        href: "https://discord.com",
-        icon: IconLinkedIn,
-      },
-    ],
-    []
-  );
-
   const toggleMenu = useCallback(() => {
     setIsExpanded((prev) => !prev);
   }, []);
@@ -597,7 +578,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
           .to(
             scrollProgressMaskRef.current,
             {
-              height: 68, // 56px base + 10px extra when expanded
+              height: 68,
               duration: 0.8,
               ease: CUSTOM_EASE,
             },
@@ -797,12 +778,12 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
           {/* Scroll Progress Bar - Clipping Mask Container */}
           <div
             ref={scrollProgressMaskRef}
-            className="absolute left-[4px] top-[4px] right-[4px] bottom-[4px] rounded-3xl squircle z-[0] pointer-events-none overflow-hidden will-change-[height]"
+            className="absolute left-[4px] top-[4px] right-[4px] bottom-[4px] rounded-3xl squircle z-[0] pointer-events-none overflow-hidden will-change-[height] h-[54px]"
           >
             {/* Inner Progress Fill */}
             <div
               ref={scrollProgressRef}
-              className="absolute left-0 top-0 h-full bg-accent/20 dark:bg-background/5 rounded-3xl squircle will-change-[width]"
+              className="absolute left-0 top-0 h-full bg-foreground/10 dark:bg-background/5 rounded-3xl squircle will-change-[width]"
               style={{ width: 0 }}
             />
           </div>
@@ -855,7 +836,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               })}
             </nav>
 
-            <div className="flex gap-4 sm:gap-10 md:gap-14 lg:gap-20">
+            <div className="flex gap-4 sm:gap-6 md:gap-10 lg:gap-12">
               <div className="space-y-2 lg:space-y-3">
                 <h4
                   className={cn(
@@ -868,7 +849,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
                 >
                   SOCIALS
                 </h4>
-                <div className="social_icons flex items-center lg:gap-6 relative">
+                <div className="social_icons flex items-center lg:gap-2 relative">
                   {socialPlatforms.map((platform, index) => (
                     <SocialIcon
                       key={platform.social}
