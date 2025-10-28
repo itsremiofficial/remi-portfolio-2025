@@ -61,7 +61,7 @@
   --color-brand-500: oklch(98.129% 0.004 84.566);
   --color-brand-600: oklch(97.206% 0.006 88.643);
   --color-brand-700: oklch(90% 0.008 91.484);
-  --color-brand-800: oklch(75% 0.011 89.725); 
+  --color-brand-800: oklch(75% 0.011 89.725);
   --color-brand-900: oklch(60% 0.009 84.577);
   --color-brand-1000: oklch(45% 0.007 88.665);
   --color-brand-1100: oklch(30% 0.005 95.162);
@@ -584,6 +584,6 @@ body {
 }
 
 @utility text-stroke-* {
-  -webkit-text-stroke-width: --value(integer)px;
-  -webkit-text-stroke-color: --value(--color-*);
+  -webkit-text-stroke-width: --value(integer) px;
+  -webkit-text-stroke-color: --value(--color- *);
 }

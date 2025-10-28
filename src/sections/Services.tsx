@@ -402,7 +402,7 @@ const Services = () => {
         </h2>
         <h2
           ref={canIDoHeadingRef}
-          className="section-sub-heading dark:text-background text-foreground text-[clamp(2rem,7vw,5rem)] sm:text-[clamp(2.5rem,6vw,5rem)]"
+          className="font-grandbold leading-none dark:text-background text-foreground text-[clamp(1rem,calc(0.981rem+5vw),6rem)]"
           style={{ transformStyle: "preserve-3d" }}
         >
           can I DO?

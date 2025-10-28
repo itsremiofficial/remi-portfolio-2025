@@ -138,7 +138,7 @@ const App = () => {
 
   return (
     <>
-      {!preloaderComplete && <PreLoader />}
+      <PreLoader />
 
       <MacCursorAuto />
       <div className="grain"></div>
