@@ -22,7 +22,7 @@ import Skills from "./sections/Skills";
 import ProjectsGallery from "./sections/ProjectsGallery";
 import { useScrollTo } from "./hooks/useLenis";
 import { Footer } from "./sections/Footer";
-import Preloader from "./components/Preloader";
+import PreLoader from "./components/Loader/Loader";
 
 gsap.registerPlugin(
   ScrollTrigger,
@@ -138,9 +138,7 @@ const App = () => {
 
   return (
     <>
-      {!preloaderComplete && (
-        <Preloader onComplete={() => setPreloaderComplete(true)} />
-      )}
+      {!preloaderComplete && <PreLoader />}
 
       <MacCursorAuto />
       <div className="grain"></div>
