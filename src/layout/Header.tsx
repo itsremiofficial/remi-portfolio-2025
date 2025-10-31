@@ -761,7 +761,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
   }, [isExpanded]);
 
   return (
-    <header className="sticky right-0 top-0 p-4 z-[99] h-24">
+    <header className="sticky right-0 top-0 p-4 z-[99] h-24 header">
       <div
         ref={drawerRef}
         className="flex items-center justify-center group/headerbutton relative size-full"
@@ -790,9 +790,16 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
 
           {/* MAIN MENU CONTENT */}
           <div className="menu_button relative z-[1] flex justify-between items-center py-[17.20px] px-8 !m-0 will-change-[padding]">
-            <a href="/" aria-label="Home">
+            <a href="/" aria-label="Home" className="logo-clip">
               <Logo ref={logoRef} />
             </a>
+
+            <TimeDisplay
+              timeType="time"
+              className="nav-links-heading font-mono text-foreground"
+              mode="single"
+              length="medium"
+            />
 
             <button
               className={`nav-wrapper !h-6 !w-6 ${isExpanded ? "open" : ""}`}
@@ -890,13 +897,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               </div>
             </div>
 
-            <div className="flex items-end justify-between font-mono tracking-widest text-foreground/70 dark:text-background/50 text-xs md:pt-1">
-              <TimeDisplay
-                timeType="time"
-                className="nav-links-heading"
-                mode="single"
-                length="medium"
-              />
+            <div className="font-mono tracking-widest text-foreground/70 dark:text-background/50 text-xs md:pt-1">
               <div className="nav-links-heading">Version 1.13</div>
             </div>
           </div>
