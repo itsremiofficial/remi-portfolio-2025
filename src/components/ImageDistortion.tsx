@@ -180,7 +180,13 @@ const ImageDistortion = ({
       <Canvas
         camera={{ position: [0, 0, 1], fov: 75 }}
         dpr={[1, 2]}
-        gl={{ alpha: true, antialias: true }}
+        frameloop="demand" // Only render when needed (saves resources)
+        gl={{
+          alpha: true,
+          antialias: true,
+          powerPreference: "high-performance",
+          preserveDrawingBuffer: false,
+        }}
       >
         <ShaderPlane imageUrl={imageUrl} isHovered={isHovered} />
       </Canvas>

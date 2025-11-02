@@ -22,7 +22,7 @@ import Skills from "./sections/Skills";
 import ProjectsGallery from "./sections/ProjectsGallery";
 import { useScrollTo } from "./hooks/useLenis";
 import { Footer } from "./sections/Footer";
-import PreLoader from "./components/Loader/Loader";
+import PreLoader from "./components/Loader/PreLoader";
 
 gsap.registerPlugin(
   ScrollTrigger,
@@ -35,25 +35,18 @@ gsap.registerPlugin(
 );
 
 const App = () => {
-  const [fontsLoaded, setFontsLoaded] = useState(false);
   const [preloaderComplete, setPreloaderComplete] = useState(false);
   const { scrollToElement, isReady, lenis } = useScrollTo();
   const location = useLocation();
 
-  // First effect to check if fonts are loaded
-  useEffect(() => {
-    // Check if the browser supports the document.fonts API
-    if ("fonts" in document) {
-      document.fonts.ready.then(() => {
-        setFontsLoaded(true);
-      });
-    } else {
-      // Fallback for browsers without font loading API - wait a moment
-      setTimeout(() => {
-        setFontsLoaded(true);
-      }, 500);
-    }
-  }, []);
+  // Handle preloader completion
+  const handlePreloaderComplete = () => {
+    // Small delay to ensure PreLoader Canvas is fully disposed
+    // before main content Canvas instances initialize
+    setTimeout(() => {
+      setPreloaderComplete(true);
+    }, 100);
+  };
 
   // Handle scroll to section after navigation from ProjectDetail
   useEffect(() => {
@@ -138,25 +131,34 @@ const App = () => {
 
   return (
     <>
-      <PreLoader />
+      {!preloaderComplete && <PreLoader onComplete={handlePreloaderComplete} />}
 
-      <MacCursorAuto />
-      <div className="grain"></div>
-      <Header fontsLoaded={fontsLoaded} />
+      {preloaderComplete && (
+        <div
+          style={{
+            opacity: 1,
+            transition: "opacity 0.5s ease-in-out",
+          }}
+        >
+          <MacCursorAuto />
+          <div className="grain" />
+          <Header fontsLoaded={preloaderComplete} />
 
-      <main className="overflow-x-hidden text-foreground dark:text-background relative">
-        {/* <Scene /> */}
-        <Hero />
-        <WelcomeMarquee />
-        <About />
-        {/* <Works /> */}
-        <ProjectsGallery />
-        <Services />
-        <Skills />
-        <ServicesMarquee />
-        <Testimonials />
-        <Footer />
-      </main>
+          <main className="overflow-x-hidden text-foreground dark:text-background relative">
+            {/* <Scene /> */}
+            <Hero />
+            <WelcomeMarquee />
+            <About />
+            {/* <Works /> */}
+            <ProjectsGallery />
+            <Services />
+            <Skills />
+            <ServicesMarquee />
+            <Testimonials />
+            <Footer />
+          </main>
+        </div>
+      )}
     </>
   );
 };

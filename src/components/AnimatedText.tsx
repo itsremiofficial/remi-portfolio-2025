@@ -45,53 +45,65 @@ const AnimatedText = ({
   useEffect(() => {
     if (!fontsLoaded || !linkRef.current) return;
 
-    const linkElement = linkRef.current;
-    const textElements = linkElement.querySelectorAll("[hoverstagger='text']");
-    const splitTextInstances: SplitText[] = [];
+    // Ensure fonts are actually ready in the DOM before splitting
+    const initializeSplitText = async () => {
+      // Wait for fonts to be fully loaded and ready
+      if ('fonts' in document) {
+        await document.fonts.ready;
+      }
 
-    // Split text into characters
-    textElements.forEach((el) => {
-      const split = new SplitText(el as HTMLElement, {
-        type: "chars,words",
-        charsClass: "char",
+      if (!linkRef.current) return;
+
+      const linkElement = linkRef.current;
+      const textElements = linkElement.querySelectorAll("[hoverstagger='text']");
+      const splitTextInstances: SplitText[] = [];
+
+      // Split text into characters
+      textElements.forEach((el) => {
+        const split = new SplitText(el as HTMLElement, {
+          type: "chars,words",
+          charsClass: "char",
+        });
+        splitTextInstances.push(split);
       });
-      splitTextInstances.push(split);
-    });
 
-    const [text1Split, text2Split] = splitTextInstances;
+      const [text1Split, text2Split] = splitTextInstances;
 
-    // Create animation timeline
-    const tl = gsap.timeline({ paused: true });
+      // Create animation timeline
+      const tl = gsap.timeline({ paused: true });
 
-    if (text1Split && text2Split) {
-      tl.to(text1Split.chars, {
-        yPercent: ANIMATION_CONFIG.Y_PERCENT_OUT,
-        duration: ANIMATION_CONFIG.DURATION,
-        stagger: { amount: ANIMATION_CONFIG.STAGGER_AMOUNT },
-      }).from(
-        text2Split.chars,
-        {
-          yPercent: ANIMATION_CONFIG.Y_PERCENT_IN,
+      if (text1Split && text2Split) {
+        tl.to(text1Split.chars, {
+          yPercent: ANIMATION_CONFIG.Y_PERCENT_OUT,
           duration: ANIMATION_CONFIG.DURATION,
           stagger: { amount: ANIMATION_CONFIG.STAGGER_AMOUNT },
-        },
-        0
-      );
-    }
+        }).from(
+          text2Split.chars,
+          {
+            yPercent: ANIMATION_CONFIG.Y_PERCENT_IN,
+            duration: ANIMATION_CONFIG.DURATION,
+            stagger: { amount: ANIMATION_CONFIG.STAGGER_AMOUNT },
+          },
+          0
+        );
+      }
 
-    // Event handlers
-    const handleMouseEnter = () => tl.restart();
-    const handleMouseLeave = () => tl.reverse();
+      // Event handlers
+      const handleMouseEnter = () => tl.restart();
+      const handleMouseLeave = () => tl.reverse();
 
-    linkElement.addEventListener("mouseenter", handleMouseEnter);
-    linkElement.addEventListener("mouseleave", handleMouseLeave);
+      linkElement.addEventListener("mouseenter", handleMouseEnter);
+      linkElement.addEventListener("mouseleave", handleMouseLeave);
 
-    // Cleanup
-    return () => {
-      linkElement.removeEventListener("mouseenter", handleMouseEnter);
-      linkElement.removeEventListener("mouseleave", handleMouseLeave);
-      splitTextInstances.forEach((split) => split.revert());
+      // Cleanup
+      return () => {
+        linkElement.removeEventListener("mouseenter", handleMouseEnter);
+        linkElement.removeEventListener("mouseleave", handleMouseLeave);
+        splitTextInstances.forEach((split) => split.revert());
+      };
     };
+
+    initializeSplitText();
   }, [fontsLoaded]);
 
   return (

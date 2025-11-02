@@ -807,10 +807,13 @@ const ProjectsGallery = () => {
           // position: [x, y, z] - z distance affects zoom (100 = far, lower = closer)
           // fov: Field of view in degrees (responsive: 15-45 based on viewport width)
           camera={{ position: [0, 0, 100], fov: fov }}
+          frameloop="always" // Always render for smooth animations
           gl={{
             antialias: true, // CONFIG: Smooth edges (true = better quality, slower)
             alpha: true,
             premultipliedAlpha: false,
+            powerPreference: "high-performance",
+            preserveDrawingBuffer: false,
           }}
           style={{
             background: "transparent",

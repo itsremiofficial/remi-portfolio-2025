@@ -18,9 +18,7 @@ import { CustomEase } from "gsap/all";
 import { useActiveSection } from "../hooks/useActiveSection";
 import { useTheme } from "../hooks/useTheme";
 import AnimatedTooltip from "../components/AnimatedTooltip";
-import IconInstagram from "../components/icons/Instagram";
 import TimeDisplay from "../components/DualTime";
-import IconLinkedIn from "../components/icons/Linkedin";
 import { MENU_ITEMS } from "../constants/MENU";
 import { socialPlatforms, type SocialPlatform } from "../constants/SOCIALS";
 
@@ -796,7 +794,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
 
             <TimeDisplay
               timeType="time"
-              className="nav-links-heading font-mono text-foreground"
+              className="font-mono text-foreground/70 dark:text-background/50 relative -left-16 tracking-widest font-extralight"
               mode="single"
               length="medium"
             />
