@@ -72,15 +72,15 @@ export const Footer = () => {
           ))}
         </div>
       </div>
-      <div className="flex items-center justify-center w-full px-6 py-10 border-t border-foreground/10 dark:border-background/5 text-foreground/50 dark:text-background/30 gap-6 group">
-        <p className="space-x-2 font-mono">
+      <div className="flex items-center justify-center w-full px-6 py-10 border-t border-foreground/10 dark:border-background/5 text-foreground/50 dark:text-background/30 gap-6 group font-robo">
+        <p className="space-x-2">
           <a
             href="/"
             className="group-hover:text-foreground dark:group-hover:text-background transition-colors duration-500"
           >
             Remi
           </a>{" "}
-          <span className="font-robo">&#169;</span> <span>2025</span>
+          &#169; <span className="font-mono">2025</span>
         </p>{" "}
         • <span>All Rights Reserved</span>
       </div>
