@@ -1,4 +1,34 @@
-import { Suspense, useEffect, useRef, useState, memo, useCallback, useMemo } from "react";
+/**
+ * PreLoader Component
+ *
+ * A sophisticated loading screen featuring animated 3D spheres and resource tracking.
+ * Displays a percentage counter while loading fonts, window resources, and textures.
+ *
+ * Features:
+ * - Resource tracking (fonts, window load, 3D textures)
+ * - Animated 3D spheres with entrance and exit animations
+ * - Progress counter with smooth fade in/out
+ * - Smooth crossfade transition to main content
+ * - Proper WebGL context management and cleanup
+ * - Memory-efficient texture caching
+ *
+ * Animation Timeline:
+ * 1. Spheres enter from bottom (1s delay + 2.5s animation)
+ * 2. Progress counter fades in at 2.3s
+ * 3. When resources load, counter fades out
+ * 4. Spheres exit upward (1.2s animation)
+ * 5. PreLoader fades out while main content animates in
+ */
+
+import {
+  Suspense,
+  useEffect,
+  useRef,
+  useState,
+  memo,
+  useCallback,
+  useMemo,
+} from "react";
 import { Canvas } from "@react-three/fiber";
 import gsap from "gsap";
 import CameraOrbit from "./CameraOrbit";
@@ -7,72 +37,91 @@ import ReadyPing from "./ReadyPing";
 import { useTheme } from "../../hooks/useTheme";
 import { clearTextureCache } from "./textureUtils";
 
+// ===== TYPES =====
 interface PreLoaderProps {
   onComplete?: () => void;
 }
 
-/**
- * PreLoader Component
- *
- * Timeline:
- * 0.0s - Page loads, resources start loading (fonts, window, textures)
- * 1.0s - Sphere starts animating up (from TexturedSphere component)
- * 2.3s - Counter fades in and shows progress
- * [All resources loaded + minimum 300ms + 500ms buffer]
- * +0.0s - Counter fades out
- * +0.3s - exitTrigger set (PreLoader div starts fading out)
- * +0.8s - Canvas unmounts (WebGL context freed immediately)
- * +1.2s - Spheres animate down (exit animation from TexturedSphere)
- * +4.0s - onComplete callback fires
- * +4.1s - PreLoader unmounts, main content mounts and fades in
- */
+// ===== COMPONENT =====
+
 const PreLoader = ({ onComplete }: PreLoaderProps) => {
+  // ===== REFS =====
   const counterRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const canvasTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hasStartedExitRef = useRef(false);
-  const hasUnmountedCanvasRef = useRef(false); // Prevent canvas from reappearing
+  const hasUnmountedCanvasRef = useRef(false);
   const loadingStartTimeRef = useRef<number>(Date.now());
+  const waveRef = useRef<HTMLDivElement>(null);
 
+  // ===== STATE =====
+  // Loading progress state
   const [progress, setProgress] = useState(0);
-  const [exitTrigger, setExitTrigger] = useState(false);
-  const [canvasState, setCanvasState] = useState(true);
-  const [isReady, setIsReady] = useState(false);
-  const [shouldFadeOut, setShouldFadeOut] = useState(false);
-
-  // Loading state tracking
   const [loadingStates, setLoadingStates] = useState({
     fonts: false,
     window: false,
     textures: false,
   });
 
+  // Animation sequence state
+  const [exitTrigger, setExitTrigger] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+  const [shouldFadeOut, setShouldFadeOut] = useState(false);
+  const [startWaveAnimation, setStartWaveAnimation] = useState(false);
+
+  // Canvas lifecycle state
+  const [canvasState, setCanvasState] = useState(true);
+  const [shouldUnmount, setShouldUnmount] = useState(false);
+
+  // ===== COMPUTED VALUES =====
   const { isDark } = useTheme();
-
-  // Cache window width check - computed once
   const isDesktop = useMemo(() => window.innerWidth > 1100, []);
+  const backgroundColor = useMemo(
+    () => (isDark ? "#161c26" : "#e3e1d8"),
+    [isDark]
+  );
 
-  // Memoize background color
-  const backgroundColor = useMemo(() => isDark ? "#1c222f" : "#ece9e1", [isDark]);
+  // ===== CALLBACKS =====
+  const handleTexturesReady = useCallback(() => {
+    setLoadingStates((prev) => ({ ...prev, textures: true }));
+  }, []);
 
-  // Track fonts loading
+  const handleExitComplete = useCallback(() => {
+    // Trigger main content appearance immediately
+    if (onComplete) {
+      onComplete();
+    }
+
+    // Unmount Canvas after short delay for smooth transition
+    setTimeout(() => {
+      hasUnmountedCanvasRef.current = true;
+      setCanvasState(false);
+    }, 500);
+
+    // Fully unmount PreLoader after fade-out completes
+    setTimeout(() => {
+      setShouldUnmount(true);
+    }, 2200);
+  }, [onComplete]);
+
+  // ===== RESOURCE TRACKING EFFECTS =====
+  // Track font loading
   useEffect(() => {
     if ("fonts" in document) {
       document.fonts.ready.then(() => {
-        setLoadingStates(prev => ({ ...prev, fonts: true }));
+        setLoadingStates((prev) => ({ ...prev, fonts: true }));
       });
     } else {
-      // Fallback for browsers without font loading API
       setTimeout(() => {
-        setLoadingStates(prev => ({ ...prev, fonts: true }));
+        setLoadingStates((prev) => ({ ...prev, fonts: true }));
       }, 500);
     }
   }, []);
 
-  // Track window load (all images, scripts, stylesheets)
+  // Track window load (images, scripts, stylesheets)
   useEffect(() => {
     const handleLoad = () => {
-      setLoadingStates(prev => ({ ...prev, window: true }));
+      setLoadingStates((prev) => ({ ...prev, window: true }));
     };
 
     if (document.readyState === "complete") {
@@ -83,12 +132,7 @@ const PreLoader = ({ onComplete }: PreLoaderProps) => {
     }
   }, []);
 
-  // Memoize ready callback for textures
-  const handleTexturesReady = useCallback(() => {
-    setLoadingStates(prev => ({ ...prev, textures: true }));
-  }, []);
-
-  // Calculate loading progress based on loaded resources
+  // Calculate loading progress percentage
   useEffect(() => {
     const loadedCount = Object.values(loadingStates).filter(Boolean).length;
     const totalResources = Object.keys(loadingStates).length;
@@ -98,30 +142,32 @@ const PreLoader = ({ onComplete }: PreLoaderProps) => {
 
   // Check if all resources are loaded
   const allResourcesLoaded = useMemo(() => {
-    return loadingStates.fonts && loadingStates.window && loadingStates.textures;
+    return (
+      loadingStates.fonts && loadingStates.window && loadingStates.textures
+    );
   }, [loadingStates]);
 
-  // Start animation sequence when all resources are loaded + minimum 300ms
+  // ===== ANIMATION SEQUENCE EFFECTS =====
+  // Trigger exit sequence when all resources load (after minimum display time)
   useEffect(() => {
     if (allResourcesLoaded && !hasStartedExitRef.current) {
       hasStartedExitRef.current = true;
 
-      // Calculate minimum loading time (300ms)
       const elapsedTime = Date.now() - loadingStartTimeRef.current;
       const minimumLoadingTime = 300;
       const remainingTime = Math.max(0, minimumLoadingTime - elapsedTime);
 
-      // Sphere entrance animation: starts at 1000ms, duration 2500ms = completes at 3500ms
-      // We need to wait until sphere animation completes before starting exit
-      // Add extra time to let user see the sphere
-      const sphereAnimationTime = 3500; // Sphere completes at 3.5s
-      const extraViewTime = 500; // Let user see the sphere for 0.5s more
-      const minimumTotalTime = sphereAnimationTime + extraViewTime; // 4000ms total
+      // Sphere entrance: 1s delay + 2.5s animation = completes at 3.5s
+      // Add 500ms viewing time = 4s total minimum
+      const sphereAnimationTime = 3500;
+      const extraViewTime = 500;
+      const minimumTotalTime = sphereAnimationTime + extraViewTime;
 
-      // Use the longer of: minimum loading time or sphere animation time
-      const actualWaitTime = Math.max(remainingTime + 500, minimumTotalTime - elapsedTime);
+      const actualWaitTime = Math.max(
+        remainingTime + 500,
+        minimumTotalTime - elapsedTime
+      );
 
-      // Wait for sphere animation to complete before starting exit
       const timer = setTimeout(() => {
         setIsReady(true);
       }, actualWaitTime);
@@ -130,19 +176,18 @@ const PreLoader = ({ onComplete }: PreLoaderProps) => {
     }
   }, [allResourcesLoaded]);
 
-  // Progress counter animation - appears AFTER sphere
+  // Fade in progress counter after sphere appears
   useEffect(() => {
     if (!counterRef.current) return;
 
-    // Show counter after sphere has appeared (sphere delay is 1s, sphere duration is 2.5s)
-    // Counter appears at 2.3s so it's visible after sphere is mostly visible
     const tl = gsap.timeline();
     timelineRef.current = tl;
 
+    // Counter appears at 2.3s (after sphere is mostly visible)
     tl.to(counterRef.current, {
       opacity: 1,
       duration: 0.6,
-      delay: 2.3 // Sphere appears at 1s, counter appears at 2.3s
+      delay: 2.3,
     });
 
     return () => {
@@ -150,79 +195,124 @@ const PreLoader = ({ onComplete }: PreLoaderProps) => {
     };
   }, []);
 
-  // Exit sequence when ready
+  // Exit sequence - fade out counter and trigger sphere exit
   useEffect(() => {
     if (!isReady) return;
 
     const tl = gsap.timeline();
 
-    // Fade out counter
     tl.to(counterRef.current, {
       opacity: 0,
       duration: 0.5,
       delay: 0.3,
       onComplete: () => {
         setExitTrigger(true);
+        setStartWaveAnimation(true);
 
-        // Wait for sphere exit animation to complete (1.2s) before fading out PreLoader div
-        // This ensures spheres are visible while animating upward
-        setTimeout(() => {
+        // Delay PreLoader fade-out until spheres finish animating (1.2s + 200ms buffer)
+        const timeoutId = setTimeout(() => {
           setShouldFadeOut(true);
-        }, 1400); // 1.2s animation + 200ms buffer
+        }, 1400);
 
-        // NOTE: Canvas unmounting is now handled in handleExitComplete
-        // after the full exit timeline completes (not on a timer)
+        canvasTimeoutRef.current = timeoutId;
       },
     });
 
     return () => {
       tl.kill();
-      if (canvasTimeoutRef.current) {
-        clearTimeout(canvasTimeoutRef.current);
+      const timeoutId = canvasTimeoutRef.current;
+      if (timeoutId) {
+        clearTimeout(timeoutId);
       }
     };
   }, [isReady]);
 
-  // Cleanup on unmount - clear texture cache and prevent memory leaks
+  // Wave animation - animate wavy layer from bottom to top
+  useEffect(() => {
+    if (!startWaveAnimation || !waveRef.current) return;
+
+    const tl = gsap.timeline();
+
+    // Animate wave from bottom to top with lazy, smooth curve
+    tl.to(waveRef.current, {
+      y: "-120vh",
+      duration: 2.5,
+      ease: "power1.inOut",
+      delay: 0.2,
+    });
+
+    return () => {
+      tl.kill();
+    };
+  }, [startWaveAnimation]);
+
+  // ===== CLEANUP EFFECT =====
   useEffect(() => {
     return () => {
-      // Clear all cached textures when PreLoader unmounts
       clearTextureCache();
-
-      // Kill any remaining timelines
-      if (timelineRef.current) {
-        timelineRef.current.kill();
-      }
+      timelineRef.current?.kill();
     };
   }, []);
 
-  // Handle exit complete callback
-  const handleExitComplete = useCallback(() => {
-    // Unmount Canvas now that exit animation is complete
-    hasUnmountedCanvasRef.current = true;
-    setCanvasState(false);
-
-    // Call parent onComplete callback to show main content
-    if (onComplete) {
-      onComplete();
-    }
-  }, [onComplete]);
+  // ===== RENDER =====
+  // Unmount after fade-out completes to free resources
+  if (shouldUnmount) {
+    return null;
+  }
 
   return (
     <div
       className="loader fixed top-0 left-0 w-full h-screen z-[100000] pointer-events-none"
       style={{
         opacity: shouldFadeOut ? 0 : 1,
-        transition: 'opacity 0.5s ease-out',
-        visibility: shouldFadeOut ? 'hidden' : 'visible'
+        transition: "opacity 0.8s ease-out",
+        visibility: shouldFadeOut ? "hidden" : "visible",
+        pointerEvents: "none",
       }}
     >
+      {/* Animated Wave Background Layer */}
+      <div
+        ref={waveRef}
+        className="absolute left-0 w-full h-[120vh]"
+        style={{
+          bottom: "-20vh",
+          zIndex: 1,
+        }}
+      >
+        <svg
+          className="absolute bottom-0 w-full h-full"
+          viewBox="0 0 1440 1200"
+          preserveAspectRatio="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          {/* Wave Layer 1 - Front most wave */}
+          <path
+            d="M0,900 Q240,750 480,820 T960,780 Q1200,740 1440,820 L1440,1200 L0,1200 Z"
+            fill={isDark ? "#161c26" : "#e3e1d8"}
+            opacity="1"
+          />
+          {/* Wave Layer 2 - Middle wave */}
+          <path
+            d="M0,950 Q180,800 360,880 T840,840 Q1080,800 1320,880 T1440,860 L1440,1200 L0,1200 Z"
+            fill={isDark ? "#1a2332" : "#dad7cc"}
+            opacity="0.95"
+          />
+          {/* Wave Layer 3 - Back wave */}
+          <path
+            d="M0,1000 Q300,870 600,930 T1200,900 Q1320,880 1440,920 L1440,1200 L0,1200 Z"
+            fill={isDark ? "#1e2a3e" : "#d0cdc0"}
+            opacity="0.9"
+          />
+        </svg>
+      </div>
+
+      {/* 3D Canvas - renders animated spheres */}
       {canvasState && !hasUnmountedCanvasRef.current && (
         <Canvas
-          key="preloader-canvas" // Unique key to ensure proper cleanup
+          key="preloader-canvas"
           camera={{ position: [0, 0, 6], fov: 50 }}
-          className="pointer-events-none"
-          frameloop="always" // Keep rendering for animations
+          className="pointer-events-none relative z-10"
+          frameloop="always"
           gl={{
             antialias: true,
             alpha: true,
@@ -230,33 +320,30 @@ const PreLoader = ({ onComplete }: PreLoaderProps) => {
             preserveDrawingBuffer: false,
             failIfMajorPerformanceCaveat: false,
           }}
-          dpr={[1, 2]} // Limit pixel ratio to prevent memory issues
+          dpr={[1, 2]}
           onCreated={({ gl }) => {
-            // Disable shader error checking for performance
             gl.debug.checkShaderErrors = false;
-
-            // Handle context loss (expected on unmount - suppress warning)
-            gl.domElement.addEventListener('webglcontextlost', (event) => {
+            gl.domElement.addEventListener("webglcontextlost", (event) => {
               event.preventDefault();
-              // Context loss on unmount is expected, don't log
             });
           }}
         >
           <color attach="background" args={[backgroundColor]} />
           <Suspense fallback={null}>
             <ReadyPing onReady={handleTexturesReady} />
-            {isDesktop ? <CameraOrbit /> : null}
-            <TexturedSphere exitTrigger={exitTrigger} onExitComplete={handleExitComplete} />
+            {isDesktop && <CameraOrbit />}
+            <TexturedSphere
+              exitTrigger={exitTrigger}
+              onExitComplete={handleExitComplete}
+            />
           </Suspense>
         </Canvas>
       )}
 
+      {/* Progress Counter */}
       <div
         ref={counterRef}
-        className="absolute left-1/2 -translate-x-1/2 font-bold text-[26px] leading-[77%] tracking-wider uppercase opacity-0
-                   bottom-[250px]
-                   max-[1900px]:max-h-[700px]:min-w-[1100px]:bottom-[100px]
-                   max-lg:bottom-[10px] max-lg:text-[18px] text-foreground text-mono"
+        className="absolute left-1/2 -translate-x-1/2 font-bold text-[26px] leading-[77%] tracking-wider uppercase opacity-0 bottom-[250px] max-[1900px]:max-h-[700px]:min-w-[1100px]:bottom-[100px] max-lg:bottom-[10px] max-lg:text-[18px] text-foreground dark:text-background text-mono z-20"
       >
         {progress}%
       </div>

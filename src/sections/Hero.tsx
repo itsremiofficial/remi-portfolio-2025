@@ -857,7 +857,7 @@ const Hero = () => {
 
   return (
     <section
-      className="w-full min-h-[calc(100lvh-6rem)] md:min-h-[calc(100vh-6rem)] flex flex-col items-center justify-between"
+      className="hero w-full min-h-[calc(100lvh-6rem)] md:min-h-[calc(100vh-6rem)] flex flex-col items-center justify-between"
       id="home"
     >
       <div className="flex items-center justify-center grow">

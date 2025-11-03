@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import Header from "./layout/Header";
 import Hero from "./sections/Hero";
@@ -38,15 +38,102 @@ const App = () => {
   const [preloaderComplete, setPreloaderComplete] = useState(false);
   const { scrollToElement, isReady, lenis } = useScrollTo();
   const location = useLocation();
+  const hasAnimatedRef = useRef(false);
 
   // Handle preloader completion
   const handlePreloaderComplete = () => {
-    // Small delay to ensure PreLoader Canvas is fully disposed
-    // before main content Canvas instances initialize
-    setTimeout(() => {
-      setPreloaderComplete(true);
-    }, 100);
+    // Show main content immediately for smooth transition
+    // PreLoader will fade out while main content fades in
+    setPreloaderComplete(true);
   };
+
+  // Animate header and hero elements when preloader completes
+  useEffect(() => {
+    if (preloaderComplete && !hasAnimatedRef.current) {
+      hasAnimatedRef.current = true;
+
+      // Create smooth entrance animations
+      const tl = gsap.timeline({
+        defaults: {
+          ease: "power3.out",
+        },
+      });
+
+      // Animate header - slide down and fade in
+      tl.fromTo(
+        ".header",
+        {
+          y: -100,
+          opacity: 0,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power4.out",
+        }
+      );
+
+      // Animate hero designer/developer text - fade in and scale
+      tl.fromTo(
+        ".hero h4",
+        {
+          opacity: 0,
+          scale: 0.9,
+        },
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 0.6,
+        },
+        "-=0.5"
+      );
+
+      // Animate hero title (h1) - fade in and slide up
+      tl.fromTo(
+        ".hero h1",
+        {
+          y: 30,
+          opacity: 0,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+        },
+        "-=0.4"
+      );
+
+      // Animate bottom marquee section - slide up and fade in
+      tl.fromTo(
+        ".hero > div:nth-child(2)",
+        {
+          y: 50,
+          opacity: 0,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+        },
+        "-=0.6"
+      );
+
+      // Animate main sections - fade in
+      tl.fromTo(
+        "main > section:not(#home)",
+        {
+          opacity: 0,
+        },
+        {
+          opacity: 1,
+          duration: 0.5,
+          stagger: 0.1,
+        },
+        "-=0.3"
+      );
+    }
+  }, [preloaderComplete]);
 
   // Handle scroll to section after navigation from ProjectDetail
   useEffect(() => {
@@ -131,34 +218,49 @@ const App = () => {
 
   return (
     <>
-      {!preloaderComplete && <PreLoader onComplete={handlePreloaderComplete} />}
+      <MacCursorAuto />
+      <div className="grain" />
 
-      {preloaderComplete && (
-        <div
-          style={{
-            opacity: 1,
-            transition: "opacity 0.5s ease-in-out",
-          }}
-        >
-          <MacCursorAuto />
-          <div className="grain" />
-          <Header fontsLoaded={preloaderComplete} />
+      {/* PreLoader layer - always rendered but fades out */}
+      <PreLoader onComplete={handlePreloaderComplete} />
 
-          <main className="overflow-x-hidden text-foreground dark:text-background relative">
-            {/* <Scene /> */}
-            <Hero />
-            <WelcomeMarquee />
-            <About />
-            {/* <Works /> */}
-            <ProjectsGallery />
-            <Services />
-            <Skills />
-            <ServicesMarquee />
-            <Testimonials />
-            <Footer />
-          </main>
-        </div>
-      )}
+      {/* Main content - animated individually when preloader completes */}
+      <div
+        style={{
+          pointerEvents: preloaderComplete ? "auto" : "none",
+        }}
+      >
+        <Header fontsLoaded={preloaderComplete} />
+
+        <main className="overflow-x-hidden text-foreground dark:text-background relative">
+          {/* <Scene /> */}
+          <Hero />
+          <WelcomeMarquee />
+          <About />
+          {/* <Works /> */}
+          <ProjectsGallery />
+          <Services />
+          <Skills />
+          <ServicesMarquee />
+          <Testimonials />
+          <Footer />
+        </main>
+      </div>
+
+      {/* Initial styles to hide elements before GSAP animations */}
+      <style>{`
+        .header {
+          opacity: 0;
+        }
+        .hero h4,
+        .hero h1,
+        .hero > div:nth-child(2) {
+          opacity: 0;
+        }
+        main > section:not(#home) {
+          opacity: 0;
+        }
+      `}</style>
     </>
   );
 };

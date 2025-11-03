@@ -1,3 +1,25 @@
+/**
+ * TexturedSphere Component
+ *
+ * Renders two animated 3D spheres with custom textures in the PreLoader.
+ * The spheres feature continuous rotation, floating motion, and entrance/exit animations.
+ *
+ * Features:
+ * - Dual-sphere system with different textures (large + small)
+ * - Theme-aware texture loading (light/dark mode)
+ * - Texture caching for performance
+ * - Custom alpha-smooth shader material
+ * - GSAP-powered entrance animation (bottom to center)
+ * - GSAP-powered exit animation (center to top)
+ * - Continuous rotation and floating effects
+ * - Desktop-only camera orbit integration
+ * - Proper geometry and material disposal
+ *
+ * Props:
+ * - exitTrigger: Triggers the exit animation when true
+ * - onExitComplete: Callback fired when exit animation completes
+ */
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useRef, useEffect, memo } from "react";
 import { useLoader, useFrame } from "@react-three/fiber";
@@ -8,15 +30,20 @@ import "./AlphaSmoothMaterial";
 import { useTheme } from "../../hooks/useTheme";
 import { createWrappedTexture } from "./textureUtils";
 
+// ===== TYPES =====
 interface TexturedSphereProps {
   exitTrigger: boolean;
   onExitComplete?: () => void;
 }
 
+// ===== COMPONENT =====
 const TexturedSphere = memo(
   ({ exitTrigger, onExitComplete }: TexturedSphereProps) => {
+    // ===== HOOKS =====
     const { isDark } = useTheme();
+    const lenis = useLenis();
 
+    // ===== TEXTURE LOADING =====
     // Memoize texture paths to prevent unnecessary reloads
     const texturePaths = useMemo(
       () => [
@@ -32,7 +59,6 @@ const TexturedSphere = memo(
 
     const [tex1, tex2] = useLoader(THREE.TextureLoader, texturePaths);
 
-    // Use cacheKey for texture creation
     const texture1 = useMemo(
       () => createWrappedTexture(tex1, texturePaths[0]),
       [tex1, texturePaths]
@@ -42,34 +68,35 @@ const TexturedSphere = memo(
       [tex2, texturePaths]
     );
 
+    // ===== REFS =====
     const mesh1 = useRef<THREE.Mesh>(null);
     const mesh2 = useRef<THREE.Mesh>(null);
     const groupRef = useRef<THREE.Group>(null);
     const entranceTimelineRef = useRef<gsap.core.Timeline | null>(null);
     const exitTimelineRef = useRef<gsap.core.Timeline | null>(null);
+    const lenisTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    const lenis = useLenis();
-
-    // Cache window width check
-    const isMobile = useMemo(() => window.innerWidth < 768, []);
+    // ===== COMPUTED VALUES =====
     const isDesktop = useMemo(() => window.innerWidth > 768, []);
 
+    // ===== EFFECTS =====
+    // Disable smooth scrolling while loader is visible
     useEffect(() => {
       if (lenis) {
         lenis.stop();
       }
     }, [lenis]);
 
-    // Cleanup on unmount - dispose of geometries and materials
+    // Cleanup on unmount
     useEffect(() => {
-      // Capture ref values at effect time for cleanup
       const mesh1Value = mesh1.current;
       const mesh2Value = mesh2.current;
       const entranceTl = entranceTimelineRef.current;
       const exitTl = exitTimelineRef.current;
+      const timeoutId = lenisTimeoutRef.current;
 
       return () => {
-        // Clean up meshes using captured values
+        // Dispose geometries and materials
         if (mesh1Value) {
           mesh1Value.geometry?.dispose();
           if (mesh1Value.material && "dispose" in mesh1Value.material) {
@@ -83,12 +110,16 @@ const TexturedSphere = memo(
           }
         }
 
-        // Kill all timelines
+        // Kill timelines and clear timeouts
         entranceTl?.kill();
         exitTl?.kill();
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
       };
     }, []);
 
+    // Continuous rotation and floating animation
     useFrame((state, delta) => {
       if (mesh1.current) mesh1.current.rotation.y -= delta * 0.3;
       if (mesh2.current) mesh2.current.rotation.y -= delta * 0.5;
@@ -101,7 +132,7 @@ const TexturedSphere = memo(
       }
     });
 
-    // Entrance animation
+    // Entrance animation - spheres rise from bottom
     useEffect(() => {
       if (mesh1.current && mesh2.current) {
         mesh1.current.position.y = -8;
@@ -128,57 +159,21 @@ const TexturedSphere = memo(
       }
     }, []);
 
-    // Exit animation - optimized with cached DOM queries
+    // Exit animation - spheres move upward when loading completes
     useEffect(() => {
       if (!exitTrigger) return;
       if (!mesh1.current || !mesh2.current) return;
 
-      // Cache all DOM queries at once
-      const sections = document.querySelectorAll("section");
-      const links = document.querySelectorAll("a");
-      const header = document.querySelector(".header");
-      const hero = document.querySelector(".hero");
-      const heroTitle = document.querySelector(".hero-title");
-      const heroLetters = document.querySelectorAll(".hero-title .hero-letter");
-      const heroDesigner = document.querySelector(".hero-designer");
-      const heroDesignerImg = document.querySelector(".hero-designer__img>img");
-      const heroDesignerDescr = document.querySelectorAll(
-        ".hero-designer__descr>p>span"
-      );
-      const heroBased = document.querySelector(".hero-based");
-      const heroDescription = document.querySelector(".hero-description");
-      const heroRecent = document.querySelector(".hero-recent");
-      const heroCollab = document.querySelector(".hero-collab");
-      const heroNumberFirst = document.querySelector(
-        ".hero-title__number-first>span"
-      );
-      const heroNumberThird = document.querySelector(
-        ".hero-title__number-third>span"
-      );
-      const heroNumberFour = document.querySelector(
-        ".hero-title__number-four>span"
-      );
-      const heroNumberFive = document.querySelector(
-        ".hero-title__number-five>span"
-      );
-      const heroNumberSecond = document.querySelector(
-        ".hero-title__number-second"
-      );
-      const loader = document.querySelector(".loader");
-      const main = document.querySelector("main");
-
       const tl = gsap.timeline({
         onComplete: () => {
-          // Call onExitComplete after all animations finish (3s delay for content reveal)
-          setTimeout(() => {
-            if (onExitComplete) {
-              onExitComplete();
-            }
-          }, 3000);
+          if (onExitComplete) {
+            onExitComplete();
+          }
         },
       });
       exitTimelineRef.current = tl;
 
+      // Animate both spheres upward with slight overlap
       tl.to(mesh2.current.position, {
         y: 10,
         duration: 1.2,
@@ -192,218 +187,28 @@ const TexturedSphere = memo(
           duration: 1.2,
           ease: "power4.in",
         },
-        "-=1.1"
+        "-=1.25"
       );
 
-      // Note: sections, links, header, and main opacity are now controlled by React state
-      // in App.tsx via preloaderComplete. Only animate hero elements here.
-
-      // if (sections.length > 0) {
-      //   tl.to(sections, {
-      //     opacity: 1,
-      //     pointerEvents: "auto",
-      //     duration: 1,
-      //   });
-      // }
-
-      // if (links.length > 0) {
-      //   tl.to(links, {
-      //     pointerEvents: "auto",
-      //   });
-      // }
-
-      // if (header) {
-      //   tl.to(header, {
-      //     opacity: 1,
-      //     pointerEvents: "auto",
-      //     duration: 1,
-      //   });
-      // }
-
-      if (hero) {
-        if (heroLetters.length > 0) {
-          tl.to(heroLetters, {
-            y: 0,
-            delay: 0.5,
-            duration: 1.7,
-            ease: "power4.inOut",
-            stagger: {
-              each: 0.03,
-              from: "center",
-            },
-          });
-        }
-
-        if (isMobile && heroTitle) {
-          tl.to(heroTitle, {
-            delay: 1.5,
-            onComplete() {
-              heroTitle.classList.add("hero-title-after");
-            },
-          });
-        }
-
-        if (heroDesigner) {
-          tl.to(heroDesigner, {
-            opacity: 1,
-            delay: 1.5,
-            duration: 1,
-            ease: "power4.out",
-          });
-        }
-
-        if (heroDesignerImg) {
-          tl.to(heroDesignerImg, {
-            clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-            scale: 1,
-            delay: 1.6,
-            duration: 2.5,
-            ease: "power4.out",
-          });
-        }
-
-        if (heroDesignerDescr.length > 0) {
-          tl.to(heroDesignerDescr, {
-            y: 0,
-            delay: 1.7,
-            duration: 1,
-            ease: "power4.out",
-            stagger: {
-              each: 0.08,
-            },
-          });
-        }
-
-        if (heroBased) {
-          tl.to(heroBased, {
-            opacity: 1,
-            delay: 1.5,
-            duration: 1,
-            ease: "power4.out",
-          });
-        }
-
-        if (heroDescription) {
-          tl.to(heroDescription, {
-            opacity: 1,
-            delay: 1.5,
-            duration: 1,
-            ease: "power4.out",
-          });
-        }
-
-        if (heroRecent) {
-          tl.to(heroRecent, {
-            opacity: 1,
-            delay: 1.5,
-            duration: 1,
-            ease: "power4.out",
-          });
-        }
-
-        if (heroCollab) {
-          tl.to(heroCollab, {
-            opacity: 1,
-            delay: 1.5,
-            duration: 1,
-            ease: "power4.out",
-          });
-        }
-
-        if (heroNumberFirst) {
-          tl.to(heroNumberFirst, {
-            y: "100%",
-            delay: 2,
-            duration: 2,
-            ease: "power4.out",
-          });
-        }
-
-        if (heroNumberThird) {
-          tl.to(heroNumberThird, {
-            y: "300%",
-            delay: 2.2,
-            duration: 1.5,
-            ease: "power4.out",
-          });
-          tl.to(heroNumberThird, {
-            y: "600%",
-            delay: 3.2,
-            duration: 2,
-            ease: "power4.out",
-          });
-        }
-
-        if (heroNumberFour) {
-          tl.to(heroNumberFour, {
-            y: "100%",
-            delay: 2.7,
-            duration: 2,
-            ease: "power4.out",
-          });
-        }
-
-        if (heroNumberFive) {
-          tl.to(heroNumberFive, {
-            y: "900%",
-            delay: 2.8,
-            duration: 2,
-            ease: "power4.out",
-          });
-          tl.to(heroNumberFive, {
-            y: "800%",
-            delay: 4.3,
-            duration: 2,
-            ease: "power4.out",
-          });
-        }
-
-        if (heroNumberSecond) {
-          tl.to(heroNumberSecond, {
-            opacity: "1",
-            delay: 3,
-            duration: 1,
-            ease: "power4.out",
-          });
-        }
-      }
-
-      if (loader) {
-        tl.to(loader, {
-          opacity: "0",
-          delay: 1,
-          duration: 0.5,
-          ease: "power4.out",
-        });
-      }
-
-      // Main opacity is now controlled by React state in App.tsx
-      // if (main) {
-      //   tl.to(main, {
-      //     opacity: 1,
-      //     delay: 3,
-      //     duration: 1,
-      //     ease: "power4.out",
-      //   });
-      // }
-
+      // Re-enable smooth scroll after animations complete
       if (lenis) {
-        // Use a more reliable callback
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
           lenis.start();
         }, 1500);
+        lenisTimeoutRef.current = timeoutId;
       }
 
       return () => {
         tl.kill();
       };
-    }, [exitTrigger, lenis, onExitComplete, isMobile]);
+    }, [exitTrigger, lenis, onExitComplete]);
 
+    // ===== RENDER =====
     return (
       <group rotation={[isDesktop ? -0.6 : 0, 0, 0]}>
         <group ref={groupRef}>
+          {/* Large Sphere - Primary texture */}
           <mesh ref={mesh1}>
-            {/* Reduced from 64x64 to 32x32 segments to prevent WebGL context loss */}
             <sphereGeometry args={[1, 32, 32]} />
             {texture1 && (
               <alphaSmoothMaterial
@@ -413,8 +218,8 @@ const TexturedSphere = memo(
             )}
           </mesh>
 
+          {/* Small Sphere - Secondary texture */}
           <mesh ref={mesh2}>
-            {/* Reduced from 64x64 to 32x32 segments to prevent WebGL context loss */}
             <sphereGeometry args={[1, 32, 32]} />
             {texture2 && (
               <alphaSmoothMaterial
