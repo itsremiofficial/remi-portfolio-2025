@@ -52,7 +52,6 @@ const PreLoader = ({ onComplete }: PreLoaderProps) => {
   const hasStartedExitRef = useRef(false);
   const hasUnmountedCanvasRef = useRef(false);
   const loadingStartTimeRef = useRef<number>(Date.now());
-  const waveRef = useRef<HTMLDivElement>(null);
 
   // ===== STATE =====
   // Loading progress state
@@ -227,25 +226,6 @@ const PreLoader = ({ onComplete }: PreLoaderProps) => {
     };
   }, [isReady]);
 
-  // Wave animation - animate wavy layer from bottom to top
-  useEffect(() => {
-    if (!startWaveAnimation || !waveRef.current) return;
-
-    const tl = gsap.timeline();
-
-    // Animate wave from bottom to top with lazy, smooth curve
-    tl.to(waveRef.current, {
-      y: "-120vh",
-      duration: 2.5,
-      ease: "power1.inOut",
-      delay: 0.2,
-    });
-
-    return () => {
-      tl.kill();
-    };
-  }, [startWaveAnimation]);
-
   // ===== CLEANUP EFFECT =====
   useEffect(() => {
     return () => {
@@ -270,42 +250,6 @@ const PreLoader = ({ onComplete }: PreLoaderProps) => {
         pointerEvents: "none",
       }}
     >
-      {/* Animated Wave Background Layer */}
-      <div
-        ref={waveRef}
-        className="absolute left-0 w-full h-[120vh]"
-        style={{
-          bottom: "-20vh",
-          zIndex: 1,
-        }}
-      >
-        <svg
-          className="absolute bottom-0 w-full h-full"
-          viewBox="0 0 1440 1200"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          {/* Wave Layer 1 - Front most wave */}
-          <path
-            d="M0,900 Q240,750 480,820 T960,780 Q1200,740 1440,820 L1440,1200 L0,1200 Z"
-            fill={isDark ? "#161c26" : "#e3e1d8"}
-            opacity="1"
-          />
-          {/* Wave Layer 2 - Middle wave */}
-          <path
-            d="M0,950 Q180,800 360,880 T840,840 Q1080,800 1320,880 T1440,860 L1440,1200 L0,1200 Z"
-            fill={isDark ? "#1a2332" : "#dad7cc"}
-            opacity="0.95"
-          />
-          {/* Wave Layer 3 - Back wave */}
-          <path
-            d="M0,1000 Q300,870 600,930 T1200,900 Q1320,880 1440,920 L1440,1200 L0,1200 Z"
-            fill={isDark ? "#1e2a3e" : "#d0cdc0"}
-            opacity="0.9"
-          />
-        </svg>
-      </div>
-
       {/* 3D Canvas - renders animated spheres */}
       {canvasState && !hasUnmountedCanvasRef.current && (
         <Canvas
