@@ -14,14 +14,14 @@ export interface Work {
 const WORKS: Work[] = [
   {
     id: "1",
-    title: "Mivator",
-    type: "Dashboard",
+    title: "Fronus Solar Energy",
+    type: "Website",
     slug: "mivator-dashboard",
     imageUrl: "/videos/video01.jpg",
     year: "2024",
     description:
       "A modern dashboard application with real-time analytics and data visualization.",
-    technologies: ["React", "TypeScript", "GSAP"],
+    technologies: ["HTML5", "CSS3", "JS", "Bootstrap"],
   },
   {
     id: "2",

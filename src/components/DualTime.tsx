@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 import React, { useState, useEffect } from "react";
+import { SlidingNumber } from "./ui/SlidingNumber";
 
 interface TimeDisplayProps {
   mode?: "single" | "dual"; // Single time or dual time display
@@ -25,143 +28,129 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
   const [visitorTimeZone, setVisitorTimeZone] = useState<string>("UTC");
 
   useEffect(() => {
-    // Detect visitor's timezone with fallback
     try {
       const detectedTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       setVisitorTimeZone(detectedTimeZone || "UTC");
-    } catch (error) {
+    } catch {
       setVisitorTimeZone("UTC");
     }
 
-    // Set up timer for real-time updates
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const formatTime = (date: Date, timeZone: string): string => {
+  // === Utility functions ===
+  const getTimeParts = (date: Date, tz: string) => {
     const options: Intl.DateTimeFormatOptions = {
-      timeZone: timeZone,
+      timeZone: tz,
       hour12: true,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
     };
 
-    switch (length) {
-      case "short":
-        options.hour = "2-digit";
-        options.minute = "2-digit";
-        break;
-      case "medium":
-        options.hour = "2-digit";
-        options.minute = "2-digit";
-        options.second = "2-digit";
-        break;
-      case "long":
-        options.hour = "2-digit";
-        options.minute = "2-digit";
-        options.second = "2-digit";
-        options.timeZoneName = "short";
-        break;
-    }
+    const parts = new Intl.DateTimeFormat("en-US", options)
+      .formatToParts(date)
+      .reduce((acc: any, part) => {
+        if (part.type !== "literal") acc[part.type] = part.value;
+        return acc;
+      }, {});
 
-    return date.toLocaleTimeString("en-US", options);
-  };
-
-  const formatDate = (date: Date, timeZone: string): string => {
-    const options: Intl.DateTimeFormatOptions = {
-      timeZone: timeZone,
+    return {
+      hours: parseInt(parts.hour),
+      minutes: parseInt(parts.minute),
+      seconds: parseInt(parts.second),
+      ampm: parts.dayPeriod,
     };
-
-    switch (length) {
-      case "short":
-        options.month = "numeric";
-        options.day = "numeric";
-        options.year = "2-digit";
-        break;
-      case "medium":
-        options.month = "short";
-        options.day = "numeric";
-        options.year = "numeric";
-        break;
-      case "long":
-        options.weekday = "long";
-        options.month = "long";
-        options.day = "numeric";
-        options.year = "numeric";
-        break;
-    }
-
-    return date.toLocaleDateString("en-US", options);
-  };
-
-  const formatDateTime = (date: Date, timeZone: string): string => {
-    if (timeType === "time") {
-      return formatTime(date, timeZone);
-    } else if (timeType === "date") {
-      return formatDate(date, timeZone);
-    } else {
-      // both
-      const timeStr = formatTime(date, timeZone);
-      const dateStr = formatDate(date, timeZone);
-
-      if (length === "short") {
-        return `${timeStr} ${dateStr}`;
-      } else {
-        return `${dateStr} ${timeStr}`;
-      }
-    }
   };
 
   const getTimeZoneLabel = (tz: string): string => {
     if (tz === "Asia/Karachi") return "PKT";
     if (tz === "UTC") return "UTC";
-
-    // Extract timezone abbreviation or use the timezone name
     const parts = tz.split("/");
     return parts[parts.length - 1].replace(/_/g, " ");
   };
 
-  // Pakistan timezone
-  const pakistanTimeZone = "Asia/Karachi";
+  const pakistanTZ = "Asia/Karachi";
+  const singleTZ = timezone || pakistanTZ;
 
-  // Determine which timezone to use for single mode
-  const singleTimeZone = timezone || pakistanTimeZone;
-
+  // === Single Mode ===
   if (mode === "single") {
-    const timeDisplay = formatDateTime(currentTime, singleTimeZone);
-    const label =
-      length === "long" ? ` (${getTimeZoneLabel(singleTimeZone)})` : "";
-
-    return (
-      <span className={className}>
-        {timeDisplay}
-        {label}
-      </span>
-    );
+    if (timeType === "time" || timeType === "both") {
+      const { hours, minutes, seconds, ampm } = getTimeParts(
+        currentTime,
+        singleTZ
+      );
+      return (
+        <div className={`flex items-center gap-1 font-mono ${className}`}>
+          <SlidingNumber value={hours} padStart />
+          <span>:</span>
+          <SlidingNumber value={minutes} padStart />
+          {length !== "short" && (
+            <>
+              <span className="">:</span>
+              <SlidingNumber value={seconds} padStart />
+            </>
+          )}
+          <span className="ml-1 ">{ampm}</span>
+          {length === "long" && (
+            <span className="ml-1">({getTimeZoneLabel(singleTZ)})</span>
+          )}
+        </div>
+      );
+    } else {
+      // Date-only mode
+      const dateStr = currentTime.toLocaleDateString("en-US", {
+        timeZone: singleTZ,
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+      return <div className={className}>{dateStr}</div>;
+    }
   }
 
-  // Dual mode
-  const pakistanTime = formatDateTime(currentTime, pakistanTimeZone);
-  const visitorTime = formatDateTime(currentTime, visitorTimeZone);
-
-  const pakistanLabel =
-    length === "long" ? ` (${getTimeZoneLabel(pakistanTimeZone)})` : "";
-  const visitorLabel =
-    length === "long" ? ` (${getTimeZoneLabel(visitorTimeZone)})` : "";
+  // === Dual Mode ===
+  const pk = getTimeParts(currentTime, pakistanTZ);
+  const visitor = getTimeParts(currentTime, visitorTimeZone);
 
   return (
-    <span className={className}>
-      <div className={childClass}>
-        {pakistanTime}
-        {pakistanLabel}
+    <div className={`flex items-center ${className}`}>
+      <div className={`flex items-center gap-1 font-mono ${childClass}`}>
+        <SlidingNumber value={pk.hours} padStart />
+        <span className="">:</span>
+        <SlidingNumber value={pk.minutes} padStart />
+        {length !== "short" && (
+          <>
+            <span className="">:</span>
+            <SlidingNumber value={pk.seconds} padStart />
+          </>
+        )}
+        <span className="ml-1 text-xs ">{pk.ampm}</span>
+        {length === "long" && (
+          <span className="ml-1 ">({getTimeZoneLabel(pakistanTZ)})</span>
+        )}
       </div>
+
       <span className={separatorClass}>{separator}</span>
-      <div className={childClass}>
-        {visitorTime}
-        {visitorLabel}
+
+      <div className={`flex items-center gap-1 font-mono ${childClass}`}>
+        <SlidingNumber value={visitor.hours} padStart />
+        <span className="">:</span>
+        <SlidingNumber value={visitor.minutes} padStart />
+        {length !== "short" && (
+          <>
+            <span className="">:</span>
+            <SlidingNumber value={visitor.seconds} padStart />
+          </>
+        )}
+        <span className="ml-1 text-xs ">{visitor.ampm}</span>
+        {length === "long" && (
+          <span className="ml-1 ">({getTimeZoneLabel(visitorTimeZone)})</span>
+        )}
       </div>
-    </span>
+    </div>
   );
 };
+
 export default TimeDisplay;

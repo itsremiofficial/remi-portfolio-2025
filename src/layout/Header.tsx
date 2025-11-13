@@ -794,7 +794,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
 
             <TimeDisplay
               timeType="time"
-              className="font-mono text-foreground/70 dark:text-background/50 relative -left-16 tracking-widest font-extralight"
+              className="font-mono text-foreground/70 dark:text-background/50 relative -left-16 tracking-widest font-extralight text-sm"
               mode="single"
               length="medium"
             />

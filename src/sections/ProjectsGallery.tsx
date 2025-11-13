@@ -9,6 +9,7 @@ import { useGSAP } from "@gsap/react";
 import MagneticButton from "../components/MagneticButton";
 import { useTheme } from "../hooks/useTheme";
 import WORKS, { type Work } from "../constants/WORKS";
+import { useNavigate } from "react-router-dom";
 
 // Global scroll progress and drag rotation trackers
 let scrollProgress = 0;
@@ -190,6 +191,7 @@ function ProjectCard({
   onHover: (data: Work) => void;
   onHoverEnd: () => void;
 }) {
+  const navigate = useNavigate();
   const ref = useRef<any>(null);
   const [hovered, setHovered] = useState(false);
   const alphaMap = useRef(createSquircleAlphaMap());
@@ -230,9 +232,11 @@ function ProjectCard({
   const handleClick = (e: any) => {
     e.stopPropagation();
     // Navigate to project link
-    window.location.href = projectData.slug;
+    navigate(`/work/${projectData.slug}`);
+    // window.location.href = projectData.slug;
   };
 
+  
   return (
     <group position={position} rotation={rotation}>
       <group scale={[1, 1, -1]}>

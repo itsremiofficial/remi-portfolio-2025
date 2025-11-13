@@ -23,6 +23,7 @@ import ProjectsGallery from "./sections/ProjectsGallery";
 import { useScrollTo } from "./hooks/useLenis";
 import { Footer } from "./sections/Footer";
 import PreLoader from "./components/Loader/PreLoader";
+import Carousel3D from "./sections/Carouselll";
 
 gsap.registerPlugin(
   ScrollTrigger,
@@ -33,6 +34,8 @@ gsap.registerPlugin(
   DrawSVGPlugin,
   InertiaPlugin
 );
+
+CustomEase.create("myBezier", "1, 0.01, 0.53, 1.05");
 
 const App = () => {
   const [preloaderComplete, setPreloaderComplete] = useState(false);
@@ -59,18 +62,19 @@ const App = () => {
         },
       });
 
-      // Animate header - slide down and fade in
       tl.fromTo(
         ".header",
         {
-          y: -100,
+          scale: 0.5,
+          y: -200,
           opacity: 0,
         },
         {
           y: 0,
+          scale: 1,
           opacity: 1,
-          duration: 0.8,
-          ease: "power4.out",
+          duration: 1,
+          ease: "myBezier",
         }
       );
 
@@ -85,6 +89,7 @@ const App = () => {
           opacity: 1,
           scale: 1,
           duration: 0.6,
+          ease: "myBezier",
         },
         "-=0.5"
       );
@@ -100,6 +105,7 @@ const App = () => {
           y: 0,
           opacity: 1,
           duration: 0.8,
+          // ease: "myBezier",s
         },
         "-=0.4"
       );
@@ -115,6 +121,7 @@ const App = () => {
           y: 0,
           opacity: 1,
           duration: 0.8,
+          // ease: "myBezier",
         },
         "-=0.6"
       );
@@ -233,6 +240,7 @@ const App = () => {
         <Header fontsLoaded={preloaderComplete} />
 
         <main className="overflow-x-hidden text-foreground dark:text-background relative">
+          <Carousel3D />
           {/* <Scene /> */}
           <Hero />
           <WelcomeMarquee />
