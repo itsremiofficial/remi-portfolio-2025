@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import gsap from "gsap";
 import { cn } from "../utils";
 import { useIsMobile } from "../hooks/useIsMobile";
+import { VIDEO_SOURCES } from "../constants/HERO_GALLERY";
 
 // ===== CONSTANTS =====
 const ANIMATION_CONFIG = {
@@ -15,17 +16,8 @@ const GALLERY_CONFIG = {
   MOBILE_SPACING: 110,
   DESKTOP_SPACING: 150,
   OPACITY_THRESHOLD: 2,
-  VISIBLE_RANGE: 1,
+  VISIBLE_RANGE: 0, // Changed from 1 to 0 to only play the center video
 } as const;
-
-const VIDEO_SOURCES = [
-  { src: "videos/video01.mp4", title: "Video 1" },
-  { src: "videos/video02.mp4", title: "Video 2" },
-  { src: "videos/video03.mp4", title: "Video 3" },
-  { src: "videos/video01.mp4", title: "Video 1" },
-  { src: "videos/video02.mp4", title: "Video 2" },
-  { src: "videos/video03.mp4", title: "Video 3" },
-] as const;
 
 // ===== TYPES =====
 interface VideoItem {
@@ -54,6 +46,7 @@ const Gallery = ({
     GALLERY_CONFIG.DEFAULT_ACTIVE_INDEX
   );
   const [userHasInteracted, setUserHasInteracted] = useState<boolean>(false);
+  const [isInView, setIsInView] = useState<boolean>(false); // New state for intersection
   const interactionListenerRef = useRef<boolean>(false);
 
   // Generate unique gallery ID
@@ -127,6 +120,31 @@ const Gallery = ({
     };
   }, []);
 
+  // Intersection Observer to pause/play based on visibility
+  useEffect(() => {
+    const element = galleryRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          setIsInView(entry.isIntersecting);
+        });
+      },
+      {
+        root: null, // viewport
+        rootMargin: "0px",
+        threshold: 0.1, // 10% visible
+      }
+    );
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   // Position cards and manage video playback
   const positionCards = useCallback(() => {
     const videoItems = cardsRef.current?.querySelectorAll<HTMLLIElement>("li");
@@ -156,15 +174,24 @@ const Gallery = ({
       // Manage video playback
       const video = item.querySelector("video");
       if (video) {
+        // STRICTER LOGIC: Only play if:
+        // 1. Distance is 0 (center item)
+        // 2. AutoPlay is enabled
+        // 3. Component is in view
+        // 4. User has interacted OR it's muted
         const shouldPlay =
-          Math.abs(distance) <= GALLERY_CONFIG.VISIBLE_RANGE &&
+          distance === 0 && // Only play center video
           autoPlay &&
+          isInView && // Only play if gallery is visible
           (userHasInteracted || muted);
 
         if (shouldPlay && video.paused) {
-          video.play().catch(() => {
-            // Video play prevented - normal browser behavior
-          });
+          const playPromise = video.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(() => {
+              // Auto-play was prevented
+            });
+          }
         } else if (!shouldPlay && !video.paused) {
           video.pause();
         }
@@ -175,6 +202,7 @@ const Gallery = ({
     autoPlay,
     muted,
     userHasInteracted,
+    isInView, // Added dependency
     isMobile,
     getCircularDistance,
     getScale,
@@ -190,7 +218,7 @@ const Gallery = ({
     allVideos.forEach((video) => {
       video.muted = muted;
       video.playsInline = playsInline;
-      video.preload = "auto";
+      video.preload = "none"; // Optimize loading
     });
   }, [muted, playsInline]);
 
@@ -199,14 +227,15 @@ const Gallery = ({
     positionCards();
 
     // Setup auto-rotation interval
-    if (!autoPlay) return;
+    // Only rotate if autoPlay is true AND it is in view
+    if (!autoPlay || !isInView) return;
 
     const cardInterval = window.setInterval(() => {
       setActiveIndex((prevIndex) => (prevIndex + 1) % videos.length);
     }, GALLERY_CONFIG.ROTATION_INTERVAL);
 
     return () => clearInterval(cardInterval);
-  }, [positionCards, autoPlay, videos.length]);
+  }, [positionCards, autoPlay, isInView, videos.length]); // Added isInView dependency
 
   // Observe resize events
   useEffect(() => {
@@ -250,8 +279,8 @@ const Gallery = ({
           >
             <video
               loop
-              muted
-              playsInline
+              muted={muted}
+              playsInline={playsInline}
               className="video-marquee w-full h-full object-cover pointer-events-none select-none"
               src={src}
               title={title}

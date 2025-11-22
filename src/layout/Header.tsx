@@ -67,6 +67,15 @@ const MORPH_TARGETS = {
   },
 } as const;
 
+// Shared className for menu section headings
+const HEADING_CLASSNAME = cn(
+  "nav-links-heading select-none",
+  "font-mono tracking-widest",
+  "text-foreground/30 dark:text-background/40",
+  "sm:text-base text-xs",
+  "will-change-[opacity,transform]"
+);
+
 // ============================================================================
 // TYPES
 // ============================================================================
@@ -366,6 +375,13 @@ ThemeIcon.displayName = "ThemeIcon";
 // HELPER FUNCTIONS
 // ============================================================================
 
+/**
+ * Creates a GSAP timeline animation for morphing the logo
+ * @param target - The HTML element to animate
+ * @param letters - The morph target configuration
+ * @param width - The target width for the animation
+ * @returns A GSAP timeline
+ */
 const createMorphAnimation = (
   target: HTMLElement,
   letters: typeof MORPH_TARGETS.COMPRESSED | typeof MORPH_TARGETS.EXPANDED,
@@ -394,6 +410,12 @@ const createMorphAnimation = (
   return tl;
 };
 
+/**
+ * Immediately applies a morph state to the logo without animation
+ * @param target - The HTML element to update
+ * @param state - The morph state ("small" or "full")
+ * @param width - The target width
+ */
 const applyMorphState = (
   target: HTMLElement,
   state: "small" | "full",
@@ -413,6 +435,9 @@ const applyMorphState = (
 // ============================================================================
 
 const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
+  // ============================================================================
+  // HOOKS - Routing & State
+  // ============================================================================
   const { scrollToElement } = useScrollTo();
   const { isDark } = useTheme();
   const navigate = useNavigate();
@@ -420,6 +445,9 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
 
+  // ============================================================================
+  // REFS
+  // ============================================================================
   const drawerRef = useRef<HTMLDivElement>(null);
   const menuContainerRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<SVGSVGElement>(null);
@@ -427,6 +455,9 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
   const scrollProgressRef = useRef<HTMLDivElement>(null);
   const scrollProgressMaskRef = useRef<HTMLDivElement>(null);
 
+  // ============================================================================
+  // MEMOIZED VALUES
+  // ============================================================================
   const ease = useMemo(() => CustomEase.create("custom", CUSTOM_EASE), []);
 
   const sectionIds = useMemo(
@@ -436,8 +467,12 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
       ),
     []
   );
+
   const activeSection = useActiveSection(sectionIds);
 
+  // ============================================================================
+  // CALLBACKS - User Interactions
+  // ============================================================================
   const toggleMenu = useCallback(() => {
     setIsExpanded((prev) => !prev);
   }, []);
@@ -449,6 +484,9 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
         navigate(item.href);
         setIsExpanded(false);
       } else {
+        // Close menu first
+        setIsExpanded(false);
+
         // Scroll to element
         const elementId = item.href.replace("#", "");
 
@@ -464,23 +502,30 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
             });
           }, 500);
         } else {
-          scrollToElement(elementId, {
-            offset: -100,
-            duration: 2.5,
-            easing: (t: number): number => ease(t),
-          });
+          // Small delay to allow menu to start closing
+          setTimeout(() => {
+            scrollToElement(elementId, {
+              offset: -100,
+              duration: 2.5,
+              easing: (t: number): number => ease(t),
+            });
+          }, 100);
         }
-        setIsExpanded(false);
       }
     },
     [scrollToElement, ease, navigate, location.pathname]
   );
 
+  // ============================================================================
+  // EFFECTS - Outside Click Handler
+  // ============================================================================
   useClickOutside(drawerRef, () => {
     if (isExpanded) toggleMenu();
   });
 
-  // Logo morph animation on scroll
+  // ============================================================================
+  // EFFECTS - Logo Morph Animation
+  // ============================================================================
   useLayoutEffect(() => {
     let lastKnownScrollY = 0;
     let ticking = false;
@@ -541,7 +586,9 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
     };
   }, []);
 
-  // Menu expand/collapse animation
+  // ============================================================================
+  // EFFECTS - Menu Expand/Collapse Animation
+  // ============================================================================
   useGSAP(() => {
     const mm = gsap.matchMedia();
 
@@ -710,7 +757,9 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
     return () => mm.kill();
   }, [isExpanded, isDark]);
 
-  // Scroll progress animation
+  // ============================================================================
+  // EFFECTS - Scroll Progress Animation
+  // ============================================================================
   useLayoutEffect(() => {
     let ticking = false;
     const progressBar = scrollProgressRef.current;
@@ -813,17 +862,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
 
           <div className="space-y-6 md:space-y-8 px-6 md:px-8">
             <nav className="nav-links-container flex flex-col gap-2 mt-4">
-              <h4
-                className={cn(
-                  "nav-links-heading select-none",
-                  "font-mono tracking-widest",
-                  "text-foreground/30 dark:text-background/40",
-                  "sm:text-base text-xs",
-                  "will-change-[opacity,transform]"
-                )}
-              >
-                MENU
-              </h4>
+              <h4 className={HEADING_CLASSNAME}>MENU</h4>
               {MENU_ITEMS.map((item, index) => {
                 const isActive = item.isRoute
                   ? location.pathname === item.href
@@ -843,17 +882,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
 
             <div className="flex gap-4 sm:gap-6 md:gap-10 lg:gap-12">
               <div className="space-y-2 lg:space-y-3">
-                <h4
-                  className={cn(
-                    "nav-links-heading select-none",
-                    "font-mono tracking-widest",
-                    "text-foreground/30 dark:text-background/40",
-                    "sm:text-base text-xs",
-                    "will-change-[opacity,transform]"
-                  )}
-                >
-                  SOCIALS
-                </h4>
+                <h4 className={HEADING_CLASSNAME}>SOCIALS</h4>
                 <div className="social_icons flex items-center lg:gap-2 relative">
                   {socialPlatforms.map((platform, index) => (
                     <SocialIcon
@@ -866,17 +895,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               </div>
 
               <div className="space-y-2 lg:space-y-3">
-                <h4
-                  className={cn(
-                    "nav-links-heading select-none",
-                    "font-mono tracking-widest",
-                    "text-foreground/30 dark:text-background/40",
-                    "sm:text-base text-xs",
-                    "will-change-[opacity,transform]"
-                  )}
-                >
-                  THEME
-                </h4>
+                <h4 className={HEADING_CLASSNAME}>THEME</h4>
                 <div className="theme_icon will-change-[opacity,transform]">
                   <AnimatedTooltip
                     id={3}

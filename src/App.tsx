@@ -23,7 +23,6 @@ import ProjectsGallery from "./sections/ProjectsGallery";
 import { useScrollTo } from "./hooks/useLenis";
 import { Footer } from "./sections/Footer";
 import PreLoader from "./components/Loader/PreLoader";
-import Carousel3D from "./sections/Carouselll";
 
 gsap.registerPlugin(
   ScrollTrigger,
@@ -240,12 +239,9 @@ const App = () => {
         <Header fontsLoaded={preloaderComplete} />
 
         <main className="overflow-x-hidden text-foreground dark:text-background relative">
-          <Carousel3D />
-          {/* <Scene /> */}
           <Hero />
           <WelcomeMarquee />
           <About />
-          {/* <Works /> */}
           <ProjectsGallery />
           <Services />
           <Skills />

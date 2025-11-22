@@ -1,433 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useRef, useState, useEffect } from "react";
-import { Canvas, useFrame, extend, useThree } from "@react-three/fiber";
-import { Image, useTexture } from "@react-three/drei";
-import * as THREE from "three";
-import { damp3, damp } from "maath/easing";
+import { Canvas } from "@react-three/fiber";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import MagneticButton from "../components/MagneticButton";
 import { useTheme } from "../hooks/useTheme";
-import WORKS, { type Work } from "../constants/WORKS";
-import { useNavigate } from "react-router-dom";
-
-// Global scroll progress and drag rotation trackers
-let scrollProgress = 0;
-let dragRotation = 0;
-let isDragging = false;
-let autoRotation = 0;
-// CONFIG: Auto-rotation direction (1 = clockwise, -1 = counter-clockwise)
-let autoRotationDirection = 1;
-
-// Custom Bent Plane Geometry
-class BentPlaneGeometry extends THREE.PlaneGeometry {
-  constructor(
-    radius: number,
-    ...args: ConstructorParameters<typeof THREE.PlaneGeometry>
-  ) {
-    super(...args);
-
-    const width = this.parameters.width;
-    const halfWidth = width * 0.5;
-
-    const p1 = new THREE.Vector2(-halfWidth, 0);
-    const p2 = new THREE.Vector2(0, radius);
-    const p3 = new THREE.Vector2(halfWidth, 0);
-
-    const v1 = new THREE.Vector2().subVectors(p1, p2);
-    const v2 = new THREE.Vector2().subVectors(p2, p3);
-    const v3 = new THREE.Vector2().subVectors(p1, p3);
-
-    const circleRadius =
-      (v1.length() * v2.length() * v3.length()) / (2 * Math.abs(v1.cross(v2)));
-
-    const center = new THREE.Vector2(0, radius - circleRadius);
-    const angleTotal =
-      2 * (new THREE.Vector2().subVectors(p1, center).angle() - 0.5 * Math.PI);
-
-    const uvAttr = this.attributes.uv;
-    const posAttr = this.attributes.position;
-    const point = new THREE.Vector2();
-
-    for (let i = 0; i < uvAttr.count; i++) {
-      const u = 1 - uvAttr.getX(i);
-      const y = posAttr.getY(i);
-
-      point.copy(p3).rotateAround(center, angleTotal * u);
-      posAttr.setXYZ(i, point.x, y, -point.y);
-    }
-
-    posAttr.needsUpdate = true;
-  }
-}
-
-// Sine-Wave Animated Material
-class MeshSineMaterial extends THREE.MeshBasicMaterial {
-  time: { value: number };
-
-  constructor(params: THREE.MeshBasicMaterialParameters = {}) {
-    super(params);
-    this.setValues(params);
-    this.time = { value: 0 };
-  }
-
-  onBeforeCompile(shader: any) {
-    shader.uniforms.time = this.time;
-    shader.vertexShader = `
-      uniform float time;
-      ${shader.vertexShader}
-    `;
-
-    shader.vertexShader = shader.vertexShader.replace(
-      "#include <begin_vertex>",
-      // Wave amplitude: divided by higher number = less wavy (currently /12.0)
-      // Wave frequency: PI * higher number = more waves (currently * 4.0)
-      `vec3 transformed = vec3(position.x, position.y + sin(time + uv.x * PI * 4.0) / 12.0, position.z);`
-    );
-  }
-}
-
-// Extend Three.js objects
-extend({ BentPlaneGeometry, MeshSineMaterial });
-
-// Declare module for TypeScript
-declare module "@react-three/fiber" {
-  interface ThreeElements {
-    bentPlaneGeometry: any;
-    meshSineMaterial: any;
-  }
-}
-
-// Carousel Container Component
-function CarouselContainer({ children, count = 8, ...props }: any) {
-  const groupRef = useRef<THREE.Group>(null!);
-  const targetRotation = useRef(0);
-
-  useFrame((state, delta) => {
-    if (groupRef.current) {
-      // Auto-rotation when not dragging
-      if (!isDragging) {
-        // CONFIG: Auto-rotation speed (higher = faster, currently 0.1)
-        // Direction is controlled by autoRotationDirection (1 or -1)
-        autoRotation += delta * 0.1 * autoRotationDirection;
-      }
-
-      // Calculate target rotation based on scroll progress, drag, and auto-rotation
-      const fullRotation = Math.PI * 2;
-      const rotationToShowAllImages = fullRotation * ((count - 1) / count);
-      const scrollRotation = -scrollProgress * rotationToShowAllImages;
-
-      targetRotation.current = scrollRotation + dragRotation + autoRotation;
-
-      // CONFIG: Rotation smoothing (0.1 = smooth, 1.0 = instant)
-      groupRef.current.rotation.y +=
-        (targetRotation.current - groupRef.current.rotation.y) * 0.1;
-    }
-
-    // CONFIG: Camera movement
-    // [x offset, y offset, z distance] - affects parallax effect
-    // Smoothing: 0.3 (lower = smoother, higher = snappier)
-    damp3(
-      state.camera.position,
-      [-(state.pointer.x * 2), state.pointer.y + 1.5, 10],
-      0.3,
-      delta
-    );
-    state.camera.lookAt(0, 0, 0);
-  });
-
-  return (
-    <group ref={groupRef} {...props}>
-      {children}
-    </group>
-  );
-}
-
-// Create squircle alpha map texture for rounded corners with clipping mask
-const createSquircleAlphaMap = () => {
-  const canvas = document.createElement("canvas");
-  const size = 512;
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext("2d");
-
-  if (ctx) {
-    // Clear canvas to transparent
-    ctx.clearRect(0, 0, size, size);
-
-    // Draw squircle shape with rounded corners and padding for clean clipping
-    const padding = 2; // Small padding to ensure clean edges
-    const radius = size * 0.12; // CONFIG: 12% radius for rounded corners
-    ctx.fillStyle = "white";
-    ctx.beginPath();
-    ctx.roundRect(
-      padding,
-      padding,
-      size - padding * 2,
-      size - padding * 2,
-      radius
-    );
-    ctx.fill();
-  }
-
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.needsUpdate = true;
-  return texture;
-};
-
-// Individual Card Component
-function ProjectCard({
-  url,
-  position,
-  rotation,
-  projectData,
-  onHover,
-  onHoverEnd,
-}: {
-  url: string;
-  position: [number, number, number];
-  rotation: [number, number, number];
-  projectData: Work;
-  onHover: (data: Work) => void;
-  onHoverEnd: () => void;
-}) {
-  const navigate = useNavigate();
-  const ref = useRef<any>(null);
-  const [hovered, setHovered] = useState(false);
-  const alphaMap = useRef(createSquircleAlphaMap());
-
-  useFrame((state, delta) => {
-    if (ref.current) {
-      // ============================================================
-      // CARD SCALE-IN ANIMATION (INITIAL ZOOM)
-      // This damp3 function creates a smooth scale animation from 0 to 1
-      // when cards first render, giving the carousel a scale-in effect
-      // CONFIG: Hover scale (1.1 = 10% larger when hovered, 1 = normal size)
-      // ============================================================
-      damp3(ref.current.scale, hovered ? 1.1 : 1, 0.1, delta);
-
-      // CONFIG: Card curvature (0.25 = more curved, 0.1 = flatter)
-      damp(ref.current.material, "radius", hovered ? 0.2 : 0.1, 0.2, delta);
-
-      // CONFIG: Image zoom level (0.75 = zoomed in, 0.85 = normal)
-      damp(ref.current.material, "zoom", hovered ? 0.75 : 0.85, 0.2, delta);
-    }
-  });
-
-  const handlePointerOver = (e: any) => {
-    e.stopPropagation();
-    setHovered(true);
-    onHover(projectData);
-    // Change cursor to pointer
-    document.body.style.cursor = "pointer";
-  };
-
-  const handlePointerOut = () => {
-    setHovered(false);
-    onHoverEnd();
-    // Reset cursor
-    document.body.style.cursor = "auto";
-  };
-
-  const handleClick = (e: any) => {
-    e.stopPropagation();
-    // Navigate to project link
-    navigate(`/work/${projectData.slug}`);
-    // window.location.href = projectData.slug;
-  };
-
-  
-  return (
-    <group position={position} rotation={rotation}>
-      <group scale={[1, 1, -1]}>
-        <Image
-          ref={ref}
-          url={url}
-          transparent
-          side={THREE.DoubleSide}
-          onPointerOver={handlePointerOver}
-          onPointerOut={handlePointerOut}
-          onClick={handleClick}
-          material-alphaMap={alphaMap.current}
-          material-alphaTest={0.5}
-        >
-          {/* CONFIG: Card geometry [curvature, width, height, widthSegments, heightSegments] */}
-          {/* Z-axis scale -1 inverts the curve depth while keeping face outward */}
-          <bentPlaneGeometry args={[0.1, 1.4, 1, 20, 20]} />
-        </Image>
-      </group>
-    </group>
-  );
-}
-
-// Carousel of Images
-function Carousel({
-  radius = 2, // CONFIG: Carousel radius (higher = wider circle)
-  count = 8, // CONFIG: Number of images in carousel
-  onHover,
-  onHoverEnd,
-}: {
-  radius?: number;
-  count?: number;
-  onHover: (data: Work) => void;
-  onHoverEnd: () => void;
-}) {
-  return (
-    <>
-      {Array.from({ length: count }, (_, i) => {
-        const projectData = WORKS[i % WORKS.length];
-        return (
-          <ProjectCard
-            key={i}
-            url={projectData.imageUrl}
-            position={[
-              Math.sin((i / count) * Math.PI * 2) * radius,
-              0,
-              Math.cos((i / count) * Math.PI * 2) * radius,
-            ]}
-            rotation={[0, (i / count) * Math.PI * 2, 0]}
-            projectData={projectData}
-            onHover={onHover}
-            onHoverEnd={onHoverEnd}
-          />
-        );
-      })}
-    </>
-  );
-}
-
-// Cylindrical Ribbon Component
-function Ribbon({
-  position,
-  count = 8,
-  isDark,
-}: {
-  position: [number, number, number];
-  count?: number;
-  isDark: boolean;
-}) {
-  const meshRef = useRef<THREE.Mesh>(null!);
-  const timeRef = useRef(0);
-  const targetRotation = useRef(0);
-
-  // Load SVG texture based on theme
-  // CONFIG: SVG paths for light and dark themes
-  const texturePath = isDark ? "/remi_ribbon.svg" : "/remi_ribbon_dark.svg";
-  const texture = useTexture(texturePath);
-  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-
-  useFrame((_state, delta) => {
-    if (meshRef.current) {
-      // Calculate target rotation based on scroll progress, drag, and auto-rotation (same as carousel)
-      const fullRotation = Math.PI * 2;
-      const rotationToShowAllImages = fullRotation * ((count - 1) / count);
-      const scrollRotation = -scrollProgress * rotationToShowAllImages;
-
-      targetRotation.current = scrollRotation + dragRotation + autoRotation;
-
-      // CONFIG: Rotation smoothing (0.1 = smooth, must match carousel)
-      meshRef.current.rotation.y +=
-        (targetRotation.current - meshRef.current.rotation.y) * 0.1;
-
-      // Animate material
-      if (meshRef.current.material) {
-        const material = meshRef.current.material as MeshSineMaterial;
-
-        // CONFIG: Wave animation speed (0.5 = slow, higher = faster waves)
-        timeRef.current += 0.5 * delta;
-        material.time.value = timeRef.current;
-
-        // CONFIG: Texture scroll speed (delta / 4 = slow, delta / 2 = faster)
-        if (material.map) {
-          material.map.offset.x += delta / 4;
-        }
-      }
-    }
-  });
-
-  return (
-    <mesh ref={meshRef} position={position}>
-      {/* CONFIG: Ribbon geometry [radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded] */}
-      {/* 1.56 = radius to match carousel, 0.14 = ribbon thickness, 128 = smoothness */}
-      <cylinderGeometry args={[2.2, 2.2, 0.2, 128, 16, true]} />
-      <meshSineMaterial
-        map={texture}
-        map-anisotropy={16}
-        map-repeat={[20, 1]} // CONFIG: [horizontal repeat, vertical repeat] for texture pattern
-        side={THREE.DoubleSide}
-        toneMapped={false}
-      />
-    </mesh>
-  );
-}
-
-// Main 3D Scene
-function Scene({
-  onHover,
-  onHoverEnd,
-  isInView,
-  fov,
-  isDark,
-}: {
-  onHover: (data: Work) => void;
-  onHoverEnd: () => void;
-  isInView: boolean;
-  fov: number;
-  isDark: boolean;
-}) {
-  // CONFIG: Total number of images in the carousel
-  const imageCount = 8;
-  const { camera, size } = useThree();
-  const hasAnimated = useRef(false);
-
-  // Update camera FOV when prop changes
-  useEffect(() => {
-    if (camera && "fov" in camera) {
-      camera.fov = fov;
-      camera.updateProjectionMatrix(); // IMPORTANT: Must update projection matrix after changing FOV
-    }
-  }, [fov, camera]);
-
-  // Responsive camera adjustment
-  useEffect(() => {
-    const updateCamera = () => {
-      // CONFIG: Responsive camera settings based on viewport width
-      const baseDistance = 100;
-      const scaleFactor = Math.min(size.width / 1920, 1); // Scale down for smaller screens
-
-      if (hasAnimated.current) {
-        camera.position.z = baseDistance / scaleFactor;
-      }
-    };
-
-    updateCamera();
-  }, [size.width, camera]);
-
-  // ============================================================
-  // NOTE: The carousel scale-in animation happens in the ProjectCard component's
-  // useFrame hook (line ~205), not here. Each card uses damp3() to smoothly
-  // animate from scale 0 to 1 when first rendered.
-  // ============================================================
-
-  return (
-    <>
-      {/* CONFIG: Fog effect matching ribbon color #a79 */}
-      {/* args: [color, near, far] - near: 8.5, far: 12 */}
-      <fog attach="fog" args={[isDark ? "#7a7977" : "#1c222f", 8.5, 12]} />
-
-      {/* CONFIG: Carousel tilt [x, y, z] in radians (0.15 = slight tilt) */}
-      <CarouselContainer rotation={[0, 0, 0.1]} count={imageCount}>
-        <Carousel
-          count={imageCount}
-          onHover={onHover}
-          onHoverEnd={onHoverEnd}
-        />
-      </CarouselContainer>
-      {/* CONFIG: Ribbon position [x, y, z] - y should match carousel tilt for alignment */}
-      <Ribbon position={[0, -0.1, 0]} count={imageCount} isDark={isDark} />
-    </>
-  );
-}
+import { type Work } from "../constants/WORKS";
+import Scene from "../components/ProjectsCarousel/Scene";
+import ProjectInfoPanel from "../components/ProjectsCarousel/ProjectInfoPanel";
+import type { CarouselState } from "../components/ProjectsCarousel/types";
 
 // Main Component
 const ProjectsGallery = () => {
@@ -438,6 +18,15 @@ const ProjectsGallery = () => {
   const currentMouseX = useRef(0);
   const currentMouseY = useRef(0);
 
+  // Shared state for 3D carousel (replaces global variables)
+  const carouselState = useRef<CarouselState>({
+    scrollProgress: 0,
+    dragRotation: 0,
+    isDragging: false,
+    autoRotation: 0,
+    autoRotationDirection: 1,
+  });
+
   // Get theme state
   const { isDark } = useTheme();
 
@@ -447,11 +36,8 @@ const ProjectsGallery = () => {
   const [panelSide, setPanelSide] = useState<"left" | "right">("right");
   const [isActive, setIsActive] = useState(false);
 
-  // Section visibility state for zoom animation
-  const [isInView, setIsInView] = useState(false);
-
   // Responsive FOV state
-  const [fov, setFov] = useState(15);
+  const [fov, setFov] = useState(18);
 
   // GSAP quickTo for smooth mouse following
   const quickX = useRef<ReturnType<typeof gsap.quickTo> | null>(null);
@@ -460,7 +46,7 @@ const ProjectsGallery = () => {
   // Update FOV based on viewport width
   useEffect(() => {
     const updateFov = () => {
-      const newFov = 15;
+      const newFov = 18;
       setFov(newFov);
     };
 
@@ -472,36 +58,6 @@ const ProjectsGallery = () => {
     };
   }, []);
 
-  // Intersection Observer to detect when section is in view
-  useEffect(() => {
-    const section = projectsSectionRef.current;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !isInView) {
-          setIsInView(true);
-        }
-      },
-      {
-        // CONFIG: Trigger when section's top edge meets the bottom of viewport
-        // rootMargin: 0px = no offset, triggers at natural viewport boundary
-        // threshold: 0 = trigger as soon as section starts entering viewport
-        rootMargin: "0px 0px 0px 0px",
-        threshold: 0,
-      }
-    );
-
-    if (section) {
-      observer.observe(section);
-    }
-
-    return () => {
-      if (section) {
-        observer.unobserve(section);
-      }
-    };
-  }, [isInView]);
-
   useEffect(() => {
     const handleScroll = () => {
       if (!projectsSectionRef.current) return;
@@ -512,13 +68,12 @@ const ProjectsGallery = () => {
       const viewportHeight = window.innerHeight;
 
       // Calculate scroll progress through the section
-      // When section top hits viewport top, progress = 0
-      // When section bottom hits viewport top, progress = 1
       const scrollableDistance = sectionHeight - viewportHeight;
       const scrolled = -rect.top;
 
       // Clamp between 0 and 1
-      scrollProgress = Math.max(0, Math.min(1, scrolled / scrollableDistance));
+      const progress = Math.max(0, Math.min(1, scrolled / scrollableDistance));
+      carouselState.current.scrollProgress = progress;
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll(); // Initial calculation
@@ -583,10 +138,10 @@ const ProjectsGallery = () => {
   };
 
   const handlePointerDown = (e: React.PointerEvent) => {
-    isDragging = true;
+    carouselState.current.isDragging = true;
     dragStartX.current = e.clientX;
     lastMouseX.current = e.clientX;
-    dragStartRotation.current = dragRotation;
+    dragStartRotation.current = carouselState.current.dragRotation;
     (e.target as HTMLCanvasElement).style.cursor = "grabbing";
   };
 
@@ -599,17 +154,14 @@ const ProjectsGallery = () => {
 
     // Update auto-rotation direction based on movement direction
     if (Math.abs(deltaX) > 0.5) {
-      // Small threshold to avoid jitter
       // Positive deltaX = moving right, negative = moving left
-      // For carousel: right movement = clockwise (positive), left = counter-clockwise (negative)
-      autoRotationDirection = deltaX > 0 ? 1 : -1;
+      carouselState.current.autoRotationDirection = deltaX > 0 ? 1 : -1;
     }
 
-    if (isDragging) {
+    if (carouselState.current.isDragging) {
       const totalDeltaX = e.clientX - dragStartX.current;
-      // CONFIG: Drag sensitivity (Math.PI * 2 = full rotation per screen width)
-      // Increase multiplier for more sensitivity (e.g., * 3 for faster rotation)
-      dragRotation =
+      // CONFIG: Drag sensitivity
+      carouselState.current.dragRotation =
         dragStartRotation.current +
         (totalDeltaX / window.innerWidth) * Math.PI * 2;
     }
@@ -624,9 +176,9 @@ const ProjectsGallery = () => {
       const spaceOnRight = screenWidth - e.clientX;
       const spaceOnLeft = e.clientX;
 
-      // CONFIG: Panel width estimate (should match the actual panel width)
-      const panelWidth = 350; // Approximate width of the panel
-      const padding = 40; // Extra padding for safety
+      // CONFIG: Panel width estimate
+      const panelWidth = 350;
+      const padding = 40;
 
       // Choose side based on available space
       if (spaceOnRight >= panelWidth + padding) {
@@ -634,7 +186,6 @@ const ProjectsGallery = () => {
       } else if (spaceOnLeft >= panelWidth + padding) {
         setPanelSide("left");
       } else {
-        // If neither side has enough space, choose the side with more space
         setPanelSide(spaceOnRight > spaceOnLeft ? "right" : "left");
       }
     }
@@ -643,13 +194,13 @@ const ProjectsGallery = () => {
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
-    isDragging = false;
+    carouselState.current.isDragging = false;
     (e.target as HTMLCanvasElement).style.cursor = "grab";
   };
 
   const handlePointerLeave = (e: React.PointerEvent) => {
-    if (isDragging) {
-      isDragging = false;
+    if (carouselState.current.isDragging) {
+      carouselState.current.isDragging = false;
       (e.target as HTMLCanvasElement).style.cursor = "grab";
     }
   };
@@ -803,17 +354,13 @@ const ProjectsGallery = () => {
         style={{
           aspectRatio: "16 / 9",
           maxWidth: "2560px",
-          // maxHeight: "1440px",
         }}
       >
         <Canvas
-          // CONFIG: Camera settings
-          // position: [x, y, z] - z distance affects zoom (100 = far, lower = closer)
-          // fov: Field of view in degrees (responsive: 15-45 based on viewport width)
           camera={{ position: [0, 0, 100], fov: fov }}
-          frameloop="always" // Always render for smooth animations
+          frameloop="always"
           gl={{
-            antialias: true, // CONFIG: Smooth edges (true = better quality, slower)
+            antialias: true,
             alpha: true,
             premultipliedAlpha: false,
             powerPreference: "high-performance",
@@ -825,7 +372,7 @@ const ProjectsGallery = () => {
             height: "100%",
             cursor: "grab",
           }}
-          dpr={[1, 2]} // CONFIG: Device pixel ratio [min, max] for performance/quality balance
+          dpr={[1, 2]}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
@@ -834,74 +381,18 @@ const ProjectsGallery = () => {
           <Scene
             onHover={handleProjectHover}
             onHoverEnd={handleProjectHoverEnd}
-            isInView={isInView}
             fov={fov}
             isDark={isDark}
+            carouselState={carouselState}
           />
         </Canvas>
 
-        {/* Floating Project Info Panel - Lazily follows mouse with GSAP */}
-        <div
+        <ProjectInfoPanel
           ref={panelRef}
-          className="fixed pointer-events-none z-20 will-change-transform"
-          style={{
-            left: 0,
-            top: 0,
-          }}
-        >
-          <div
-            className={`transition-all duration-300 ease-out ${
-              isActive ? "scale-100 opacity-100" : "scale-75 opacity-0"
-            }`}
-            style={{
-              // CONFIG: Panel offset distance from cursor (20px)
-              transform:
-                panelSide === "right"
-                  ? "translate(75px, -50%)" // Position to the right
-                  : "translate(-100%, -50%) translate(-75px, 0)", // Position to the left
-            }}
-          >
-            {hoveredProject && (
-              <div
-                className={`bg-black/90 backdrop-blur-md text-white p-6 squircle rounded-3xl shadow-2xl border border-white/10 min-w-[300px] max-w-[400px] ${
-                  panelSide === "left" ? "origin-right" : "origin-left"
-                }`}
-              >
-                {/* Project Title */}
-                <h3 className="text-2xl font-bold mb-2 text-white">
-                  {hoveredProject.title}
-                </h3>
-
-                {/* Category */}
-                <p className="text-sm text-gray-400 mb-4 uppercase tracking-wider">
-                  {hoveredProject.type}
-                </p>
-
-                {/* Tech Stack */}
-                <div>
-                  <p className="text-xs text-gray-500 mb-2 uppercase font-semibold">
-                    Tech Stack
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {hoveredProject.technologies?.map((tech, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1 bg-white/10 rounded-full text-xs font-medium text-white/90 border border-white/20"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Click hint */}
-                <p className="text-xs text-gray-500 mt-4 text-center italic">
-                  Click card to view details
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
+          hoveredProject={hoveredProject}
+          isActive={isActive}
+          panelSide={panelSide}
+        />
       </div>
     </section>
   );

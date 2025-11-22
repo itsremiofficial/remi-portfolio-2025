@@ -66,7 +66,7 @@ const PreLoader = ({ onComplete }: PreLoaderProps) => {
   const [exitTrigger, setExitTrigger] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [shouldFadeOut, setShouldFadeOut] = useState(false);
-  const [startWaveAnimation, setStartWaveAnimation] = useState(false);
+  const [_startWaveAnimation, setStartWaveAnimation] = useState(false);
 
   // Canvas lifecycle state
   const [canvasState, setCanvasState] = useState(true);
