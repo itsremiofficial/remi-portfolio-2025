@@ -7,7 +7,10 @@ import LogoShort from "../components/ui/LogoShort";
 
 export const Footer = () => {
   return (
-    <footer className="relative w-full flex flex-col items-center pt-12">
+    <footer
+      id="contact"
+      className="relative w-full flex flex-col items-center pt-12"
+    >
       <div className="relative w-full text-center flex flex-col items-center">
         {/* Large background text - FIXED */}
         <div

@@ -443,7 +443,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const [_scrollProgress, setScrollProgress] = useState(0);
 
   // ============================================================================
   // REFS
