@@ -45,7 +45,7 @@ const Hero = () => {
         }, 2600);
       }
     },
-    [scrollToElement, ease]
+    [scrollToElement, ease],
   );
 
   useGSAP(
@@ -90,7 +90,7 @@ const Hero = () => {
         timeline?.kill();
       };
     },
-    { scope: uiContainerRef }
+    { scope: uiContainerRef },
   );
 
   return (
@@ -123,15 +123,15 @@ const Hero = () => {
           <SkillsMarquee onSkillClick={handleNavigation} />
           <TestimonialsMarquee onTestimonialClick={handleNavigation} />
           <GalleryMarquee />
-          <ContactIcon />
+          <ContactIcon className="marquee-item" />
           <SkillsMarquee onSkillClick={handleNavigation} />
           <TestimonialsMarquee onTestimonialClick={handleNavigation} />
           <GalleryMarquee />
-          <ContactIcon />
+          <ContactIcon className="marquee-item" />
           <SkillsMarquee onSkillClick={handleNavigation} />
           <TestimonialsMarquee onTestimonialClick={handleNavigation} />
           <GalleryMarquee />
-          <ContactIcon />
+          <ContactIcon className="marquee-item" />
         </div>
       </div>
     </section>

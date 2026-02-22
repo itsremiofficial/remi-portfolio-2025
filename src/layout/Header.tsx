@@ -20,7 +20,10 @@ import { useTheme } from "../hooks/useTheme";
 import AnimatedTooltip from "../components/AnimatedTooltip";
 import TimeDisplay from "../components/DualTime";
 import { MENU_ITEMS } from "../constants/MENU";
-import { socialPlatforms, type SocialPlatform } from "../constants/SOCIALS";
+import {
+  socialPlatforms,
+  type SocialPlatform,
+} from "../constants/PERSONAL_DETAILS";
 
 // ============================================================================
 // CONSTANTS
@@ -73,7 +76,7 @@ const HEADING_CLASSNAME = cn(
   "font-mono tracking-widest",
   "text-foreground/30 dark:text-background/40",
   "sm:text-base text-xs",
-  "will-change-[opacity,transform]"
+  "will-change-[opacity,transform]",
 );
 
 // ============================================================================
@@ -138,7 +141,7 @@ const Logo = memo(
         d="M9.38,9.13c.03.16-.09.31-.25.31H2.1c-.12,0-.23-.09-.25-.21L.06.31c-.03-.16.09-.31.25-.31h7.02c.12,0,.23.09.25.21l1.78,8.92h.02Z"
       />
     </svg>
-  ))
+  )),
 );
 
 Logo.displayName = "Logo";
@@ -157,7 +160,7 @@ const NavItem = memo<{
       "perspective-distant will-change-transform",
       isActive
         ? "text-accent"
-        : "text-foreground/40 hover:text-foreground dark:hover:text-background dark:text-background/30"
+        : "text-foreground/40 hover:text-foreground dark:hover:text-background dark:text-background/30",
     )}
     onClick={onClick}
   >
@@ -192,8 +195,8 @@ const SocialIcon = memo<{
         "bg-foreground/15 hover:bg-foreground/20",
         "text-foreground md:text-foreground/85 hover:text-foreground",
         "dark:bg-foreground/70 dark:hover:bg-foreground",
-        "dark:text-background/70 dark:hover:text-background",
-        "transition-colors duration-400"
+        "dark:text-background/70 dark:hover:text-accent",
+        "transition-colors duration-400",
       )}
       mains={platform.social}
       Children={<platform.icon className="size-full" fill />}
@@ -250,7 +253,7 @@ const ThemeIcon = memo<{ className?: string }>(({ className }) => {
           stagger: 0.08,
           transformOrigin: "center center",
         },
-        "<0.1"
+        "<0.1",
       );
     }
 
@@ -262,7 +265,7 @@ const ThemeIcon = memo<{ className?: string }>(({ className }) => {
         scale: isDark ? 1 : 0,
         transformOrigin: "center center",
       },
-      "<0.05"
+      "<0.05",
     );
 
     // Sun animations
@@ -273,7 +276,7 @@ const ThemeIcon = memo<{ className?: string }>(({ className }) => {
         duration: 0.3,
         rotateZ: isDark ? -180 : 0,
       },
-      "<"
+      "<",
     );
 
     if (sunRaysRef.current) {
@@ -288,7 +291,7 @@ const ThemeIcon = memo<{ className?: string }>(({ className }) => {
           duration: 0.4,
           stagger: 0.04,
         },
-        "<0.1"
+        "<0.1",
       );
     }
 
@@ -385,7 +388,7 @@ ThemeIcon.displayName = "ThemeIcon";
 const createMorphAnimation = (
   target: HTMLElement,
   letters: typeof MORPH_TARGETS.COMPRESSED | typeof MORPH_TARGETS.EXPANDED,
-  width: string | number
+  width: string | number,
 ) => {
   const tl = gsap.timeline();
 
@@ -403,7 +406,7 @@ const createMorphAnimation = (
         duration: 1.5,
         ease: "power2.out",
       },
-      index === 0 ? "<" : "<0.05"
+      index === 0 ? "<" : "<0.05",
     );
   });
 
@@ -419,7 +422,7 @@ const createMorphAnimation = (
 const applyMorphState = (
   target: HTMLElement,
   state: "small" | "full",
-  width: string | number
+  width: string | number,
 ) => {
   const letters =
     state === "small" ? MORPH_TARGETS.COMPRESSED : MORPH_TARGETS.EXPANDED;
@@ -463,9 +466,9 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
   const sectionIds = useMemo(
     () =>
       MENU_ITEMS.filter((item) => !item.isRoute).map((item) =>
-        item.href.replace("#", "")
+        item.href.replace("#", ""),
       ),
-    []
+    [],
   );
 
   const activeSection = useActiveSection(sectionIds);
@@ -513,7 +516,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
         }
       }
     },
-    [scrollToElement, ease, navigate, location.pathname]
+    [scrollToElement, ease, navigate, location.pathname],
   );
 
   // ============================================================================
@@ -543,7 +546,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
       applyMorphState(
         menuContainerRef.current,
         animationState,
-        animationState === "small" ? smallWidth : "100%"
+        animationState === "small" ? smallWidth : "100%",
       );
 
       const handleScroll = () => {
@@ -567,7 +570,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               morphTimelineRef.current = createMorphAnimation(
                 menuContainerRef.current,
                 targetLetters,
-                targetWidth
+                targetWidth,
               );
             }
             ticking = false;
@@ -598,10 +601,10 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
       const openHeight = sm
         ? MENU_HEIGHTS.SM
         : md
-        ? MENU_HEIGHTS.MD
-        : lg
-        ? MENU_HEIGHTS.LG
-        : MENU_HEIGHTS.XS;
+          ? MENU_HEIGHTS.MD
+          : lg
+            ? MENU_HEIGHTS.LG
+            : MENU_HEIGHTS.XS;
       const closedHeight = MENU_HEIGHTS.CLOSED;
 
       const tl = gsap.timeline({ paused: true, immediateRender: false });
@@ -618,7 +621,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               ease: CUSTOM_EASE,
               force3D: true,
             },
-            "start"
+            "start",
           )
           .to(
             scrollProgressMaskRef.current,
@@ -627,7 +630,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               duration: 0.8,
               ease: CUSTOM_EASE,
             },
-            "start"
+            "start",
           )
           .to(
             menuContainerRef.current,
@@ -636,7 +639,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               duration: 0.5,
               // ease: "power1.in",
             },
-            "<"
+            "<",
           )
           .to(
             ".menu_button",
@@ -644,7 +647,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               padding: "24px 32px",
               duration: 0.4,
             },
-            "<"
+            "<",
           )
           .to(
             ".nav-links-container .link",
@@ -656,7 +659,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               z: 0,
               force3D: true,
             },
-            "-=0.1"
+            "-=0.1",
           )
           .to(
             ".nav-links-heading",
@@ -666,7 +669,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               duration: 0.4,
               ease: CUSTOM_EASE,
             },
-            "-=0.7"
+            "-=0.7",
           )
           .to(
             [".social_icon", ".theme_icon"],
@@ -678,7 +681,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               stagger: 0.2,
               ease: CUSTOM_EASE,
             },
-            "-=0.5"
+            "-=0.5",
           );
       } else {
         tl.addLabel("start")
@@ -692,7 +695,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               stagger: -0.2,
               ease: ANIMATION_EASE_IN,
             },
-            "start"
+            "start",
           )
           .to(
             ".nav-links-heading",
@@ -702,7 +705,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               duration: 0.4,
               ease: CUSTOM_EASE,
             },
-            "-=0.3"
+            "-=0.3",
           )
           .to(
             ".nav-links-container .link",
@@ -717,7 +720,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               ease: ANIMATION_EASE_IN,
               force3D: true,
             },
-            "-=0.3"
+            "-=0.3",
           )
           .to(
             ".menu_button",
@@ -725,7 +728,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               padding: "17.20px 32px",
               duration: 0.4,
             },
-            "<"
+            "<",
           )
           .to(
             menuContainerRef.current,
@@ -737,7 +740,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               ease: ANIMATION_EASE_IN,
               force3D: true,
             },
-            "<"
+            "<",
           )
           .to(
             scrollProgressMaskRef.current,
@@ -746,7 +749,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               duration: 0.6,
               ease: ANIMATION_EASE_IN,
             },
-            "<"
+            "<",
           );
       }
 
@@ -819,7 +822,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
             "absolute top-0 border w-full h-16 z-[100] overflow-hidden origin-top-right space-y-3 backdrop-blur-2xl",
             "bg-nav-background/10 dark:bg-nav-foreground/70",
             "border-black/10 dark:border-background/12",
-            "will-change-[width,height,borderRadius] squircle rounded-3xl"
+            "will-change-[width,height,borderRadius] squircle rounded-3xl",
           )}
         >
           {/* Scroll Progress Bar - Clipping Mask Container */}
@@ -904,8 +907,8 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
                       "bg-foreground/15 hover:bg-foreground/20",
                       "text-foreground md:text-foreground/85 hover:text-foreground",
                       "dark:bg-foreground/70 dark:hover:bg-foreground",
-                      "dark:text-background/70 dark:hover:text-background",
-                      "transition-colors duration-400"
+                      "dark:text-background/70 dark:hover:text-accent",
+                      "transition-colors duration-400",
                     )}
                     mains={isDark ? "Dark Mode" : "Light Mode"}
                     Children={<ThemeIcon className="size-full !text-inherit" />}
@@ -914,7 +917,8 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
               </div>
             </div>
 
-            <div className="font-mono tracking-widest text-foreground/70 dark:text-background/50 text-xs md:pt-1">
+            <div className="font-mono tracking-widest text-foreground/70 dark:text-background/50 text-xs md:pt-1 flex justify-between">
+              <div className="nav-links-heading">Version 1.13</div>
               <div className="nav-links-heading">Version 1.13</div>
             </div>
           </div>

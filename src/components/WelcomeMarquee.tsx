@@ -6,8 +6,8 @@ import { gsap } from "gsap";
 import { Observer } from "gsap/Observer";
 import { cn } from "../utils";
 import { WELCOME_TEXT } from "../constants/WELCOME";
-import IconStarish2 from "./icons/Starish2";
 import WelcomeScript from "./illustrations/WelcomScript";
+import IconStarish from "./icons/Starish";
 
 const WelcomeMarquee = () => {
   const welcomeRef = useRef<HTMLDivElement>(null);
@@ -54,14 +54,14 @@ const WelcomeMarquee = () => {
     },
     {
       scope: welcomeRef,
-    }
+    },
   );
   return (
     <>
       <div
         ref={welcomeRef}
         className={cn(
-          "flex items-center font-extrabold bg-foreground dark:bg-background py-10"
+          "flex items-center font-extrabold bg-foreground dark:bg-background py-10",
         )}
       >
         {Array.from({ length: REPEAT }).flatMap((_, repeatIdx) =>
@@ -70,8 +70,8 @@ const WelcomeMarquee = () => {
               className="marquee-welcome flex items-center"
               key={`${repeatIdx}-${idx}`}
             >
-              <div className="px-[8vw] lg:px-[4vw]">
-                <IconStarish2 className={ICON_CLASSES} />
+              <div className="px-[8vw] lg:px-[6vw]">
+                <IconStarish className={ICON_CLASSES} />
               </div>
               <div className="relative">
                 <Icon className="h-[12vw] lg:h-[6vw] text-background dark:text-foreground" />
@@ -80,7 +80,7 @@ const WelcomeMarquee = () => {
                 </span>
               </div>
             </div>
-          ))
+          )),
         )}
       </div>
     </>

@@ -2,7 +2,9 @@
 import { cn } from "../utils";
 import AnimatedTooltip from "../components/AnimatedTooltip";
 import { Link } from "react-router-dom";
-import socialPlatforms from "../constants/SOCIALS";
+import socialPlatforms, {
+  personalDetails,
+} from "../constants/PERSONAL_DETAILS";
 import LogoShort from "../components/ui/LogoShort";
 
 export const Footer = () => {
@@ -21,7 +23,7 @@ export const Footer = () => {
             lineHeight: "0.75",
           }}
         >
-          REMI
+          {personalDetails.name.toUpperCase()}
         </div>
 
         {/* Bottom logo */}
@@ -34,7 +36,7 @@ export const Footer = () => {
         {/* Bottom shadow */}
         <div className="bg-gradient-to-t from-background via-background to-background/30 dark:from-foreground dark:via-foreground dark:to-foreground/30 absolute -bottom-16 blur-3xl w-full h-16 lg:h-36" />
         {/* Bottom line */}
-        <div className="absolute bottom-0 backdrop-blur-sm h-1 bg-gradient-to-r from-transparent via-foreground/5 dark:via-background/5 to-transparent w-full left-1/2 -translate-x-1/2" />
+        <div className="absolute bottom-0 backdrop-blur-sm h-[3px] bg-gradient-to-r from-transparent via-foreground/5 dark:via-background/5 to-transparent w-4/5 left-1/2 -translate-x-1/2" />
       </div>
       <div className="pt-28 pb-16 social_icons flex flex-col items-center lg:gap-6 relative">
         <h4
@@ -43,7 +45,7 @@ export const Footer = () => {
             "font-mono tracking-widest",
             "text-foreground/50 dark:text-background/40",
             "sm:text-base text-xs",
-            "will-change-[opacity,transform]"
+            "will-change-[opacity,transform]",
           )}
         >
           SOCIALS
@@ -66,7 +68,7 @@ export const Footer = () => {
 
                   "dark:bg-background/10 dark:hover:bg-background/20",
                   "dark:text-background dark:hover:text-white",
-                  "transition-colors duration-300"
+                  "transition-colors duration-300",
                 )}
                 mains={platform.social}
                 Children={<platform.icon className="size-full" fill />}
@@ -81,9 +83,9 @@ export const Footer = () => {
             href="/"
             className="group-hover:text-foreground dark:group-hover:text-background transition-colors duration-500"
           >
-            Remi
+            {personalDetails.name}
           </a>{" "}
-          &#169; <span className="font-mono">2025</span>
+          &#169; <span className="font-mono">{new Date().getFullYear()}</span>
         </p>{" "}
         • <span>All Rights Reserved</span>
       </div>

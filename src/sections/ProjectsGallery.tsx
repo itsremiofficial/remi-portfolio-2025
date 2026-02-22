@@ -1,24 +1,42 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { Canvas } from "@react-three/fiber";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import MagneticButton from "../components/MagneticButton";
 import { useTheme } from "../hooks/useTheme";
-import { type Work } from "../constants/WORKS";
+import type { Work } from "../constants/WORKS";
 import Scene from "../components/ProjectsCarousel/Scene";
 import ProjectInfoPanel from "../components/ProjectsCarousel/ProjectInfoPanel";
 import type { CarouselState } from "../components/ProjectsCarousel/types";
 
-// Main Component
+// ── Constants ────────────────────────────────────────────────────────────────
+const CAMERA_FOV = 18;
+const PANEL_WIDTH = 350;
+const PANEL_PADDING = 40;
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+/** Determine which side of the cursor the info panel should appear on. */
+const getPanelSide = (cursorX: number): "left" | "right" => {
+  const spaceOnRight = window.innerWidth - cursorX;
+  if (spaceOnRight >= PANEL_WIDTH + PANEL_PADDING) return "right";
+  if (cursorX >= PANEL_WIDTH + PANEL_PADDING) return "left";
+  return spaceOnRight > cursorX ? "right" : "left";
+};
+
+// ── Main Component ───────────────────────────────────────────────────────────
 const ProjectsGallery = () => {
+  // — DOM refs ----------------------------------------------------------------
   const projectsSectionRef = useRef<HTMLElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // — Drag tracking refs (mutable, no re-render) ------------------------------
   const dragStartX = useRef(0);
   const dragStartRotation = useRef(0);
   const lastMouseX = useRef(0);
   const currentMouseX = useRef(0);
   const currentMouseY = useRef(0);
 
-  // Shared state for 3D carousel (replaces global variables)
+  // — 3D carousel shared state ------------------------------------------------
   const carouselState = useRef<CarouselState>({
     scrollProgress: 0,
     dragRotation: 0,
@@ -27,36 +45,21 @@ const ProjectsGallery = () => {
     autoRotationDirection: 1,
   });
 
-  // Get theme state
+  // — Theme -------------------------------------------------------------------
   const { isDark } = useTheme();
 
-  // Hover state for floating panel
+  // — Hover / panel state -----------------------------------------------------
   const [hoveredProject, setHoveredProject] = useState<Work | null>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
   const [panelSide, setPanelSide] = useState<"left" | "right">("right");
   const [isActive, setIsActive] = useState(false);
 
-  // Responsive FOV state
-  const [fov, setFov] = useState(18);
-
-  // GSAP quickTo for smooth mouse following
+  // — GSAP quickTo tweens for smooth mouse-following --------------------------
   const quickX = useRef<ReturnType<typeof gsap.quickTo> | null>(null);
   const quickY = useRef<ReturnType<typeof gsap.quickTo> | null>(null);
 
-  // Update FOV based on viewport width
-  useEffect(() => {
-    const updateFov = () => {
-      const newFov = 18;
-      setFov(newFov);
-    };
-
-    updateFov();
-    window.addEventListener("resize", updateFov);
-
-    return () => {
-      window.removeEventListener("resize", updateFov);
-    };
-  }, []);
+  // NOTE: FOV is a constant (CAMERA_FOV). The previous useEffect + resize
+  // listener always set the same value (18) regardless of viewport width, so
+  // it was removed to eliminate an unnecessary effect and state variable.
 
   useEffect(() => {
     const handleScroll = () => {
@@ -106,104 +109,73 @@ const ProjectsGallery = () => {
   // Set initial position when hovering starts
   useEffect(() => {
     if (isActive && panelRef.current && quickX.current && quickY.current) {
-      // Immediately position at current mouse location
       quickX.current(currentMouseX.current);
       quickY.current(currentMouseY.current);
-
-      // Calculate initial side
-      const screenWidth = window.innerWidth;
-      const spaceOnRight = screenWidth - currentMouseX.current;
-      const spaceOnLeft = currentMouseX.current;
-      const panelWidth = 350;
-      const padding = 40;
-
-      if (spaceOnRight >= panelWidth + padding) {
-        setPanelSide("right");
-      } else if (spaceOnLeft >= panelWidth + padding) {
-        setPanelSide("left");
-      } else {
-        setPanelSide(spaceOnRight > spaceOnLeft ? "right" : "left");
-      }
+      setPanelSide(getPanelSide(currentMouseX.current));
     }
   }, [isActive]);
 
-  const handleProjectHover = (data: Work) => {
+  const handleProjectHover = useCallback((data: Work) => {
     setHoveredProject(data);
     setIsActive(true);
-  };
+  }, []);
 
-  const handleProjectHoverEnd = () => {
+  const handleProjectHoverEnd = useCallback(() => {
     setHoveredProject(null);
     setIsActive(false);
-  };
+  }, []);
 
-  const handlePointerDown = (e: React.PointerEvent) => {
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
     carouselState.current.isDragging = true;
     dragStartX.current = e.clientX;
     lastMouseX.current = e.clientX;
     dragStartRotation.current = carouselState.current.dragRotation;
     (e.target as HTMLCanvasElement).style.cursor = "grabbing";
-  };
+  }, []);
 
-  const handlePointerMove = (e: React.PointerEvent) => {
-    // Store current mouse position
-    currentMouseX.current = e.clientX;
-    currentMouseY.current = e.clientY;
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      // Store current mouse position
+      currentMouseX.current = e.clientX;
+      currentMouseY.current = e.clientY;
 
-    const deltaX = e.clientX - lastMouseX.current;
+      const deltaX = e.clientX - lastMouseX.current;
 
-    // Update auto-rotation direction based on movement direction
-    if (Math.abs(deltaX) > 0.5) {
-      // Positive deltaX = moving right, negative = moving left
-      carouselState.current.autoRotationDirection = deltaX > 0 ? 1 : -1;
-    }
-
-    if (carouselState.current.isDragging) {
-      const totalDeltaX = e.clientX - dragStartX.current;
-      // CONFIG: Drag sensitivity
-      carouselState.current.dragRotation =
-        dragStartRotation.current +
-        (totalDeltaX / window.innerWidth) * Math.PI * 2;
-    }
-
-    // Update panel position with GSAP smooth animation
-    if (isActive && quickX.current && quickY.current) {
-      quickX.current(e.clientX);
-      quickY.current(e.clientY);
-
-      // Calculate which side has more space
-      const screenWidth = window.innerWidth;
-      const spaceOnRight = screenWidth - e.clientX;
-      const spaceOnLeft = e.clientX;
-
-      // CONFIG: Panel width estimate
-      const panelWidth = 350;
-      const padding = 40;
-
-      // Choose side based on available space
-      if (spaceOnRight >= panelWidth + padding) {
-        setPanelSide("right");
-      } else if (spaceOnLeft >= panelWidth + padding) {
-        setPanelSide("left");
-      } else {
-        setPanelSide(spaceOnRight > spaceOnLeft ? "right" : "left");
+      // Update auto-rotation direction based on movement direction
+      if (Math.abs(deltaX) > 0.5) {
+        carouselState.current.autoRotationDirection = deltaX > 0 ? 1 : -1;
       }
-    }
 
-    lastMouseX.current = e.clientX;
-  };
+      if (carouselState.current.isDragging) {
+        const totalDeltaX = e.clientX - dragStartX.current;
+        carouselState.current.dragRotation =
+          dragStartRotation.current +
+          (totalDeltaX / window.innerWidth) * Math.PI * 2;
+      }
 
-  const handlePointerUp = (e: React.PointerEvent) => {
+      // Update panel position with GSAP smooth animation
+      if (isActive && quickX.current && quickY.current) {
+        quickX.current(e.clientX);
+        quickY.current(e.clientY);
+        setPanelSide(getPanelSide(e.clientX));
+      }
+
+      lastMouseX.current = e.clientX;
+    },
+    [isActive],
+  );
+
+  const handlePointerUp = useCallback((e: React.PointerEvent) => {
     carouselState.current.isDragging = false;
     (e.target as HTMLCanvasElement).style.cursor = "grab";
-  };
+  }, []);
 
-  const handlePointerLeave = (e: React.PointerEvent) => {
+  const handlePointerLeave = useCallback((e: React.PointerEvent) => {
     if (carouselState.current.isDragging) {
       carouselState.current.isDragging = false;
       (e.target as HTMLCanvasElement).style.cursor = "grab";
     }
-  };
+  }, []);
 
   // Refs for Projects Gallery header animation
   const projectsSelectedHeadingRef = useRef<HTMLHeadingElement>(null);
@@ -253,7 +225,7 @@ const ProjectsGallery = () => {
             defaults: { ease: "power1.inOut" },
             onComplete: () => {
               targets.forEach((el) =>
-                el.classList.remove("will-change-transform")
+                el.classList.remove("will-change-transform"),
               );
             },
           })
@@ -275,7 +247,7 @@ const ProjectsGallery = () => {
               filter: "blur(0px)",
               duration: 1,
               stagger: 0.8,
-            }
+            },
           );
 
         return () => tl.kill();
@@ -283,7 +255,7 @@ const ProjectsGallery = () => {
 
       return () => mm.revert();
     },
-    { scope: projectsHeaderContainerRef }
+    { scope: projectsHeaderContainerRef },
   );
 
   return (
@@ -357,7 +329,7 @@ const ProjectsGallery = () => {
         }}
       >
         <Canvas
-          camera={{ position: [0, 0, 100], fov: fov }}
+          camera={{ position: [0, 0, 100], fov: CAMERA_FOV }}
           frameloop="always"
           gl={{
             antialias: true,
@@ -381,7 +353,7 @@ const ProjectsGallery = () => {
           <Scene
             onHover={handleProjectHover}
             onHoverEnd={handleProjectHoverEnd}
-            fov={fov}
+            fov={CAMERA_FOV}
             isDark={isDark}
             carouselState={carouselState}
           />

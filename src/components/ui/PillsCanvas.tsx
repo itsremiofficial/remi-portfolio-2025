@@ -47,6 +47,8 @@ const SKILLS = [
   { name: "socketio", width: 201 },
   { name: "tailwindcss", width: 237 },
   { name: "typescript", width: 204 },
+  { name: "googleanalytics", width: 236 },
+  { name: "seo", width: 144 },
   // Circular skills
   { name: "framermotion", width: 64 },
   { name: "illustrator", width: 64 },
@@ -91,7 +93,7 @@ const PillsCanvas = () => {
         width,
         height,
       })),
-    []
+    [],
   );
 
   // ===== HELPER FUNCTIONS =====
@@ -110,7 +112,7 @@ const PillsCanvas = () => {
         img.onerror = reject;
         img.src = src;
       }),
-    []
+    [],
   );
 
   const ensureTextureMeta = useCallback(
@@ -137,7 +139,7 @@ const PillsCanvas = () => {
         return meta;
       }
     },
-    [loadImage]
+    [loadImage],
   );
 
   const resolveSize = useCallback(
@@ -149,7 +151,7 @@ const PillsCanvas = () => {
           getAutoWidth(containerRef.current?.clientWidth || 0));
       return { w, h };
     },
-    [getAutoWidth]
+    [getAutoWidth],
   );
 
   // ===== MAIN EFFECT =====
@@ -253,7 +255,7 @@ const PillsCanvas = () => {
             strokeStyle: "transparent",
             opacity: 0,
           },
-        }
+        },
       );
 
       leftWall = Matter.Bodies.rectangle(
@@ -268,7 +270,7 @@ const PillsCanvas = () => {
             strokeStyle: "transparent",
             opacity: 0,
           },
-        }
+        },
       );
 
       rightWall = Matter.Bodies.rectangle(
@@ -283,7 +285,7 @@ const PillsCanvas = () => {
             strokeStyle: "transparent",
             opacity: 0,
           },
-        }
+        },
       );
 
       Matter.Composite.add(engine.world, [ground, leftWall, rightWall]);
@@ -356,12 +358,12 @@ const PillsCanvas = () => {
         }
         Matter.Body.setPosition(
           ground,
-          Matter.Vector.create(newW / 2, newH + THICCNESS / 2)
+          Matter.Vector.create(newW / 2, newH + THICCNESS / 2),
         );
       } else if (ground && deltaH >= MIN_DELTA) {
         Matter.Body.setPosition(
           ground,
-          Matter.Vector.create(newW / 2, newH + THICCNESS / 2)
+          Matter.Vector.create(newW / 2, newH + THICCNESS / 2),
         );
       }
 
@@ -369,7 +371,7 @@ const PillsCanvas = () => {
       const desiredWallHeight = newH * 5;
       const adjustWall = (
         wall: Matter.Body | null,
-        x: number
+        x: number,
       ): Matter.Body | null => {
         if (!wall) return wall;
         const h = wall.bounds.max.y - wall.bounds.min.y;
@@ -387,7 +389,7 @@ const PillsCanvas = () => {
                 strokeStyle: "transparent",
                 opacity: 0,
               },
-            }
+            },
           );
           Matter.Composite.add(engine.world, replacement);
           return replacement;
@@ -405,7 +407,7 @@ const PillsCanvas = () => {
         deltaH < newH * MAX_RESIZE_RATIO
       ) {
         const bodies = Matter.Composite.allBodies(engine.world).filter(
-          (b) => !b.isStatic
+          (b) => !b.isStatic,
         );
         const scaleX = newW / prevW;
         const scaleY = newH / prevH;
@@ -429,7 +431,7 @@ const PillsCanvas = () => {
       if (debounceTimer) clearTimeout(debounceTimer);
       debounceTimer = window.setTimeout(
         scheduleResize,
-        RESIZE_CONFIG.DEBOUNCE_MS
+        RESIZE_CONFIG.DEBOUNCE_MS,
       );
     };
 
@@ -458,7 +460,7 @@ const PillsCanvas = () => {
         if (Math.abs(body.angularVelocity) > MAX_ANGULAR_VELOCITY) {
           Matter.Body.setAngularVelocity(
             body,
-            Math.sign(body.angularVelocity) * MAX_ANGULAR_VELOCITY
+            Math.sign(body.angularVelocity) * MAX_ANGULAR_VELOCITY,
           );
         }
       }
@@ -479,7 +481,7 @@ const PillsCanvas = () => {
           }
         });
       },
-      { threshold: [0, 0.3, 0.5, 1] }
+      { threshold: [0, 0.3, 0.5, 1] },
     );
     observer.observe(container);
 

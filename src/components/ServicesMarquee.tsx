@@ -38,14 +38,14 @@ const ServicesMarquee = () => {
     },
     {
       scope: servicesRef,
-    }
+    },
   );
   return (
     <div
       ref={servicesRef}
       className={cn(
         "flex items-center justify-center text-[8vw] font-extrabold bg-foreground text-background dark:bg-background dark:text-foreground py-6 align-self-start place-self-start font-grandbold",
-        "[&>div]:select-none [&>div]:pointer-events-none [&>div]:mb-1 [&>div]:leading-none [&>div]:whitespace-nowrap [&>div]:flex [&>div]:items-center"
+        "[&>div]:select-none [&>div]:pointer-events-none [&>div]:mb-1 [&>div]:leading-none [&>div]:whitespace-nowrap [&>div]:flex [&>div]:items-center",
       )}
     >
       {Array.from({ length: REPEAT }).flatMap((_, i) =>
@@ -61,7 +61,7 @@ const ServicesMarquee = () => {
               </span>
             </div>
           </div>
-        ))
+        )),
       )}
     </div>
   );

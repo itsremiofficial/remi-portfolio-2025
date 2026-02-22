@@ -28,3 +28,12 @@ export const socialPlatforms: SocialPlatform[] = [
 ];
 
 export default socialPlatforms;
+
+export const personalDetails = {
+  name: "Remi",
+  title: "Visual Designer & Web Developer",
+  description: "I design digital products that solve real-world problems.",
+  email: "connect@remidevigner.pro",
+  phone: "+923369933339",
+  socialPlatforms,
+};

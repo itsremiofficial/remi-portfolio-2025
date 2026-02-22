@@ -23,6 +23,7 @@ import ProjectsGallery from "./sections/ProjectsGallery";
 import { useScrollTo } from "./hooks/useLenis";
 import { Footer } from "./sections/Footer";
 import PreLoader from "./components/Loader/PreLoader";
+import ContactMarquee from "./components/ContactMarquee";
 
 gsap.registerPlugin(
   ScrollTrigger,
@@ -31,7 +32,7 @@ gsap.registerPlugin(
   CustomEase,
   MorphSVGPlugin,
   DrawSVGPlugin,
-  InertiaPlugin
+  InertiaPlugin,
 );
 
 CustomEase.create("myBezier", "1, 0.01, 0.53, 1.05");
@@ -74,7 +75,7 @@ const App = () => {
           opacity: 1,
           duration: 1,
           ease: "myBezier",
-        }
+        },
       );
 
       // Animate hero designer/developer text - fade in and scale
@@ -90,7 +91,7 @@ const App = () => {
           duration: 0.6,
           ease: "myBezier",
         },
-        "-=0.5"
+        "-=0.5",
       );
 
       // Animate hero title (h1) - fade in and slide up
@@ -106,7 +107,7 @@ const App = () => {
           duration: 0.8,
           // ease: "myBezier",s
         },
-        "-=0.4"
+        "-=0.4",
       );
 
       // Animate bottom marquee section - slide up and fade in
@@ -122,7 +123,7 @@ const App = () => {
           duration: 0.8,
           // ease: "myBezier",
         },
-        "-=0.6"
+        "-=0.6",
       );
 
       // Animate main sections - fade in
@@ -136,7 +137,7 @@ const App = () => {
           duration: 0.5,
           stagger: 0.1,
         },
-        "-=0.3"
+        "-=0.3",
       );
     }
   }, [preloaderComplete]);
@@ -159,7 +160,7 @@ const App = () => {
           `Attempt ${retries}: Element found:`,
           !!targetElement,
           "Lenis ready:",
-          isReady
+          isReady,
         );
 
         if (targetElement && isReady && lenis) {
@@ -171,7 +172,7 @@ const App = () => {
             "Element offsetTop:",
             elementTop,
             "Scroll to:",
-            scrollPosition
+            scrollPosition,
           );
 
           // First, ensure we're at the top
@@ -190,7 +191,7 @@ const App = () => {
                 onComplete: () => {
                   console.log(
                     "Scroll complete. Current scroll position:",
-                    window.scrollY
+                    window.scrollY,
                   );
                 },
               });
@@ -201,7 +202,7 @@ const App = () => {
             "Scrolling with native to:",
             scrollTarget,
             "offsetTop:",
-            targetElement.offsetTop
+            targetElement.offsetTop,
           );
           // Fallback to native scroll
           const elementTop = targetElement.offsetTop - 100;
@@ -247,6 +248,7 @@ const App = () => {
           <Skills />
           <ServicesMarquee />
           <Testimonials />
+          <ContactMarquee />
           <Footer />
         </main>
       </div>

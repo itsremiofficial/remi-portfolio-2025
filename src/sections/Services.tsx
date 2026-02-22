@@ -98,7 +98,7 @@ export const FrontSide = ({ children, className }: FrontSideProps) => (
   <div
     className={cn(
       "flip-service-card-front squircle rounded-[8rem] absolute left-0 top-0 overflow-hidden",
-      className
+      className,
     )}
   >
     {children}
@@ -111,7 +111,7 @@ export const BackSide = ({ children, className }: BackSideProps) => (
   <div
     className={cn(
       "flip-service-card-back squircle rounded-[8rem] absolute left-0 top-0 overflow-hidden",
-      className
+      className,
     )}
   >
     {children}
@@ -133,7 +133,7 @@ const Services = () => {
     useResponsiveVars(
       CARD_DIMENSIONS.WIDTH,
       CARD_DIMENSIONS.HEIGHT,
-      CARD_DIMENSIONS.TYPE
+      CARD_DIMENSIONS.TYPE,
     );
 
   // Heading animations
@@ -174,7 +174,7 @@ const Services = () => {
             defaults: { ease: "power1.inOut" },
             onComplete: () => {
               targets.forEach((el) =>
-                el.classList.remove("will-change-transform")
+                el.classList.remove("will-change-transform"),
               );
             },
           })
@@ -196,7 +196,7 @@ const Services = () => {
               filter: `blur(${ANIMATION_CONFIG.HEADING.BLUR_END})`,
               duration: ANIMATION_CONFIG.HEADING.DURATION,
               stagger: ANIMATION_CONFIG.HEADING.STAGGER,
-            }
+            },
           );
 
         return () => tl.kill();
@@ -204,7 +204,7 @@ const Services = () => {
 
       return () => mm.revert();
     },
-    { scope: sectionRef }
+    { scope: sectionRef },
   );
 
   // Cards animation
@@ -298,14 +298,14 @@ const Services = () => {
             rotation: CARD_ROTATIONS[i],
             duration: ANIMATION_CONFIG.TIMELINE.SPREAD_PORTION,
           },
-          0
+          0,
         ).to(
           card,
           {
             x: xPosition,
             duration: ANIMATION_CONFIG.TIMELINE.SPREAD_PORTION,
           },
-          ">"
+          ">",
         );
       });
 
@@ -344,7 +344,7 @@ const Services = () => {
               ANIMATION_CONFIG.TIMELINE.OVERSHOOT_PORTION,
             ease: "power3.out",
           },
-          flipStart
+          flipStart,
         )
           .to(
             inner,
@@ -357,7 +357,7 @@ const Services = () => {
             },
             flipStart +
               ANIMATION_CONFIG.TIMELINE.FLIP_PORTION *
-                ANIMATION_CONFIG.TIMELINE.OVERSHOOT_PORTION
+                ANIMATION_CONFIG.TIMELINE.OVERSHOOT_PORTION,
           )
           .to(
             card,
@@ -366,7 +366,7 @@ const Services = () => {
               duration: ANIMATION_CONFIG.TIMELINE.FLIP_PORTION,
               ease: "power2.out",
             },
-            flipStart
+            flipStart,
           );
       });
 
@@ -381,7 +381,7 @@ const Services = () => {
         }
       };
     },
-    { scope: sectionRef }
+    { scope: sectionRef },
   );
 
   return (
@@ -415,7 +415,7 @@ const Services = () => {
         {EXPERTIES.map(
           (
             { title, subtitle, skills, Icon, illustration: Illustration },
-            index
+            index,
           ) => (
             <ServiceCard
               key={title}
@@ -475,7 +475,7 @@ const Services = () => {
                 </div>
               </BackSide>
             </ServiceCard>
-          )
+          ),
         )}
         {/* </div> */}
       </div>
@@ -530,7 +530,7 @@ const ServiceCard = forwardRef<HTMLDivElement, ServiceCardProps>(
         <div
           className={cn(
             "service-card-wrapper w-full h-full relative",
-            init && "animate-floating"
+            init && "animate-floating",
           )}
           style={{
             animationDelay: `${index * 200}ms`,
@@ -541,7 +541,7 @@ const ServiceCard = forwardRef<HTMLDivElement, ServiceCardProps>(
           <div
             className={cn(
               "flip-service-card-inner relative w-full h-full",
-              className
+              className,
             )}
           >
             {frontSide}
@@ -550,7 +550,7 @@ const ServiceCard = forwardRef<HTMLDivElement, ServiceCardProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 ServiceCard.displayName = "ServiceCard";
