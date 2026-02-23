@@ -29,14 +29,15 @@ createRoot(document.getElementById("root")!).render(
         className="lenis-smooth"
       >
         <BrowserRouter>
+          <div className="grain" />
           <Routes>
             <Route path="/" element={<App />} />
             <Route path="/projects" element={<Projects />} />
-            <Route path="/work/:slug" element={<ProjectDetail />} />
+            <Route path="/projects/:slug" element={<ProjectDetail />} />
           </Routes>
           <FluidCursor />
         </BrowserRouter>
       </LenisProvider>
     </ThemeProvider>
-  </StrictMode>
+  </StrictMode>,
 );

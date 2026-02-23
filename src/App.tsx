@@ -226,7 +226,6 @@ const App = () => {
   return (
     <>
       <MacCursorAuto />
-      <div className="grain" />
 
       {/* PreLoader layer - always rendered but fades out */}
       <PreLoader onComplete={handlePreloaderComplete} />

@@ -67,7 +67,7 @@ const Works = () => {
             defaults: { ease: "power1.inOut" },
             onComplete: () => {
               targets.forEach((el) =>
-                el.classList.remove("will-change-transform")
+                el.classList.remove("will-change-transform"),
               );
             },
           })
@@ -89,7 +89,7 @@ const Works = () => {
               filter: "blur(0px)",
               duration: 1,
               stagger: 0.8,
-            }
+            },
           );
 
         return () => tl.kill();
@@ -97,7 +97,7 @@ const Works = () => {
 
       return () => mm.revert();
     },
-    { scope: mainContainerRef }
+    { scope: mainContainerRef },
   );
 
   const dragCursor = useMemo(
@@ -116,7 +116,7 @@ const Works = () => {
         <IconAltArrowRight width={2} className="size-4 lg:size-6 wiggleright" />
       </div>
     ),
-    []
+    [],
   );
 
   return (
@@ -164,14 +164,14 @@ const Works = () => {
                 dataStrength={2.5}
                 dataStrengthText={30}
                 aria-label="Explore all works"
-                href="/works"
+                href="/projects"
               >
                 <span className="inline-flex items-center gap-2 font-bold uppercase text-sm lg:text-lg font-robo leading-none dark:text-foreground text-background group-hover:text-background dark:group-hover:text-background transition-colors duration-800 whitespace-nowrap">
                   Explore All
                 </span>
               </MagneticButton>
               <a
-                href="#all-works"
+                href="/projects"
                 className="md:hidden inline-block py-2.5 px-6 bg-accent rounded-full font-bold uppercase text-sm font-robo leading-none text-background hover:text-background dark:hover:text-foreground transition-colors duration-500 whitespace-nowrap"
                 aria-label="Explore all works"
               >

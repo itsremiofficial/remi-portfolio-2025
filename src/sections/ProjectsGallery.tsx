@@ -4,7 +4,7 @@ import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import MagneticButton from "../components/MagneticButton";
 import { useTheme } from "../hooks/useTheme";
-import type { Work } from "../constants/WORKS";
+import type { Project } from "../constants/PROJECTS";
 import Scene from "../components/ProjectsCarousel/Scene";
 import ProjectInfoPanel from "../components/ProjectsCarousel/ProjectInfoPanel";
 import type { CarouselState } from "../components/ProjectsCarousel/types";
@@ -49,7 +49,7 @@ const ProjectsGallery = () => {
   const { isDark } = useTheme();
 
   // — Hover / panel state -----------------------------------------------------
-  const [hoveredProject, setHoveredProject] = useState<Work | null>(null);
+  const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
   const [panelSide, setPanelSide] = useState<"left" | "right">("right");
   const [isActive, setIsActive] = useState(false);
 
@@ -115,7 +115,7 @@ const ProjectsGallery = () => {
     }
   }, [isActive]);
 
-  const handleProjectHover = useCallback((data: Work) => {
+  const handleProjectHover = useCallback((data: Project) => {
     setHoveredProject(data);
     setIsActive(true);
   }, []);
@@ -303,14 +303,14 @@ const ProjectsGallery = () => {
                 dataStrength={2.5}
                 dataStrengthText={30}
                 aria-label="Explore all works"
-                href="/works"
+                href="/projects"
               >
                 <span className="inline-flex items-center gap-2 font-bold uppercase text-sm lg:text-lg font-robo leading-none dark:text-foreground text-background group-hover:text-background dark:group-hover:text-background transition-colors duration-800 whitespace-nowrap">
                   Explore All
                 </span>
               </MagneticButton>
               <a
-                href="#all-works"
+                href="/projects"
                 className="md:hidden inline-block py-2.5 px-6 bg-accent rounded-full font-bold uppercase text-sm font-robo leading-none text-background hover:text-background dark:hover:text-foreground transition-colors duration-500 whitespace-nowrap"
                 aria-label="Explore all works"
               >

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import gsap from "gsap";
-import WORKS, { type Work } from "../constants/WORKS";
+import PROJECTS, { type Project } from "../constants/PROJECTS";
 import ImageDistortion from "../components/ImageDistortion";
 import Header from "../layout/Header";
 import MacCursorAuto from "../components/ui/MacCursorAuto";
@@ -39,7 +39,7 @@ const Projects = () => {
           scale: 1,
           duration: ANIMATION_CONFIG.DURATION,
           ease: ANIMATION_CONFIG.EASE,
-        }
+        },
       );
 
       // Animate project cards
@@ -63,7 +63,7 @@ const Projects = () => {
             end: "bottom 20%",
             toggleActions: "play none none reverse",
           },
-        }
+        },
       );
 
       // Parallax effect on scroll
@@ -84,7 +84,7 @@ const Projects = () => {
   }, []);
 
   const handleProjectClick = (slug: string) => {
-    navigate(`/work/${slug}`);
+    navigate(`/projects/${slug}`);
   };
 
   return (
@@ -100,30 +100,30 @@ const Projects = () => {
         {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none" />
 
-      {/* Header */}
-      <div className="relative z-10 pt-20 pb-12 px-6 md:px-12 lg:px-20">
-        <h1
-          ref={headingRef}
-          className="text-6xl md:text-8xl lg:text-9xl font-grandbold uppercase tracking-wider text-center"
-        >
-          All Projects
-        </h1>
-        <p className="text-center text-lg md:text-xl mt-6 font-robo opacity-70 max-w-2xl mx-auto">
-          Explore our collection of creative works and innovative solutions
-        </p>
-      </div>
+        {/* Header */}
+        <div className="relative z-10 pt-20 pb-12 px-6 md:px-12 lg:px-20">
+          <h1
+            ref={headingRef}
+            className="text-6xl md:text-8xl lg:text-9xl font-grandbold uppercase tracking-wider text-center"
+          >
+            All Projects
+          </h1>
+          <p className="text-center text-lg md:text-xl mt-6 font-robo opacity-70 max-w-2xl mx-auto">
+            Explore our collection of creative works and innovative solutions
+          </p>
+        </div>
 
         {/* Projects Grid */}
         <div className="relative z-10 px-6 md:px-12 lg:px-20 pb-20">
           <div className="projects-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
-            {WORKS.map((work) => (
+            {PROJECTS.map((project) => (
               <ProjectCard
-                key={work.id}
-                work={work}
-                isHovered={hoveredId === work.id}
-                onHover={() => setHoveredId(work.id)}
+                key={project.id}
+                work={project}
+                isHovered={hoveredId === project.id}
+                onHover={() => setHoveredId(project.id)}
                 onLeave={() => setHoveredId(null)}
-                onClick={() => handleProjectClick(work.slug)}
+                onClick={() => handleProjectClick(project.slug)}
               />
             ))}
           </div>
@@ -135,7 +135,7 @@ const Projects = () => {
 
 // ===== PROJECT CARD COMPONENT =====
 interface ProjectCardProps {
-  work: Work;
+  work: Project;
   isHovered: boolean;
   onHover: () => void;
   onLeave: () => void;

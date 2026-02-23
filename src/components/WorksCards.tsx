@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useRef, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import WORKS from "../constants/WORKS";
+import PROJECTS from "../constants/PROJECTS";
 import gsap from "gsap";
 import { Observer } from "gsap/all";
 import horizontalLoop from "../utils/horizontalLoop";
@@ -87,7 +87,7 @@ const WorksCards = () => {
     typeof window !== "undefined" &&
     (isTouch ||
       /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
+        navigator.userAgent,
       ));
 
   // Single flag to disable animations on mobile or when reduced motion is set
@@ -95,7 +95,7 @@ const WorksCards = () => {
 
   const lerp = useCallback(
     (v0: number, v1: number, t: number) => v0 * (1 - t) + v1 * t,
-    []
+    [],
   );
 
   // Helper: order cards by current on-screen x position to keep loop continuity
@@ -105,7 +105,7 @@ const WorksCards = () => {
       .slice()
       .sort(
         (a, b) =>
-          a.getBoundingClientRect().left - b.getBoundingClientRect().left
+          a.getBoundingClientRect().left - b.getBoundingClientRect().left,
       );
   }, []);
 
@@ -256,7 +256,7 @@ const WorksCards = () => {
         currentTimeRef.current = lerp(
           currentTimeRef.current,
           targetTimeRef.current,
-          DRAG_LERP
+          DRAG_LERP,
         );
         const dur = loopRef.current.totalDuration();
         loopRef.current.time(((currentTimeRef.current % dur) + dur) % dur);
@@ -268,7 +268,7 @@ const WorksCards = () => {
         smoothedVelocityRef.current = lerp(
           smoothedVelocityRef.current,
           velocityRef.current * VELOCITY_EFFECT_MULT,
-          VELOCITY_SMOOTH
+          VELOCITY_SMOOTH,
         );
 
         const skewX = clamp(-14, 14, -smoothedVelocityRef.current * 0.25);
@@ -287,7 +287,7 @@ const WorksCards = () => {
         currentTimeRef.current = lerp(
           currentTimeRef.current,
           targetTimeRef.current,
-          INERTIA_LERP
+          INERTIA_LERP,
         );
         const dur = loopRef.current.totalDuration();
         loopRef.current.time(((currentTimeRef.current % dur) + dur) % dur);
@@ -323,7 +323,7 @@ const WorksCards = () => {
         currentTimeRef.current = lerp(
           currentTimeRef.current,
           targetTimeRef.current,
-          WHEEL_LERP
+          WHEEL_LERP,
         );
         const dur = loopRef.current.totalDuration();
         loopRef.current.time(((currentTimeRef.current % dur) + dur) % dur);
@@ -334,7 +334,7 @@ const WorksCards = () => {
         smoothedVelocityRef.current = lerp(
           smoothedVelocityRef.current,
           wheelVelocityRef.current * VELOCITY_EFFECT_MULT,
-          VELOCITY_SMOOTH
+          VELOCITY_SMOOTH,
         );
         const skewX = clamp(-8, 8, -smoothedVelocityRef.current * 0.18);
         const rotate = clamp(-3, 3, smoothedVelocityRef.current * 0.02);
@@ -392,7 +392,7 @@ const WorksCards = () => {
           const offset = clamp(
             -MAX_PARALLAX_OFFSET,
             MAX_PARALLAX_OFFSET,
-            -normalizedPos * parallaxAmount * depth
+            -normalizedPos * parallaxAmount * depth,
           );
 
           setX(offset);
@@ -418,7 +418,7 @@ const WorksCards = () => {
     // NEW: Disable animations on mobile or if reduced motion is preferred
     if (disableAnimations) {
       cardRefs.current.forEach((c) =>
-        gsap.set(c, { transform: "none", clearProps: "all" })
+        gsap.set(c, { transform: "none", clearProps: "all" }),
       );
       return;
     }
@@ -433,8 +433,8 @@ const WorksCards = () => {
     if (trackRef.current) {
       const imgs = Array.from(
         trackRef.current.querySelectorAll<HTMLImageElement>(
-          'img[data-parallax="true"]'
-        )
+          'img[data-parallax="true"]',
+        ),
       );
       parallaxTargetsRef.current = imgs.map((img) => {
         const depthAttr = parseFloat(img.getAttribute("data-depth") || "0.25");
@@ -459,7 +459,13 @@ const WorksCards = () => {
     attachPointer();
 
     startRAF();
-  }, [disableAnimations, getOrderedCards, attachDesktopWheel, attachPointer, startRAF]);
+  }, [
+    disableAnimations,
+    getOrderedCards,
+    attachDesktopWheel,
+    attachPointer,
+    startRAF,
+  ]);
 
   useEffect(() => {
     const el = trackRef.current;
@@ -477,7 +483,7 @@ const WorksCards = () => {
         return img.decode().catch(() => undefined);
       }
       return new Promise<void>((res) =>
-        img.addEventListener("load", () => res(), { once: true })
+        img.addEventListener("load", () => res(), { once: true }),
       );
     });
     Promise.all(waits).then(() => {
@@ -503,7 +509,7 @@ const WorksCards = () => {
       {
         threshold: 0,
         rootMargin: "200px 0px 200px 0px", // trigger early
-      }
+      },
     );
     io.observe(el);
     return () => io.disconnect();
@@ -602,11 +608,11 @@ const WorksCards = () => {
       if (parallaxTargetsRef.current.length) {
         gsap.set(
           parallaxTargetsRef.current.map((t) => t.img),
-          { x: 0 }
+          { x: 0 },
         );
       }
     },
-    []
+    [],
   );
 
   const navigate = useNavigate();
@@ -624,16 +630,16 @@ const WorksCards = () => {
           WebkitOverflowScrolling: "touch",
         }}
       >
-        {WORKS.map(({ title, imageUrl, year, type, slug, id }, index) => (
+        {PROJECTS.map(({ title, imageUrl, year, type, slug, id }, index) => (
           <div
             key={id}
             ref={(el) => {
               if (el) cardRefs.current[index] = el;
             }}
-            className="menu--item m-4 marquee-works-card flex-shrink-0"
+            className="menu--item m-4 marquee-projects-card flex-shrink-0"
           >
             <div
-              onClick={() => navigate(`/work/${slug}`)}
+              onClick={() => navigate(`/projects/${slug}`)}
               className="relative space-x-20 cursor-pointer"
             >
               <div className="absolute right-0 top-2 flex items-center justify-center rounded-full w-6 md:w-8 lg:w-14 h-1/3">
@@ -647,7 +653,7 @@ const WorksCards = () => {
                 </div>
               </div>
 
-              <div className="relative works-card-clip flex items-center justify-center !aspect-[16/10] pointer-events-none select-none">
+              <div className="relative projects-card-clip flex items-center justify-center !aspect-[16/10] pointer-events-none select-none">
                 <img
                   src={imageUrl}
                   alt={title}

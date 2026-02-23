@@ -58,7 +58,7 @@ const ContactMarquee = () => {
       document.fonts.ready.then(() => {
         timeline = horizontalLoop(".contact-marquee-item", {
           repeat: -1,
-          speed: 0.3,
+          speed: 1.5,
         });
 
         container.addEventListener("mouseenter", handleMouseEnter);
@@ -79,20 +79,23 @@ const ContactMarquee = () => {
       <div
         ref={containerRef}
         className={cn(
-          "flex items-center justify-center text-[8vw] font-extrabold border-y border-y-foreground/20 dark:border-y-background/20 text-foreground dark:text-background py-6 align-self-start place-self-start font-grandbold",
+          "flex items-center justify-center text-[8vw] font-extrabold bg-white dark:bg-foreground-dark border-y border-y-foreground/20 dark:border-y-background/20 text-foreground dark:text-background py-6 align-self-start place-self-start font-grandbold",
           "[&>div]:select-none [&>div]:mb-1 [&>div]:leading-none [&>div]:whitespace-nowrap [&>div]:flex [&>div]:items-center",
         )}
       >
         {Array.from({ length: REPEAT }).flatMap((_, i) =>
           CONTACT_MARQUEE.map(({ title, subtitle }) => (
             <div className="contact-marquee-item" key={`${i}-${title}`}>
-              <ContactIcon textClassName="font-inter" />
+              <ContactIcon
+                textClassName="font-inter dark:text-background"
+                bgClassName="text-accent dark:text-accent/80"
+              />
               <a
                 href={`mailto:${personalDetails.email}`}
                 className="relative text-group pointer-cursor"
               >
                 {title}
-                <span className="text-[10vw] absolute -bottom-4 inset-x-0 flex items-center justify-center font-playground leading-[80%] text-accent">
+                <span className="text-[10vw] absolute -bottom-6 inset-x-0 flex items-center justify-center font-playground leading-[80%] text-accent">
                   {subtitle}
                 </span>
               </a>

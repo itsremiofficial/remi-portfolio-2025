@@ -1,4 +1,4 @@
-export interface Work {
+export interface Project {
   id: string;
   title: string;
   type: string;
@@ -12,13 +12,13 @@ export interface Work {
   videoUrl?: string;
 }
 
-const WORKS: Work[] = [
+const PROJECTS: Project[] = [
   {
     id: "1",
     title: "Fronus Solar Energy",
     type: "Corporate Website",
     slug: "fronus-solar",
-    imageUrl: "/videos/fronus.png",
+    imageUrl: "/videos/fronus.avif",
     year: "2024",
     description:
       "A premium corporate website for a solar energy leader, featuring immersive product showcases and sustainable energy solutions.",
@@ -29,7 +29,7 @@ const WORKS: Work[] = [
     title: "Mivator Pro",
     type: "SaaS Platform",
     slug: "mivator-pro",
-    imageUrl: "/videos/mivatorproweb.png",
+    imageUrl: "/videos/mivatorproweb.avif",
     year: "2023",
     description:
       "A high-performance SaaS platform website with advanced animations and a seamless user experience for enterprise clients.",
@@ -37,10 +37,10 @@ const WORKS: Work[] = [
   },
   {
     id: "3",
-    title: "Mivator Pro",
-    type: "Analytics Platform",
-    slug: "mivator-dashboard",
-    imageUrl: "/videos/mivatorprodash.png",
+    title: "UX Creatives",
+    type: "Agency Website",
+    slug: "uxcreatives",
+    imageUrl: "/videos/uxcreatives.avif",
     year: "2024",
     description:
       "A comprehensive analytics dashboard with real-time data visualization, dark mode support, and intuitive data grids.",
@@ -48,10 +48,10 @@ const WORKS: Work[] = [
   },
   {
     id: "4",
-    title: "Kessoft Solutions",
+    title: "Calyptus",
     type: "Software Agency",
-    slug: "kessoft-solutions",
-    imageUrl: "/videos/kessoft.png",
+    slug: "calyptus",
+    imageUrl: "/videos/calyptus.avif",
     year: "2024",
     description:
       "A dynamic agency portfolio featuring 3D interactive elements and a modern, dark-themed aesthetic.",
@@ -59,10 +59,21 @@ const WORKS: Work[] = [
   },
   {
     id: "5",
-    title: "Beacon Energy",
-    type: "Renewable Energy",
-    slug: "beacon-energy",
-    imageUrl: "/videos/beaconenergy.png",
+    title: "Logo Diffusion",
+    type: "Software Agency",
+    slug: "logodiffusion",
+    imageUrl: "/videos/logodiffusion.avif",
+    year: "2024",
+    description:
+      "A dynamic agency portfolio featuring 3D interactive elements and a modern, dark-themed aesthetic.",
+    technologies: ["React", "Three.js", "Styled Components"],
+  },
+  {
+    id: "6",
+    title: "TravlApp",
+    type: "Travel App",
+    slug: "travlapp",
+    imageUrl: "/videos/travlapp.avif",
     year: "2024",
     description:
       "An eco-conscious digital presence for a renewable energy provider, highlighting sustainability through organic design and smooth transitions.",
@@ -70,4 +81,4 @@ const WORKS: Work[] = [
   },
 ];
 
-export default WORKS;
+export default PROJECTS;

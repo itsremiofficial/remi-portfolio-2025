@@ -67,7 +67,7 @@ const WelcomeMarquee = () => {
         {Array.from({ length: REPEAT }).flatMap((_, repeatIdx) =>
           WELCOME_TEXT.map(({ icon: Icon }, idx) => (
             <div
-              className="marquee-welcome flex items-center"
+              className="marquee-welcome flex items-center py-6"
               key={`${repeatIdx}-${idx}`}
             >
               <div className="px-[8vw] lg:px-[6vw]">

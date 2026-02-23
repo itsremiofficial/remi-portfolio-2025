@@ -3,10 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { CustomEase } from "gsap/all";
-import WORKS from "../constants/WORKS";
-import type { Work } from "../constants/WORKS";
+import PROJECTS from "../constants/PROJECTS";
+import type { Project } from "../constants/PROJECTS";
 import IconAltArrowRight from "../components/icons/AltArrowRight";
-import MagneticButton from "../components/MagneticButton";
 import { useScrollTo } from "../hooks/useLenis";
 import MagneticItem from "../components/MagneticItem";
 import MagneticButtonCircular from "../components/MagneticButtonCircular";
@@ -21,12 +20,12 @@ const ProjectDetail = () => {
 
   // Find current project and calculate prev/next
   const { project, prevProject, nextProject, projectIndex } = useMemo<{
-    project: Work | null;
-    prevProject: Work | null;
-    nextProject: Work | null;
+    project: Project | null;
+    prevProject: Project | null;
+    nextProject: Project | null;
     projectIndex: number;
   }>(() => {
-    const index = WORKS.findIndex((work) => work.slug === slug);
+    const index = PROJECTS.findIndex((project) => project.slug === slug);
     if (index === -1) {
       return {
         project: null,
@@ -36,13 +35,13 @@ const ProjectDetail = () => {
       };
     }
 
-    const prevIndex = index === 0 ? WORKS.length - 1 : index - 1;
-    const nextIndex = index === WORKS.length - 1 ? 0 : index + 1;
+    const prevIndex = index === 0 ? PROJECTS.length - 1 : index - 1;
+    const nextIndex = index === PROJECTS.length - 1 ? 0 : index + 1;
 
     return {
-      project: WORKS[index],
-      prevProject: WORKS[prevIndex],
-      nextProject: WORKS[nextIndex],
+      project: PROJECTS[index],
+      prevProject: PROJECTS[prevIndex],
+      nextProject: PROJECTS[nextIndex],
       projectIndex: index,
     };
   }, [slug]);
@@ -95,7 +94,7 @@ const ProjectDetail = () => {
           scale: 0.95,
           duration: 1,
         },
-        "-=0.4"
+        "-=0.4",
       )
       .from(
         ".project-content",
@@ -105,7 +104,7 @@ const ProjectDetail = () => {
           duration: 0.6,
           stagger: 0.1,
         },
-        "-=0.5"
+        "-=0.5",
       )
       .from(
         ".project-nav",
@@ -114,7 +113,7 @@ const ProjectDetail = () => {
           y: 20,
           duration: 0.5,
         },
-        "-=0.3"
+        "-=0.3",
       );
   }, [project]);
 
@@ -130,14 +129,14 @@ const ProjectDetail = () => {
 
   const handlePrevious = () => {
     if (prevProject) {
-      navigate(`/work/${prevProject.slug}`);
+      navigate(`/projects/${prevProject.slug}`);
       // Scroll to top will be handled by useEffect
     }
   };
 
   const handleNext = () => {
     if (nextProject) {
-      navigate(`/work/${nextProject.slug}`);
+      navigate(`/projects/${nextProject.slug}`);
       // Scroll to top will be handled by useEffect
     }
   };
@@ -180,7 +179,7 @@ const ProjectDetail = () => {
             <span>{project.year}</span>
             <span>•</span>
             <span>
-              {projectIndex + 1} / {WORKS.length}
+              {projectIndex + 1} / {PROJECTS.length}
             </span>
           </div>
           <h1 className="text-5xl lg:text-8xl font-grandbold uppercase tracking-wider mb-6">

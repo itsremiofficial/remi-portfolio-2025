@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import "./ThreeExtensions"; // Import to register extensions
 import type { ThreeEvent, ThreeElements } from "@react-three/fiber";
 import type { CarouselState } from "./types";
-import WORKS, { type Work } from "../../constants/WORKS";
+import PROJECTS, { type Project } from "../../constants/PROJECTS";
 import { MeshSineMaterial } from "./ThreeExtensions";
 
 const IMAGE_COUNT = 5;
@@ -38,7 +38,7 @@ const getSquircleAlphaMap = () => {
       padding,
       size - padding * 2,
       size - padding * 2,
-      radius
+      radius,
     );
     ctx.fill();
   }
@@ -93,8 +93,8 @@ function ProjectCard({
   url: string;
   position: [number, number, number];
   rotation: [number, number, number];
-  projectData: Work;
-  onHover: (data: Work) => void;
+  projectData: Project;
+  onHover: (data: Project) => void;
   onHoverEnd: () => void;
 }) {
   const navigate = useNavigate();
@@ -170,7 +170,7 @@ function ProjectCard({
     }
 
     e.stopPropagation();
-    navigate(`/work/${projectData.slug}`);
+    navigate(`/projects/${projectData.slug}`);
   };
 
   return (
@@ -223,13 +223,13 @@ function Carousel({
 }: {
   radius?: number;
   count?: number;
-  onHover: (data: Work) => void;
+  onHover: (data: Project) => void;
   onHoverEnd: () => void;
 }) {
   return (
     <>
       {Array.from({ length: count }, (_, i) => {
-        const projectData = WORKS[i % WORKS.length];
+        const projectData = PROJECTS[i % PROJECTS.length];
         return (
           <ProjectCard
             key={i}
@@ -300,7 +300,7 @@ function CarouselContainer({
       state.camera.position,
       [-(state.pointer.x * 2), state.pointer.y + 1.5, 10],
       0.3,
-      delta
+      delta,
     );
     state.camera.lookAt(0, 0, 0);
   });
@@ -389,7 +389,7 @@ export default function Scene({
   isDark,
   carouselState,
 }: {
-  onHover: (data: Work) => void;
+  onHover: (data: Project) => void;
   onHoverEnd: () => void;
   fov: number;
   isDark: boolean;

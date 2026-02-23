@@ -44,7 +44,7 @@ const ServicesMarquee = () => {
     <div
       ref={servicesRef}
       className={cn(
-        "flex items-center justify-center text-[8vw] font-extrabold bg-foreground text-background dark:bg-background dark:text-foreground py-6 align-self-start place-self-start font-grandbold",
+        "flex items-center justify-center text-[8vw] font-extrabold bg-foreground text-background dark:bg-background dark:text-foreground py-12 align-self-start place-self-start font-grandbold",
         "[&>div]:select-none [&>div]:pointer-events-none [&>div]:mb-1 [&>div]:leading-none [&>div]:whitespace-nowrap [&>div]:flex [&>div]:items-center",
       )}
     >

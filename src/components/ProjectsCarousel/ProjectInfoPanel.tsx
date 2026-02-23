@@ -1,8 +1,8 @@
 import { forwardRef } from "react";
-import { type Work } from "../../constants/WORKS";
+import { type Project } from "../../constants/PROJECTS";
 
 interface ProjectInfoPanelProps {
-  hoveredProject: Work | null;
+  hoveredProject: Project | null;
   isActive: boolean;
   panelSide: "left" | "right";
 }
@@ -72,7 +72,7 @@ const ProjectInfoPanel = forwardRef<HTMLDivElement, ProjectInfoPanelProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 ProjectInfoPanel.displayName = "ProjectInfoPanel";
