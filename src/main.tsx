@@ -28,7 +28,7 @@ createRoot(document.getElementById("root")!).render(
         root={true}
         className="lenis-smooth"
       >
-        <BrowserRouter basename="/remi-portfolio-2025">
+        <BrowserRouter>
           <div className="grain" />
           <Routes>
             <Route path="/" element={<App />} />
