@@ -1,13 +1,13 @@
 @font-face {
   font-family: "Robo";
-  src: url("/fonts/RobotoFlex.ttf") format("truetype");
+  src: url("/remi-portfolio-2025/fonts/RobotoFlex.ttf") format("truetype");
   font-display: swap;
   font-style: normal;
   font-optical-sizing: auto;
 }
 @font-face {
   font-family: "Heming";
-  src: url("/fonts/Heming.ttf") format("truetype");
+  src: url("/remi-portfolio-2025/fonts/Heming.ttf") format("truetype");
   font-display: swap;
   font-style: normal;
   font-optical-sizing: auto;
@@ -15,7 +15,7 @@
 
 @font-face {
   font-family: "playground";
-  src: url("/fonts/Script.ttf") format("truetype");
+  src: url("/remi-portfolio-2025/fonts/Script.ttf") format("truetype");
   font-display: swap;
   font-style: normal;
   font-optical-sizing: auto;
@@ -23,7 +23,7 @@
 
 @font-face {
   font-family: "Grand Bold";
-  src: url("/fonts/GrandBold.woff2") format("woff2");
+  src: url("/remi-portfolio-2025/fonts/GrandBold.woff2") format("woff2");
   font-display: swap;
   font-style: normal;
   font-optical-sizing: auto;

@@ -1,19 +1,20 @@
 import React, { useEffect } from "react";
+import { assetUrl } from "../../utils/assetUrl";
 
 // UPDATED: include base arrow mapping (previously only CSS handled this)
 const CURSOR_MAP: Record<string, string> = {
-  auto: 'url("/cursors/default.svg") 1 1, default',
-  default: 'url("/cursors/default.svg") 1 1, default',
-  pointer: 'url("/cursors/handpointing.svg") 8 4, pointer',
-  text: 'url("/cursors/textcursor.svg") 8 2, text',
-  move: 'url("/cursors/move.svg") 16 16, move',
-  grab: 'url("/cursors/handopen.svg") 6 4, grab',
-  grabbing: 'url("/cursors/handgrabbing.svg") 6 8, grabbing',
-  "not-allowed": 'url("/cursors/notallowed.svg") 16 16, not-allowed',
-  // "ew-resize": 'url("/cursors/mac-ew-resize.png") 16 16, ew-resize',
-  // "ns-resize": 'url("/cursors/mac-ns-resize.png") 16 16, ns-resize',
-  // "nesw-resize": 'url("/cursors/mac-nesw-resize.png") 16 16, nesw-resize',
-  // "nwse-resize": 'url("/cursors/mac-nwse-resize.png") 16 16, nwse-resize',
+  auto: `url("${assetUrl("/cursors/default.svg")}") 1 1, default`,
+  default: `url("${assetUrl("/cursors/default.svg")}") 1 1, default`,
+  pointer: `url("${assetUrl("/cursors/handpointing.svg")}") 8 4, pointer`,
+  text: `url("${assetUrl("/cursors/textcursor.svg")}") 8 2, text`,
+  move: `url("${assetUrl("/cursors/move.svg")}") 16 16, move`,
+  grab: `url("${assetUrl("/cursors/handopen.svg")}") 6 4, grab`,
+  grabbing: `url("${assetUrl("/cursors/handgrabbing.svg")}") 6 8, grabbing`,
+  "not-allowed": `url("${assetUrl("/cursors/notallowed.svg")}") 16 16, not-allowed`,
+  // "ew-resize": `url("${assetUrl("/cursors/mac-ew-resize.png")}") 16 16, ew-resize`,
+  // "ns-resize": `url("${assetUrl("/cursors/mac-ns-resize.png")}") 16 16, ns-resize`,
+  // "nesw-resize": `url("${assetUrl("/cursors/mac-nesw-resize.png")}") 16 16, nesw-resize`,
+  // "nwse-resize": `url("${assetUrl("/cursors/mac-nwse-resize.png")}") 16 16, nwse-resize`,
 };
 
 // Allow list only for values we still ignore
@@ -120,7 +121,7 @@ const MacCursorAuto: React.FC<MacCursorAutoProps> = ({
       if (
         el.className &&
         /(^|\s)(text-content|editable|rich-text|text-field)(\s|$)/i.test(
-          el.className
+          el.className,
         )
       ) {
         return true;
@@ -275,14 +276,14 @@ const MacCursorAuto: React.FC<MacCursorAutoProps> = ({
         document.documentElement.style.setProperty(
           "cursor",
           CURSOR_MAP["default"],
-          "important"
+          "important",
         );
 
         if (document.body) {
           document.body.style.setProperty(
             "cursor",
             CURSOR_MAP["default"],
-            "important"
+            "important",
           );
         }
       }
@@ -316,7 +317,7 @@ const MacCursorAuto: React.FC<MacCursorAutoProps> = ({
               // Use TreeWalker for efficient traversal of large subtrees
               const walker = document.createTreeWalker(
                 node,
-                NodeFilter.SHOW_ELEMENT
+                NodeFilter.SHOW_ELEMENT,
               );
 
               let count = 0;
@@ -416,13 +417,13 @@ const MacCursorAuto: React.FC<MacCursorAutoProps> = ({
         document.documentElement.style.setProperty(
           "cursor",
           CURSOR_MAP["default"],
-          "important"
+          "important",
         );
         if (document.body) {
           document.body.style.setProperty(
             "cursor",
             CURSOR_MAP["default"],
-            "important"
+            "important",
           );
         }
       }
@@ -430,7 +431,7 @@ const MacCursorAuto: React.FC<MacCursorAutoProps> = ({
       // Pointer cursor - ONLY for clearly interactive elements
       document
         .querySelectorAll(
-          'a, button, [role="button"], input[type="submit"], input[type="button"], input[type="checkbox"], input[type="radio"], summary, select, .btn, .button, .clickable'
+          'a, button, [role="button"], input[type="submit"], input[type="button"], input[type="checkbox"], input[type="radio"], summary, select, .btn, .button, .clickable',
         )
         .forEach((el) => {
           if (el instanceof HTMLElement) {
@@ -441,7 +442,7 @@ const MacCursorAuto: React.FC<MacCursorAutoProps> = ({
       // Text cursor - ONLY for text input elements and content editable
       document
         .querySelectorAll(
-          'input[type="text"], input[type="password"], input[type="email"], input[type="search"], input[type="tel"], input[type="url"], textarea, [contenteditable="true"], .text-field, .text-input, h1,h2,h3,h4,h5,h6,p,li'
+          'input[type="text"], input[type="password"], input[type="email"], input[type="search"], input[type="tel"], input[type="url"], textarea, [contenteditable="true"], .text-field, .text-input, h1,h2,h3,h4,h5,h6,p,li',
         )
         .forEach((el) => {
           if (el instanceof HTMLElement) {
@@ -484,7 +485,7 @@ const MacCursorAuto: React.FC<MacCursorAutoProps> = ({
             forceCommonElementCursors();
           }, 200);
         },
-        { once: true }
+        { once: true },
       );
     }
 

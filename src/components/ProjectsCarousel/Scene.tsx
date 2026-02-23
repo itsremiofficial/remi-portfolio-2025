@@ -9,6 +9,7 @@ import type { ThreeEvent, ThreeElements } from "@react-three/fiber";
 import type { CarouselState } from "./types";
 import PROJECTS, { type Project } from "../../constants/PROJECTS";
 import { MeshSineMaterial } from "./ThreeExtensions";
+import { assetUrl } from "../../utils/assetUrl";
 
 const IMAGE_COUNT = 5;
 // Create squircle alpha map texture for rounded corners with clipping mask
@@ -329,7 +330,9 @@ function Ribbon({
   const targetRotation = useRef(0);
 
   // Load SVG texture based on theme
-  const texturePath = isDark ? "/remi_ribbon.svg" : "/remi_ribbon_dark.svg";
+  const texturePath = isDark
+    ? assetUrl("/remi_ribbon.svg")
+    : assetUrl("/remi_ribbon_dark.svg");
   const texture = useTexture(texturePath);
   texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 

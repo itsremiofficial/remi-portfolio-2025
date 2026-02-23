@@ -29,6 +29,7 @@ import { useLenis } from "lenis/react";
 import "./AlphaSmoothMaterial";
 import { useTheme } from "../../hooks/useTheme";
 import { createWrappedTexture } from "./textureUtils";
+import { assetUrl } from "../../utils/assetUrl";
 
 // ===== TYPES =====
 interface TexturedSphereProps {
@@ -48,24 +49,24 @@ const TexturedSphere = memo(
     const texturePaths = useMemo(
       () => [
         isDark
-          ? "/loader/loader-texture-light.png"
-          : "/loader/loader-texture-dark.png",
+          ? assetUrl("/loader/loader-texture-light.png")
+          : assetUrl("/loader/loader-texture-dark.png"),
         isDark
-          ? "/loader/loader-texture-small-light.png"
-          : "/loader/loader-texture-small-dark.png",
+          ? assetUrl("/loader/loader-texture-small-light.png")
+          : assetUrl("/loader/loader-texture-small-dark.png"),
       ],
-      [isDark]
+      [isDark],
     );
 
     const [tex1, tex2] = useLoader(THREE.TextureLoader, texturePaths);
 
     const texture1 = useMemo(
       () => createWrappedTexture(tex1, texturePaths[0]),
-      [tex1, texturePaths]
+      [tex1, texturePaths],
     );
     const texture2 = useMemo(
       () => createWrappedTexture(tex2, texturePaths[1]),
-      [tex2, texturePaths]
+      [tex2, texturePaths],
     );
 
     // ===== REFS =====
@@ -150,7 +151,7 @@ const TexturedSphere = memo(
         tl.to(
           mesh2.current.position,
           { y: -0.18, duration: 2, ease: "power4.out" },
-          "-=2"
+          "-=2",
         );
 
         return () => {
@@ -187,7 +188,7 @@ const TexturedSphere = memo(
           duration: 1.2,
           ease: "power4.in",
         },
-        "-=1.25"
+        "-=1.25",
       );
 
       // Re-enable smooth scroll after animations complete
@@ -231,7 +232,7 @@ const TexturedSphere = memo(
         </group>
       </group>
     );
-  }
+  },
 );
 
 TexturedSphere.displayName = "TexturedSphere";
