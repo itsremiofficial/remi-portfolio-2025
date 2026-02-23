@@ -27,12 +27,17 @@ const setStorageItem = (key: string, value: string): void => {
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [colorScheme, setColorScheme] = useState<ColorScheme>(
-    () => getStorageItem("color-scheme", "default") as ColorScheme
+    () => getStorageItem("color-scheme", "default") as ColorScheme,
   );
 
-  const [themeMode, setThemeMode] = useState<ThemeMode>(
-    () => getStorageItem("theme-mode", "light") as ThemeMode
-  );
+  const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
+    const stored = getStorageItem("theme-mode", "");
+    if (stored === "light" || stored === "dark") return stored;
+    // No stored preference — use device/OS setting
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  });
 
   const [isTransitioning, setIsTransitioning] = useState(false);
 
