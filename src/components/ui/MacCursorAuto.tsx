@@ -11,10 +11,6 @@ const CURSOR_MAP: Record<string, string> = {
   grab: `url("${assetUrl("/cursors/handopen.svg")}") 6 4, grab`,
   grabbing: `url("${assetUrl("/cursors/handgrabbing.svg")}") 6 8, grabbing`,
   "not-allowed": `url("${assetUrl("/cursors/notallowed.svg")}") 16 16, not-allowed`,
-  // "ew-resize": `url("${assetUrl("/cursors/mac-ew-resize.png")}") 16 16, ew-resize`,
-  // "ns-resize": `url("${assetUrl("/cursors/mac-ns-resize.png")}") 16 16, ns-resize`,
-  // "nesw-resize": `url("${assetUrl("/cursors/mac-nesw-resize.png")}") 16 16, nesw-resize`,
-  // "nwse-resize": `url("${assetUrl("/cursors/mac-nwse-resize.png")}") 16 16, nwse-resize`,
 };
 
 // Allow list only for values we still ignore

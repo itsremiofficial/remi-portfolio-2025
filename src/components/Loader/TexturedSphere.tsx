@@ -49,11 +49,11 @@ const TexturedSphere = memo(
     const texturePaths = useMemo(
       () => [
         isDark
-          ? assetUrl("/loader/loader-texture-light.png")
-          : assetUrl("/loader/loader-texture-dark.png"),
+          ? assetUrl("/loader/loader-texture-light.avif")
+          : assetUrl("/loader/loader-texture-dark.avif"),
         isDark
-          ? assetUrl("/loader/loader-texture-small-light.png")
-          : assetUrl("/loader/loader-texture-small-dark.png"),
+          ? assetUrl("/loader/loader-texture-small-light.avif")
+          : assetUrl("/loader/loader-texture-small-dark.avif"),
       ],
       [isDark],
     );
