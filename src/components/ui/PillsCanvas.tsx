@@ -1,5 +1,6 @@
 import { useEffect, useRef, useMemo, useCallback } from "react";
 import Matter from "matter-js";
+import { assetUrl } from "../../utils/assetUrl";
 
 // ===== CONSTANTS =====
 const PHYSICS_CONFIG = {
@@ -89,7 +90,7 @@ const PillsCanvas = () => {
   const skillAssets = useMemo<SkillAsset[]>(
     () =>
       SKILLS.map(({ name, width, height }) => ({
-        texture: `/skills/${name}.svg`,
+        texture: assetUrl(`/skills/${name}.svg`),
         width,
         height,
       })),
