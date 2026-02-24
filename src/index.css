@@ -320,8 +320,8 @@ body {
 
 @media (max-width: 768px) {
   .div-block-100 {
-    width: 3em;
-    height: 3em;
+    width: 4em;
+    height: 4em;
   }
 }
 
@@ -424,6 +424,7 @@ body {
     );
   }
 }
+
 .is-dragging {
   cursor: grabbing;
 }
@@ -431,6 +432,7 @@ body {
 .section-heading {
   @apply text-[clamp(2rem,18vw,350px)] leading-[clamp(2rem,15vw,300px)] font-grandbold;
 }
+
 .section-sub-heading {
   @apply text-[clamp(2rem,10vw,140px)] leading-[clamp(2rem,8.5vw,135px)] font-grandbold;
 }

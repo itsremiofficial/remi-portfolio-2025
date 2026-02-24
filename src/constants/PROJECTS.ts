@@ -38,7 +38,18 @@ const PROJECTS: Project[] = [
     technologies: ["Next.js", "Framer Motion", "TypeScript"],
   },
   {
-    id: "3",
+    id: "4",
+    title: "TravlApp",
+    type: "Travel App",
+    slug: "travlapp",
+    imageUrl: assetUrl("/videos/travlapp.avif"),
+    year: "2024",
+    description:
+      "An eco-conscious digital presence for a renewable energy provider, highlighting sustainability through organic design and smooth transitions.",
+    technologies: ["Vue.js", "Nuxt", "SCSS"],
+  },
+  {
+    id: "5",
     title: "UX Creatives",
     type: "Agency Website",
     slug: "uxcreatives",
@@ -49,7 +60,7 @@ const PROJECTS: Project[] = [
     technologies: ["React", "D3.js", "Material UI", "Redux"],
   },
   {
-    id: "4",
+    id: "6",
     title: "Calyptus",
     type: "Software Agency",
     slug: "calyptus",
@@ -60,7 +71,7 @@ const PROJECTS: Project[] = [
     technologies: ["React", "Three.js", "Styled Components"],
   },
   {
-    id: "5",
+    id: "7",
     title: "Logo Diffusion",
     type: "Software Agency",
     slug: "logodiffusion",
@@ -69,17 +80,6 @@ const PROJECTS: Project[] = [
     description:
       "A dynamic agency portfolio featuring 3D interactive elements and a modern, dark-themed aesthetic.",
     technologies: ["React", "Three.js", "Styled Components"],
-  },
-  {
-    id: "6",
-    title: "TravlApp",
-    type: "Travel App",
-    slug: "travlapp",
-    imageUrl: assetUrl("/videos/travlapp.avif"),
-    year: "2024",
-    description:
-      "An eco-conscious digital presence for a renewable energy provider, highlighting sustainability through organic design and smooth transitions.",
-    technologies: ["Vue.js", "Nuxt", "SCSS"],
   },
 ];
 

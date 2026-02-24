@@ -84,11 +84,12 @@ const ContactMarquee = () => {
         )}
       >
         {Array.from({ length: REPEAT }).flatMap((_, i) =>
-          CONTACT_MARQUEE.map(({ title, subtitle }) => (
-            <div className="contact-marquee-item" key={`${i}-${title}`}>
+          CONTACT_MARQUEE.map(({ title, subtitle }, j) => (
+            <div className="contact-marquee-item" key={`${i}-${j}-${title}`}>
               <ContactIcon
                 textClassName="font-inter dark:text-background"
                 bgClassName="text-accent dark:text-accent/80"
+                className="contact_marquee"
               />
               <a
                 href={`mailto:${personalDetails.email}`}

@@ -8,6 +8,9 @@ import type { Project } from "../constants/PROJECTS";
 import Scene from "../components/ProjectsCarousel/Scene";
 import ProjectInfoPanel from "../components/ProjectsCarousel/ProjectInfoPanel";
 import type { CarouselState } from "../components/ProjectsCarousel/types";
+import { useIsMobile } from "../hooks/useIsMobile";
+import PROJECTS from "../constants/PROJECTS";
+import ProjectCard from "../components/ProjectsCarousel/ProjectCard";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 const CAMERA_FOV = 18;
@@ -47,6 +50,7 @@ const ProjectsGallery = () => {
 
   // — Theme -------------------------------------------------------------------
   const { isDark } = useTheme();
+  const isMobile = useIsMobile();
 
   // — Hover / panel state -----------------------------------------------------
   const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
@@ -321,51 +325,59 @@ const ProjectsGallery = () => {
         </div>
       </div>
 
-      <div
-        className="top-0 left-0 w-full z-10 "
-        style={{
-          aspectRatio: "16 / 9",
-          maxWidth: "2560px",
-        }}
-      >
-        <Canvas
-          camera={{ position: [0, 0, 100], fov: CAMERA_FOV }}
-          frameloop="always"
-          gl={{
-            antialias: true,
-            alpha: true,
-            premultipliedAlpha: false,
-            powerPreference: "high-performance",
-            preserveDrawingBuffer: false,
-          }}
+      {isMobile ? (
+        <div className="w-full p-4 space-y-4">
+          {PROJECTS.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </div>
+      ) : (
+        <div
+          className="top-0 left-0 w-full z-10 "
           style={{
-            background: "transparent",
-            width: "100%",
-            height: "100%",
-            cursor: "grab",
+            aspectRatio: "16 / 9",
+            maxWidth: "2560px",
           }}
-          dpr={[1, 2]}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerLeave={handlePointerLeave}
         >
-          <Scene
-            onHover={handleProjectHover}
-            onHoverEnd={handleProjectHoverEnd}
-            fov={CAMERA_FOV}
-            isDark={isDark}
-            carouselState={carouselState}
-          />
-        </Canvas>
+          <Canvas
+            camera={{ position: [0, 0, 100], fov: CAMERA_FOV }}
+            frameloop="always"
+            gl={{
+              antialias: true,
+              alpha: true,
+              premultipliedAlpha: false,
+              powerPreference: "high-performance",
+              preserveDrawingBuffer: false,
+            }}
+            style={{
+              background: "transparent",
+              width: "100%",
+              height: "100%",
+              cursor: "grab",
+            }}
+            dpr={[1, 2]}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerLeave={handlePointerLeave}
+          >
+            <Scene
+              onHover={handleProjectHover}
+              onHoverEnd={handleProjectHoverEnd}
+              fov={CAMERA_FOV}
+              isDark={isDark}
+              carouselState={carouselState}
+            />
+          </Canvas>
 
-        <ProjectInfoPanel
-          ref={panelRef}
-          hoveredProject={hoveredProject}
-          isActive={isActive}
-          panelSide={panelSide}
-        />
-      </div>
+          <ProjectInfoPanel
+            ref={panelRef}
+            hoveredProject={hoveredProject}
+            isActive={isActive}
+            panelSide={panelSide}
+          />
+        </div>
+      )}
     </section>
   );
 };

@@ -15,7 +15,7 @@ export const TESTIMONIALS: Testimonial[] = [
     subname: "Memon",
     designation: "Managing Director Wasiq Industries",
     quote:
-      "Working with Rehman was amazing! He’s great at web design and development, turning ideas into reality with skill and creativity. His clear communication and attention to detail made everything easy. Highly recommend him!",
+      "Working with Rehman was amazing! He is great at web design and development, turning ideas into reality with skill and creativity. His clear communication and attention to detail made everything easy. Highly recommend him!",
     src: "testimonials/MurtazaMemon.avif",
     shortSrc: "testimonials/MurtazaMemonSmall.avif",
   },

@@ -61,7 +61,7 @@ const WelcomeMarquee = () => {
       <div
         ref={welcomeRef}
         className={cn(
-          "flex items-center font-extrabold bg-foreground dark:bg-background py-10",
+          "flex items-center font-extrabold bg-foreground dark:bg-background py-6",
         )}
       >
         {Array.from({ length: REPEAT }).flatMap((_, repeatIdx) =>

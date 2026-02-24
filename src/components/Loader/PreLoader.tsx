@@ -77,7 +77,7 @@ const PreLoader = ({ onComplete }: PreLoaderProps) => {
   const isDesktop = useMemo(() => window.innerWidth > 1100, []);
   const backgroundColor = useMemo(
     () => (isDark ? "#161c26" : "#e3e1d8"),
-    [isDark]
+    [isDark],
   );
 
   // ===== CALLBACKS =====
@@ -164,7 +164,7 @@ const PreLoader = ({ onComplete }: PreLoaderProps) => {
 
       const actualWaitTime = Math.max(
         remainingTime + 500,
-        minimumTotalTime - elapsedTime
+        minimumTotalTime - elapsedTime,
       );
 
       const timer = setTimeout(() => {

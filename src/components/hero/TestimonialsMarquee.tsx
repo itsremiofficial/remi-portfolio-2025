@@ -3,6 +3,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { cn } from "../../utils";
 import { TESTIMONIALS } from "../../constants/TESTIMONIALS";
+import { useIsMobile } from "../../hooks/useIsMobile";
 
 // Testimonial item component
 const TestimonialItem = memo(
@@ -20,14 +21,14 @@ const TestimonialItem = memo(
     onClick: () => void;
   }) => (
     <div
-      className={`testimonial_hero ${testimonialId} w-[270px] md:w-[363.781px] w-inline-block bg-white/40 dark:bg-foreground/70 rounded-full border border-foreground/10 dark:border-background/10 backdrop-blur-md group/learnmore cursor-pointer`}
+      className={`testimonial_hero ${testimonialId} w-[300px] md:w-[363.781px] w-inline-block bg-white/40 dark:bg-foreground/70 rounded-full border border-foreground/10 dark:border-background/10 backdrop-blur-md group/learnmore cursor-pointer`}
       ref={forwardedRef}
     >
       <img
         src={src}
         alt="Testimonial Avatar"
         className={cn(
-          `div-block-100 bg-cover bg-center border border-background/15 shadow-lg`
+          `div-block-100 bg-cover bg-center border border-background/15 shadow-lg`,
         )}
       />
       <div className="flex flex-col items-start justify-center gap-2">
@@ -46,7 +47,7 @@ const TestimonialItem = memo(
         </div>
       </div>
     </div>
-  )
+  ),
 );
 
 const TestimonialsMarquee = memo(
@@ -54,6 +55,8 @@ const TestimonialsMarquee = memo(
     const testimonialContainerRef = useRef<HTMLDivElement>(null);
     const testimonialRefs = useRef<(HTMLDivElement | null)[]>([]);
     const tlRef = useRef<gsap.core.Timeline | null>(null);
+
+    const isMobile = useIsMobile();
 
     const displayTestimonials = useMemo(() => TESTIMONIALS.slice(0, 2), []);
 
@@ -73,7 +76,7 @@ const TestimonialsMarquee = memo(
         },
         scales: { active: 1, inactive: 0.9, transition: 0.95 },
       }),
-      []
+      [],
     );
 
     const createTransition = useCallback(
@@ -82,7 +85,7 @@ const TestimonialsMarquee = memo(
         fromEl: HTMLElement,
         toEl: HTMLElement,
         params: ReturnType<typeof createAnimParams>,
-        label: string
+        label: string,
       ) => {
         tl.to(
           fromEl,
@@ -92,7 +95,7 @@ const TestimonialsMarquee = memo(
             duration: params.duration,
             ease: params.ease.in,
           },
-          label
+          label,
         )
           .to(
             toEl,
@@ -102,7 +105,7 @@ const TestimonialsMarquee = memo(
               duration: params.duration,
               ease: params.ease.in,
             },
-            label
+            label,
           )
           .add(() => {
             gsap.set(fromEl, { zIndex: 0 });
@@ -116,7 +119,7 @@ const TestimonialsMarquee = memo(
               duration: params.duration,
               ease: params.ease.out,
             },
-            `${label}+`
+            `${label}+`,
           )
           .to(
             toEl,
@@ -126,10 +129,10 @@ const TestimonialsMarquee = memo(
               duration: params.duration,
               ease: params.ease.out,
             },
-            `${label}+`
+            `${label}+`,
           );
       },
-      []
+      [],
     );
 
     useGSAP(() => {
@@ -171,7 +174,7 @@ const TestimonialsMarquee = memo(
           createTransition(tl, firstEl, secondEl, params, "trans1");
           tl.to({}, { duration: params.holdDuration });
           createTransition(tl, secondEl, firstEl, params, "trans2");
-        }
+        },
       );
 
       testimonialContainer.addEventListener("mouseenter", handleMouseEnter);
@@ -180,11 +183,11 @@ const TestimonialsMarquee = memo(
       return () => {
         testimonialContainer.removeEventListener(
           "mouseenter",
-          handleMouseEnter
+          handleMouseEnter,
         );
         testimonialContainer.removeEventListener(
           "mouseleave",
-          handleMouseLeave
+          handleMouseLeave,
         );
         tlRef.current?.kill();
         mm.kill();
@@ -201,8 +204,8 @@ const TestimonialsMarquee = memo(
         className={cn(
           "marquee-item rounded-xl",
           "md:px-8 md:py-4",
-          "min-w-[350px] md:min-w-[450px]",
-          "text-foreground dark:text-background"
+          "min-w-[400px] md:min-w-[450px]",
+          "text-foreground dark:text-background",
         )}
       >
         <div
@@ -214,7 +217,9 @@ const TestimonialsMarquee = memo(
               <TestimonialItem
                 key={testimonial.id}
                 src={testimonial.shortSrc as string}
-                text={testimonial.quote.substring(0, 70) + "..."}
+                text={
+                  testimonial.quote.substring(0, isMobile ? 50 : 65) + "..."
+                }
                 testimonialId={testimonial.id}
                 forwardedRef={(el) => {
                   testimonialRefs.current[index] = el;
@@ -226,7 +231,7 @@ const TestimonialsMarquee = memo(
         </div>
       </div>
     );
-  }
+  },
 );
 
 export default TestimonialsMarquee;
