@@ -327,7 +327,7 @@ const ProjectsGallery = () => {
 
       {isMobile ? (
         <div className="w-full p-4 space-y-4">
-          {PROJECTS.map((project) => (
+          {PROJECTS.slice(0, 3).map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
         </div>
