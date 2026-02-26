@@ -24,6 +24,9 @@ import { useScrollTo } from "./hooks/useLenis";
 import { Footer } from "./sections/Footer";
 import PreLoader from "./components/Loader/PreLoader";
 import ContactMarquee from "./components/ContactMarquee";
+import { useIsMobile } from "./hooks/useIsMobile";
+import SkillsMobile from "./components/SkillsMobile";
+import { MobileTestimonials } from "./components/ui/MobileTestimonials";
 
 gsap.registerPlugin(
   ScrollTrigger,
@@ -42,6 +45,8 @@ const App = () => {
   const { scrollToElement, isReady, lenis } = useScrollTo();
   const location = useLocation();
   const hasAnimatedRef = useRef(false);
+
+  const isMobile = useIsMobile();
 
   // Handle preloader completion
   const handlePreloaderComplete = () => {
@@ -243,10 +248,20 @@ const App = () => {
           <WelcomeMarquee />
           <About />
           <ProjectsGallery />
-          <Services />
-          <Skills />
+          {isMobile === undefined ? null : isMobile ? <></> : <Services />}
+          {isMobile === undefined ? null : isMobile ? (
+            <div className="py-6">
+              <SkillsMobile />
+            </div>
+          ) : (
+            <Skills />
+          )}
           <ServicesMarquee />
-          <Testimonials />
+          {isMobile === undefined ? null : isMobile ? (
+            <MobileTestimonials />
+          ) : (
+            <Testimonials />
+          )}
           <ContactMarquee />
           <Footer />
         </main>

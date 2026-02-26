@@ -12,13 +12,36 @@ import { useIsMobile } from "../hooks/useIsMobile";
 import PROJECTS from "../constants/PROJECTS";
 import ProjectCard from "../components/ProjectsCarousel/ProjectCard";
 
-// ── Constants ────────────────────────────────────────────────────────────────
+// ── Module-level constants ──────────────────────────────────────────────────
 const CAMERA_FOV = 18;
 const PANEL_WIDTH = 350;
 const PANEL_PADDING = 40;
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-/** Determine which side of the cursor the info panel should appear on. */
+/** First N projects shown on mobile (avoids allocating a new array every render). */
+const MOBILE_PROJECTS = PROJECTS.slice(0, 3);
+
+/** Static Canvas GL config — hoisted so the identity is stable across renders. */
+const GL_CONFIG = {
+  antialias: true,
+  alpha: true,
+  premultipliedAlpha: false,
+  powerPreference: "high-performance" as const,
+  preserveDrawingBuffer: false,
+};
+
+/** Static Canvas camera config. */
+const CAMERA_CONFIG = { position: [0, 0, 100] as const, fov: CAMERA_FOV };
+
+/** Static Canvas inline style. */
+const CANVAS_STYLE: React.CSSProperties = {
+  background: "transparent",
+  width: "100%",
+  height: "100%",
+  cursor: "grab",
+};
+
+// ── Helpers ─────────────────────────────────────────────────────────────────
+/** Determine which side of the cursor the info-panel should appear on. */
 const getPanelSide = (cursorX: number): "left" | "right" => {
   const spaceOnRight = window.innerWidth - cursorX;
   if (spaceOnRight >= PANEL_WIDTH + PANEL_PADDING) return "right";
@@ -26,20 +49,30 @@ const getPanelSide = (cursorX: number): "left" | "right" => {
   return spaceOnRight > cursorX ? "right" : "left";
 };
 
-// ── Main Component ───────────────────────────────────────────────────────────
+/** Reset the cursor on dragging canvas element */
+const resetDragCursor = (e: React.PointerEvent) => {
+  (e.target as HTMLCanvasElement).style.cursor = "grab";
+};
+
+// ── Main Component ──────────────────────────────────────────────────────────
 const ProjectsGallery = () => {
-  // — DOM refs ----------------------------------------------------------------
+  // — Refs: DOM elements ------------------------------------------------------
   const projectsSectionRef = useRef<HTMLElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const projectsSelectedHeadingRef = useRef<HTMLHeadingElement>(null);
+  const projectsGalleryHeadingRef = useRef<HTMLHeadingElement>(null);
+  const projectsSecondaryContainerRef = useRef<HTMLDivElement>(null);
+  const projectsHeaderContainerRef = useRef<HTMLDivElement>(null);
+  const projectsDescRef = useRef<HTMLParagraphElement>(null);
 
-  // — Drag tracking refs (mutable, no re-render) ------------------------------
+  // — Refs: drag tracking (mutable, no re-render) ----------------------------
   const dragStartX = useRef(0);
   const dragStartRotation = useRef(0);
   const lastMouseX = useRef(0);
   const currentMouseX = useRef(0);
   const currentMouseY = useRef(0);
 
-  // — 3D carousel shared state ------------------------------------------------
+  // — Refs: 3-D carousel shared state ----------------------------------------
   const carouselState = useRef<CarouselState>({
     scrollProgress: 0,
     dragRotation: 0,
@@ -48,69 +81,60 @@ const ProjectsGallery = () => {
     autoRotationDirection: 1,
   });
 
-  // — Theme -------------------------------------------------------------------
+  // — Refs: GSAP quickTo tweens & active tracking ----------------------------
+  const quickX = useRef<ReturnType<typeof gsap.quickTo> | null>(null);
+  const quickY = useRef<ReturnType<typeof gsap.quickTo> | null>(null);
+  const isActiveRef = useRef(false);
+
+  // — Theme / responsive -----------------------------------------------------
   const { isDark } = useTheme();
   const isMobile = useIsMobile();
 
-  // — Hover / panel state -----------------------------------------------------
+  // — State (only what truly needs to trigger a render) -----------------------
   const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
   const [panelSide, setPanelSide] = useState<"left" | "right">("right");
   const [isActive, setIsActive] = useState(false);
 
-  // — GSAP quickTo tweens for smooth mouse-following --------------------------
-  const quickX = useRef<ReturnType<typeof gsap.quickTo> | null>(null);
-  const quickY = useRef<ReturnType<typeof gsap.quickTo> | null>(null);
+  // Keep the ref in sync so callbacks stay stable.
+  useEffect(() => {
+    isActiveRef.current = isActive;
+  }, [isActive]);
 
-  // NOTE: FOV is a constant (CAMERA_FOV). The previous useEffect + resize
-  // listener always set the same value (18) regardless of viewport width, so
-  // it was removed to eliminate an unnecessary effect and state variable.
-
+  // — Scroll progress tracking ------------------------------------------------
   useEffect(() => {
     const handleScroll = () => {
-      if (!projectsSectionRef.current) return;
-
       const section = projectsSectionRef.current;
+      if (!section) return;
+
       const rect = section.getBoundingClientRect();
-      const sectionHeight = section.offsetHeight;
-      const viewportHeight = window.innerHeight;
+      const scrollableDistance = section.offsetHeight - window.innerHeight;
+      const progress = Math.max(0, Math.min(1, -rect.top / scrollableDistance));
 
-      // Calculate scroll progress through the section
-      const scrollableDistance = sectionHeight - viewportHeight;
-      const scrolled = -rect.top;
-
-      // Clamp between 0 and 1
-      const progress = Math.max(0, Math.min(1, scrolled / scrollableDistance));
       carouselState.current.scrollProgress = progress;
     };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll(); // Initial calculation
 
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // initial calculation
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Initialize GSAP quickTo on mount
+  // — GSAP quickTo initialisation ---------------------------------------------
   useEffect(() => {
     const panel = panelRef.current;
+    if (!panel) return;
 
-    if (panel) {
-      // Set initial position off-screen
-      gsap.set(panel, { x: 0, y: 0 });
-
-      // CONFIG: Animation duration and easing for smooth following
-      quickX.current = gsap.quickTo(panel, "x", {
-        duration: 1, // Slower = more lazy/smooth
-        ease: "power3.out",
-      });
-      quickY.current = gsap.quickTo(panel, "y", {
-        duration: 1,
-        ease: "power3.out",
-      });
-    }
+    gsap.set(panel, { x: 0, y: 0 });
+    quickX.current = gsap.quickTo(panel, "x", {
+      duration: 1,
+      ease: "power3.out",
+    });
+    quickY.current = gsap.quickTo(panel, "y", {
+      duration: 1,
+      ease: "power3.out",
+    });
   }, []);
 
-  // Set initial position when hovering starts
+  // — Snap panel to cursor when hovering starts -------------------------------
   useEffect(() => {
     if (isActive && panelRef.current && quickX.current && quickY.current) {
       quickX.current(currentMouseX.current);
@@ -119,6 +143,7 @@ const ProjectsGallery = () => {
     }
   }, [isActive]);
 
+  // — Pointer callbacks (stable — no state in dependency arrays) ─────────────
   const handleProjectHover = useCallback((data: Project) => {
     setHoveredProject(data);
     setIsActive(true);
@@ -137,57 +162,48 @@ const ProjectsGallery = () => {
     (e.target as HTMLCanvasElement).style.cursor = "grabbing";
   }, []);
 
-  const handlePointerMove = useCallback(
-    (e: React.PointerEvent) => {
-      // Store current mouse position
-      currentMouseX.current = e.clientX;
-      currentMouseY.current = e.clientY;
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    // Track current mouse position for panel snapping on hover-start.
+    currentMouseX.current = e.clientX;
+    currentMouseY.current = e.clientY;
 
-      const deltaX = e.clientX - lastMouseX.current;
+    const deltaX = e.clientX - lastMouseX.current;
 
-      // Update auto-rotation direction based on movement direction
-      if (Math.abs(deltaX) > 0.5) {
-        carouselState.current.autoRotationDirection = deltaX > 0 ? 1 : -1;
-      }
+    // Update auto-rotation direction based on drag direction.
+    if (Math.abs(deltaX) > 0.5) {
+      carouselState.current.autoRotationDirection = deltaX > 0 ? 1 : -1;
+    }
 
-      if (carouselState.current.isDragging) {
-        const totalDeltaX = e.clientX - dragStartX.current;
-        carouselState.current.dragRotation =
-          dragStartRotation.current +
-          (totalDeltaX / window.innerWidth) * Math.PI * 2;
-      }
+    if (carouselState.current.isDragging) {
+      const totalDeltaX = e.clientX - dragStartX.current;
+      carouselState.current.dragRotation =
+        dragStartRotation.current +
+        (totalDeltaX / window.innerWidth) * Math.PI * 2;
+    }
 
-      // Update panel position with GSAP smooth animation
-      if (isActive && quickX.current && quickY.current) {
-        quickX.current(e.clientX);
-        quickY.current(e.clientY);
-        setPanelSide(getPanelSide(e.clientX));
-      }
+    // Smooth-follow the cursor with the info panel (read ref, not state).
+    if (isActiveRef.current && quickX.current && quickY.current) {
+      quickX.current(e.clientX);
+      quickY.current(e.clientY);
+      setPanelSide(getPanelSide(e.clientX));
+    }
 
-      lastMouseX.current = e.clientX;
-    },
-    [isActive],
-  );
+    lastMouseX.current = e.clientX;
+  }, []); // ← stable: reads refs only
 
   const handlePointerUp = useCallback((e: React.PointerEvent) => {
     carouselState.current.isDragging = false;
-    (e.target as HTMLCanvasElement).style.cursor = "grab";
+    resetDragCursor(e);
   }, []);
 
   const handlePointerLeave = useCallback((e: React.PointerEvent) => {
     if (carouselState.current.isDragging) {
       carouselState.current.isDragging = false;
-      (e.target as HTMLCanvasElement).style.cursor = "grab";
+      resetDragCursor(e);
     }
   }, []);
 
-  // Refs for Projects Gallery header animation
-  const projectsSelectedHeadingRef = useRef<HTMLHeadingElement>(null);
-  const projectsGalleryHeadingRef = useRef<HTMLHeadingElement>(null);
-  const projectsSecondaryContainerRef = useRef<HTMLDivElement>(null);
-  const projectsHeaderContainerRef = useRef<HTMLDivElement>(null);
-  const projectsDescRef = useRef<HTMLParagraphElement>(null);
-
+  // — Header scroll-in animation (GSAP + ScrollTrigger) -----------------------
   useGSAP(
     () => {
       const selected = projectsSelectedHeadingRef.current;
@@ -202,7 +218,7 @@ const ProjectsGallery = () => {
       const mm = gsap.matchMedia();
       const targets = [selected, gallery, projectsDesc, secondary];
 
-      // Reduced motion - static display
+      // Reduced motion — static display
       mm.add("(prefers-reduced-motion: reduce)", () => {
         gsap.set(targets, {
           autoAlpha: 1,
@@ -213,9 +229,8 @@ const ProjectsGallery = () => {
         });
       });
 
-      // Full motion - animated
+      // Full motion — animated
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        // Add performance hint
         targets.forEach((el) => el.classList.add("will-change-transform"));
 
         const tl = gsap
@@ -223,7 +238,7 @@ const ProjectsGallery = () => {
             scrollTrigger: {
               trigger: wrapper,
               start: "top 80%",
-              end: "top 10%",
+              end: "top 30%",
               scrub: 0.6,
             },
             defaults: { ease: "power1.inOut" },
@@ -237,8 +252,8 @@ const ProjectsGallery = () => {
             targets,
             {
               autoAlpha: 0,
-              xPercent: 6,
-              yPercent: 6,
+              xPercent: 12,
+              yPercent: 12,
               filter: "blur(10px)",
               rotationX: -45,
               transformPerspective: 1000,
@@ -249,8 +264,7 @@ const ProjectsGallery = () => {
               yPercent: 0,
               rotationX: 0,
               filter: "blur(0px)",
-              duration: 1,
-              stagger: 0.8,
+              stagger: 0.1,
             },
           );
 
@@ -262,6 +276,7 @@ const ProjectsGallery = () => {
     { scope: projectsHeaderContainerRef },
   );
 
+  // — Render ──────────────────────────────────────────────────────────────────
   return (
     <section
       id="projects-gallery"
@@ -325,36 +340,22 @@ const ProjectsGallery = () => {
         </div>
       </div>
 
-      {isMobile ? (
+      {isMobile === undefined ? null : isMobile ? (
         <div className="w-full p-4 space-y-4">
-          {PROJECTS.slice(0, 3).map((project) => (
+          {MOBILE_PROJECTS.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
         </div>
       ) : (
         <div
-          className="top-0 left-0 w-full z-10 "
-          style={{
-            aspectRatio: "16 / 9",
-            maxWidth: "2560px",
-          }}
+          className="top-0 left-0 w-full z-10"
+          style={{ aspectRatio: "16 / 9", maxWidth: "2560px" }}
         >
           <Canvas
-            camera={{ position: [0, 0, 100], fov: CAMERA_FOV }}
+            camera={CAMERA_CONFIG}
             frameloop="always"
-            gl={{
-              antialias: true,
-              alpha: true,
-              premultipliedAlpha: false,
-              powerPreference: "high-performance",
-              preserveDrawingBuffer: false,
-            }}
-            style={{
-              background: "transparent",
-              width: "100%",
-              height: "100%",
-              cursor: "grab",
-            }}
+            gl={GL_CONFIG}
+            style={CANVAS_STYLE}
             dpr={[1, 2]}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
