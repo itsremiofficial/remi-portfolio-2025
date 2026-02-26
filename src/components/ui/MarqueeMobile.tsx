@@ -119,7 +119,7 @@ const MarqueeMobile = ({
     return `${easing ? easing(wrappedValue / -100) * -100 : wrappedValue}%`;
   });
 
-  useAnimationFrame((t, delta) => {
+  useAnimationFrame((_t, delta) => {
     if (isDragging.current && draggable) {
       if (isHorizontal) {
         baseX.set(baseX.get() + dragVelocity.current);
