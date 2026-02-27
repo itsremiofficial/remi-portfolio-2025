@@ -10,21 +10,15 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/all";
 import { cn } from "../utils";
+import { useSectionHeadingAnimation } from "../hooks/useSectionHeadingAnimation";
 import { EXPERTIES } from "../constants/EXPERTIES";
 import { useResponsiveVars } from "../hooks/useResponsiveVars";
 
 // ===== CONSTANTS =====
 const ANIMATION_CONFIG = {
   HEADING: {
-    START: "top 80%",
-    END: "top 30%",
-    SCRUB: 0.6,
-    DURATION: 1,
-    STAGGER: 0.4,
-    BLUR_START: "10px",
-    BLUR_END: "0px",
-    ROTATION_X: -45,
-    OFFSET_PERCENT: 6,
+    STAGGER: 0.1,
+    OFFSET_PERCENT: 12,
   },
   CARD: {
     SCROLL_MULTIPLIER: 2,
@@ -129,83 +123,21 @@ const Services = () => {
   const canIDoHeadingRef = useRef<HTMLHeadingElement>(null);
   const [init, setInit] = useState(false);
 
+  // Heading scroll-in animation (shared hook)
+  const headingScopeRef = useSectionHeadingAnimation(
+    [whatHeadingRef, canIDoHeadingRef],
+    {
+      stagger: ANIMATION_CONFIG.HEADING.STAGGER,
+      offsetPercent: ANIMATION_CONFIG.HEADING.OFFSET_PERCENT,
+    },
+  );
+
   const { width: serviceCardWidth, height: serviceCardHeight } =
     useResponsiveVars(
       CARD_DIMENSIONS.WIDTH,
       CARD_DIMENSIONS.HEIGHT,
       CARD_DIMENSIONS.TYPE,
     );
-
-  // Heading animations
-  useGSAP(
-    () => {
-      const section = sectionRef.current;
-      const whatHeading = whatHeadingRef.current;
-      const canIDoHeading = canIDoHeadingRef.current;
-
-      if (!section || !whatHeading || !canIDoHeading) return;
-
-      const mm = gsap.matchMedia();
-      const targets = [whatHeading, canIDoHeading];
-
-      // Reduced motion - static display
-      mm.add("(prefers-reduced-motion: reduce)", () => {
-        gsap.set(targets, {
-          autoAlpha: 1,
-          xPercent: 0,
-          yPercent: 0,
-          rotationX: 0,
-          clearProps: "transform",
-        });
-      });
-
-      // Full motion - animated
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
-        targets.forEach((el) => el.classList.add("will-change-transform"));
-
-        const tl = gsap
-          .timeline({
-            scrollTrigger: {
-              trigger: section,
-              start: ANIMATION_CONFIG.HEADING.START,
-              end: ANIMATION_CONFIG.HEADING.END,
-              scrub: ANIMATION_CONFIG.HEADING.SCRUB,
-            },
-            defaults: { ease: "power1.inOut" },
-            onComplete: () => {
-              targets.forEach((el) =>
-                el.classList.remove("will-change-transform"),
-              );
-            },
-          })
-          .fromTo(
-            targets,
-            {
-              autoAlpha: 0,
-              xPercent: ANIMATION_CONFIG.HEADING.OFFSET_PERCENT,
-              yPercent: ANIMATION_CONFIG.HEADING.OFFSET_PERCENT,
-              filter: `blur(${ANIMATION_CONFIG.HEADING.BLUR_START})`,
-              rotationX: ANIMATION_CONFIG.HEADING.ROTATION_X,
-              transformPerspective: 1000,
-            },
-            {
-              autoAlpha: 1,
-              xPercent: 0,
-              yPercent: 0,
-              rotationX: 0,
-              filter: `blur(${ANIMATION_CONFIG.HEADING.BLUR_END})`,
-              duration: ANIMATION_CONFIG.HEADING.DURATION,
-              stagger: ANIMATION_CONFIG.HEADING.STAGGER,
-            },
-          );
-
-        return () => tl.kill();
-      });
-
-      return () => mm.revert();
-    },
-    { scope: sectionRef },
-  );
 
   // Cards animation
   useGSAP(
@@ -392,7 +324,10 @@ const Services = () => {
       aria-label="Services - What Can I Do For You?"
     >
       {/* Section Heading */}
-      <div className="inline-flex items-end gap-2 sm:gap-4 md:gap-[2vw] px-4 md:px-6 relative z-[2] [&>*]:select-none">
+      <div
+        ref={headingScopeRef}
+        className="inline-flex items-end gap-2 sm:gap-4 md:gap-[2vw] px-4 md:px-6 relative z-[2] [&>*]:select-none"
+      >
         <h2
           ref={whatHeadingRef}
           className="section-heading text-accent text-[clamp(3rem,10vw,8rem)] sm:text-[clamp(4rem,8vw,8rem)]"
@@ -400,13 +335,13 @@ const Services = () => {
         >
           What
         </h2>
-        <h2
+        <h3
           ref={canIDoHeadingRef}
           className="font-grandbold leading-none dark:text-background text-foreground text-[clamp(1rem,calc(0.981rem+5vw),6rem)]"
           style={{ transformStyle: "preserve-3d" }}
         >
           can I DO?
-        </h2>
+        </h3>
       </div>
 
       {/* Service Cards Container */}

@@ -251,45 +251,47 @@ const PreLoader = ({ onComplete }: PreLoaderProps) => {
       }}
     >
       {/* 3D Canvas - renders animated spheres */}
-      {canvasState && !hasUnmountedCanvasRef.current && (
-        <Canvas
-          key="preloader-canvas"
-          camera={{ position: [0, 0, 6], fov: 50 }}
-          className="pointer-events-none relative z-10"
-          frameloop="always"
-          gl={{
-            antialias: true,
-            alpha: true,
-            powerPreference: "high-performance",
-            preserveDrawingBuffer: false,
-            failIfMajorPerformanceCaveat: false,
-          }}
-          dpr={[1, 2]}
-          onCreated={({ gl }) => {
-            gl.debug.checkShaderErrors = false;
-            gl.domElement.addEventListener("webglcontextlost", (event) => {
-              event.preventDefault();
-            });
-          }}
-        >
-          <color attach="background" args={[backgroundColor]} />
-          <Suspense fallback={null}>
-            <ReadyPing onReady={handleTexturesReady} />
-            {isDesktop && <CameraOrbit />}
-            <TexturedSphere
-              exitTrigger={exitTrigger}
-              onExitComplete={handleExitComplete}
-            />
-          </Suspense>
-        </Canvas>
-      )}
+      <div className="w-full h-full flex items-center justify-center relative">
+        {canvasState && !hasUnmountedCanvasRef.current && (
+          <Canvas
+            key="preloader-canvas"
+            camera={{ position: [0, 0, 6], fov: 50 }}
+            className="pointer-events-none relative z-10"
+            frameloop="always"
+            gl={{
+              antialias: true,
+              alpha: true,
+              powerPreference: "high-performance",
+              preserveDrawingBuffer: false,
+              failIfMajorPerformanceCaveat: false,
+            }}
+            dpr={[1, 2]}
+            onCreated={({ gl }) => {
+              gl.debug.checkShaderErrors = false;
+              gl.domElement.addEventListener("webglcontextlost", (event) => {
+                event.preventDefault();
+              });
+            }}
+          >
+            <color attach="background" args={[backgroundColor]} />
+            <Suspense fallback={null}>
+              <ReadyPing onReady={handleTexturesReady} />
+              {isDesktop && <CameraOrbit />}
+              <TexturedSphere
+                exitTrigger={exitTrigger}
+                onExitComplete={handleExitComplete}
+              />
+            </Suspense>
+          </Canvas>
+        )}
 
-      {/* Progress Counter */}
-      <div
-        ref={counterRef}
-        className="absolute left-1/2 -translate-x-1/2 font-bold text-[26px] leading-[77%] tracking-wider uppercase opacity-0 bottom-[250px] max-[1900px]:max-h-[700px]:min-w-[1100px]:bottom-[100px] max-lg:bottom-[10px] max-lg:text-[18px] text-foreground dark:text-background text-mono z-20"
-      >
-        {progress}%
+        {/* Progress Counter */}
+        <div
+          ref={counterRef}
+          className="absolute left-1/2 -translate-x-1/2 font-bold text-[26px] leading-[77%] tracking-wider uppercase opacity-0 bottom-[250px] max-[1900px]:max-h-[700px]:min-w-[1100px]:bottom-[100px] max-lg:bottom-[10px] max-lg:text-[18px] text-foreground dark:text-background text-mono z-20"
+        >
+          {progress}%
+        </div>
       </div>
     </div>
   );

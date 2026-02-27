@@ -18,21 +18,22 @@ const ProjectInfoPanel = forwardRef<HTMLDivElement, ProjectInfoPanelProps>(
           top: 0,
         }}
       >
+        {/* Info panel — offset below cursor */}
         <div
           className={`transition-all duration-300 ease-out ${
             isActive ? "scale-100 opacity-100" : "scale-75 opacity-0"
           }`}
           style={{
-            // CONFIG: Panel offset distance from cursor (20px)
+            // CONFIG: Panel offset distance from cursor
             transform:
               panelSide === "right"
-                ? "translate(75px, -50%)" // Position to the right
-                : "translate(-100%, -50%) translate(-75px, 0)", // Position to the left
+                ? "translate(40px, 20px)" // Bottom-right of cursor
+                : "translate(-100%, 0) translate(-40px, 20px)", // Bottom-left of cursor
           }}
         >
           {hoveredProject && (
             <div
-              className={`bg-black/90 backdrop-blur-md text-white p-6 squircle rounded-3xl shadow-2xl border border-white/10 min-w-[300px] max-w-[400px] ${
+              className={`bg-black/90 backdrop-blur-md text-white p-6 squircle rounded-3xl shadow-2xl border-2 border-foreground min-w-[300px] max-w-[400px] ${
                 panelSide === "left" ? "origin-right" : "origin-left"
               }`}
             >

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useMemo } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TESTIMONIALS } from "../constants/TESTIMONIALS";
+import { useSectionHeadingAnimation } from "../hooks/useSectionHeadingAnimation";
 
 // gsap.registerPlugin(ScrollTrigger);
 
@@ -33,15 +34,23 @@ const Testimonials = () => {
   const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
   const targetTestimonialIdRef = useRef<string | null>(null);
 
+  // Section heading refs + animation
+  const whatHeadingRef = useRef<HTMLHeadingElement>(null);
+  const clientsSayHeadingRef = useRef<HTMLHeadingElement>(null);
+  const headingScopeRef = useSectionHeadingAnimation(
+    [whatHeadingRef, clientsSayHeadingRef],
+    { stagger: 0.1 },
+  );
+
   const splitQuotes = useMemo(
     () =>
       TESTIMONIALS.map((t) =>
         t.quote
           .split(" ")
           .map((word) => `<span class="word">${word}</span>`)
-          .join(" ")
+          .join(" "),
       ),
-    []
+    [],
   );
 
   const animateWords = useCallback(() => {
@@ -58,7 +67,7 @@ const Testimonials = () => {
         stagger: 0.015,
         duration: 0.4,
         ease: "power2.out",
-      }
+      },
     );
   }, []);
 
@@ -143,7 +152,7 @@ const Testimonials = () => {
 
         // Update shadow styling based on position
         const shadowElement = slidingContainer.querySelector(
-          ".shadow-element"
+          ".shadow-element",
         ) as HTMLElement;
         if (shadowElement) {
           // Hide shadow on last images (offset 2 and 3)
@@ -193,7 +202,7 @@ const Testimonials = () => {
         .to(quoteElement, { opacity: 1, y: 0, duration: 0.4 }, 0.7)
         .call(animateWords, [], 0.5);
     },
-    [animateWords, splitQuotes]
+    [animateWords, splitQuotes],
   );
 
   useEffect(() => {
@@ -236,7 +245,7 @@ const Testimonials = () => {
       onUpdate: (self) => {
         const slideIndex = Math.min(
           Math.floor(self.progress * TESTIMONIALS.length),
-          TESTIMONIALS.length - 1
+          TESTIMONIALS.length - 1,
         );
 
         if (slideIndex !== currentIndexRef.current) {
@@ -280,7 +289,7 @@ const Testimonials = () => {
       // Check if we have a target testimonial ID stored
       if (targetTestimonialIdRef.current && section && st) {
         const testimonialIndex = TESTIMONIALS.findIndex(
-          (t) => t.id === targetTestimonialIdRef.current
+          (t) => t.id === targetTestimonialIdRef.current,
         );
 
         if (testimonialIndex !== -1) {
@@ -309,24 +318,46 @@ const Testimonials = () => {
 
     window.addEventListener(
       "scrollToTestimonial",
-      handleScrollToTestimonial as EventListener
+      handleScrollToTestimonial as EventListener,
     );
 
     return () => {
       window.removeEventListener(
         "scrollToTestimonial",
-        handleScrollToTestimonial as EventListener
+        handleScrollToTestimonial as EventListener,
       );
     };
   }, []);
 
   return (
     <section
-      className="min-h-screen flex items-center justify-center"
+      className="min-h-screen flex flex-col justify-between py-32 gap-24"
       ref={sectionRef}
       id="testimonials"
     >
-      <div className="w-full max-w-7xl p-8">
+      {/* Section Heading */}
+      <div
+        ref={headingScopeRef}
+        className="px-4 md:px-6 mb-12 flex items-end gap-4"
+      >
+        <h2
+          ref={whatHeadingRef}
+          className="section-heading text-accent pt-2"
+          style={{ transformStyle: "preserve-3d" }}
+        >
+          Words
+        </h2>
+        <h3
+          ref={clientsSayHeadingRef}
+          className="font-grandbold leading-none dark:text-background text-foreground text-[clamp(1rem,calc(0.981rem+4vw),6rem)]"
+          style={{ transformStyle: "preserve-3d" }}
+        >
+          <div>that </div>
+          <div>inspire </div>
+        </h3>
+      </div>
+
+      <div className="w-full max-w-7xl p-8 self-center flex-1">
         <div className="grid gap-20 grid-cols-1 lg:grid-cols-5 w-full">
           <div
             className="relative w-60 h-96 lg:h-full lg:col-span-2 mt-14 place-self-center flex items-end lg:items-center justify-center"

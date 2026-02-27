@@ -1,8 +1,8 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { Canvas } from "@react-three/fiber";
 import { gsap } from "gsap";
-import { useGSAP } from "@gsap/react";
 import MagneticButton from "../components/MagneticButton";
+import { useSectionHeadingAnimation } from "../hooks/useSectionHeadingAnimation";
 import { useTheme } from "../hooks/useTheme";
 import type { Project } from "../constants/PROJECTS";
 import Scene from "../components/ProjectsCarousel/Scene";
@@ -59,11 +59,22 @@ const ProjectsGallery = () => {
   // — Refs: DOM elements ------------------------------------------------------
   const projectsSectionRef = useRef<HTMLElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const circleRef = useRef<HTMLDivElement>(null);
   const projectsSelectedHeadingRef = useRef<HTMLHeadingElement>(null);
   const projectsGalleryHeadingRef = useRef<HTMLHeadingElement>(null);
   const projectsSecondaryContainerRef = useRef<HTMLDivElement>(null);
-  const projectsHeaderContainerRef = useRef<HTMLDivElement>(null);
   const projectsDescRef = useRef<HTMLParagraphElement>(null);
+
+  // — Heading scroll-in animation (shared hook) ------------------------------
+  const headingScopeRef = useSectionHeadingAnimation(
+    [
+      projectsSelectedHeadingRef,
+      projectsGalleryHeadingRef,
+      projectsDescRef,
+      projectsSecondaryContainerRef,
+    ],
+    { stagger: 0.1 },
+  );
 
   // — Refs: drag tracking (mutable, no re-render) ----------------------------
   const dragStartX = useRef(0);
@@ -84,6 +95,8 @@ const ProjectsGallery = () => {
   // — Refs: GSAP quickTo tweens & active tracking ----------------------------
   const quickX = useRef<ReturnType<typeof gsap.quickTo> | null>(null);
   const quickY = useRef<ReturnType<typeof gsap.quickTo> | null>(null);
+  const quickCircleX = useRef<ReturnType<typeof gsap.quickTo> | null>(null);
+  const quickCircleY = useRef<ReturnType<typeof gsap.quickTo> | null>(null);
   const isActiveRef = useRef(false);
 
   // — Theme / responsive -----------------------------------------------------
@@ -121,8 +134,10 @@ const ProjectsGallery = () => {
   // — GSAP quickTo initialisation ---------------------------------------------
   useEffect(() => {
     const panel = panelRef.current;
-    if (!panel) return;
+    const circle = circleRef.current;
+    if (!panel || !circle) return;
 
+    // Panel — slower, trailing feel
     gsap.set(panel, { x: 0, y: 0 });
     quickX.current = gsap.quickTo(panel, "x", {
       duration: 1,
@@ -132,14 +147,34 @@ const ProjectsGallery = () => {
       duration: 1,
       ease: "power3.out",
     });
-  }, []);
 
-  // — Snap panel to cursor when hovering starts -------------------------------
+    // Circle — fast, sticks close to cursor
+    gsap.set(circle, { x: 0, y: 0 });
+    quickCircleX.current = gsap.quickTo(circle, "x", {
+      duration: 0.35,
+      ease: "power2.out",
+    });
+    quickCircleY.current = gsap.quickTo(circle, "y", {
+      duration: 0.35,
+      ease: "power2.out",
+    });
+  }, [isMobile]);
+
+  // — Snap panel + circle to cursor when hovering starts ----------------------
   useEffect(() => {
     if (isActive && panelRef.current && quickX.current && quickY.current) {
       quickX.current(currentMouseX.current);
       quickY.current(currentMouseY.current);
       setPanelSide(getPanelSide(currentMouseX.current));
+    }
+    if (
+      isActive &&
+      circleRef.current &&
+      quickCircleX.current &&
+      quickCircleY.current
+    ) {
+      quickCircleX.current(currentMouseX.current);
+      quickCircleY.current(currentMouseY.current);
     }
   }, [isActive]);
 
@@ -188,6 +223,12 @@ const ProjectsGallery = () => {
       setPanelSide(getPanelSide(e.clientX));
     }
 
+    // Circle — follows cursor more tightly.
+    if (isActiveRef.current && quickCircleX.current && quickCircleY.current) {
+      quickCircleX.current(e.clientX);
+      quickCircleY.current(e.clientY);
+    }
+
     lastMouseX.current = e.clientX;
   }, []); // ← stable: reads refs only
 
@@ -203,79 +244,6 @@ const ProjectsGallery = () => {
     }
   }, []);
 
-  // — Header scroll-in animation (GSAP + ScrollTrigger) -----------------------
-  useGSAP(
-    () => {
-      const selected = projectsSelectedHeadingRef.current;
-      const gallery = projectsGalleryHeadingRef.current;
-      const secondary = projectsSecondaryContainerRef.current;
-      const projectsDesc = projectsDescRef.current;
-      const wrapper = projectsHeaderContainerRef.current;
-
-      if (!wrapper || !selected || !gallery || !secondary || !projectsDesc)
-        return;
-
-      const mm = gsap.matchMedia();
-      const targets = [selected, gallery, projectsDesc, secondary];
-
-      // Reduced motion — static display
-      mm.add("(prefers-reduced-motion: reduce)", () => {
-        gsap.set(targets, {
-          autoAlpha: 1,
-          xPercent: 0,
-          yPercent: 0,
-          rotationX: 0,
-          clearProps: "transform",
-        });
-      });
-
-      // Full motion — animated
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
-        targets.forEach((el) => el.classList.add("will-change-transform"));
-
-        const tl = gsap
-          .timeline({
-            scrollTrigger: {
-              trigger: wrapper,
-              start: "top 80%",
-              end: "top 30%",
-              scrub: 0.6,
-            },
-            defaults: { ease: "power1.inOut" },
-            onComplete: () => {
-              targets.forEach((el) =>
-                el.classList.remove("will-change-transform"),
-              );
-            },
-          })
-          .fromTo(
-            targets,
-            {
-              autoAlpha: 0,
-              xPercent: 12,
-              yPercent: 12,
-              filter: "blur(10px)",
-              rotationX: -45,
-              transformPerspective: 1000,
-            },
-            {
-              autoAlpha: 1,
-              xPercent: 0,
-              yPercent: 0,
-              rotationX: 0,
-              filter: "blur(0px)",
-              stagger: 0.1,
-            },
-          );
-
-        return () => tl.kill();
-      });
-
-      return () => mm.revert();
-    },
-    { scope: projectsHeaderContainerRef },
-  );
-
   // — Render ──────────────────────────────────────────────────────────────────
   return (
     <section
@@ -284,7 +252,7 @@ const ProjectsGallery = () => {
       className="relative w-full overflow-visible"
       aria-label="Projects Gallery"
     >
-      <div ref={projectsHeaderContainerRef} className="px-4 md:px-6">
+      <div ref={headingScopeRef} className="px-4 md:px-6">
         <h2
           ref={projectsSelectedHeadingRef}
           className="section-heading text-foreground dark:text-background pt-2"
@@ -370,6 +338,24 @@ const ProjectsGallery = () => {
               carouselState={carouselState}
             />
           </Canvas>
+
+          {/* Cursor circle — own element with fast tracking */}
+          <div
+            ref={circleRef}
+            className="fixed pointer-events-none z-20 will-change-transform"
+            style={{ left: 0, top: 0 }}
+          >
+            <div
+              className={`transition-all duration-300 ease-out rounded-full border-2 border-white/50 backdrop-blur-xs ${
+                isActive ? "scale-100 opacity-100" : "scale-0 opacity-0"
+              }`}
+              style={{
+                width: 48,
+                height: 48,
+                transform: "translate(-50%, -50%)",
+              }}
+            />
+          </div>
 
           <ProjectInfoPanel
             ref={panelRef}
