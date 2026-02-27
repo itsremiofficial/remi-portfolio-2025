@@ -318,7 +318,7 @@ const Services = () => {
 
   return (
     <section
-      className="services_section w-full relative mt-40 space-y-32 isolate z-10"
+      className="services_section w-full relative pt-32 space-y-32 isolate z-10"
       ref={sectionRef}
       id="services"
       aria-label="Services - What Can I Do For You?"
@@ -340,7 +340,8 @@ const Services = () => {
           className="font-grandbold leading-none dark:text-background text-foreground text-[clamp(1rem,calc(0.981rem+5vw),6rem)]"
           style={{ transformStyle: "preserve-3d" }}
         >
-          can I DO?
+          <div>solutions</div>
+          <div>I provide?</div>
         </h3>
       </div>
 
