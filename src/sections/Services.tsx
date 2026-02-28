@@ -337,10 +337,10 @@ const Services = () => {
         </h2>
         <h3
           ref={canIDoHeadingRef}
-          className="font-grandbold leading-none dark:text-background text-foreground text-[clamp(1rem,calc(0.981rem+5vw),6rem)]"
+          className="font-grandbold leading-none dark:text-background text-foreground text-[clamp(1rem,calc(0.981rem+4.5vw),6rem)]"
           style={{ transformStyle: "preserve-3d" }}
         >
-          <div>solutions</div>
+          <div>Solutions</div>
           <div>I provide?</div>
         </h3>
       </div>

@@ -15,7 +15,7 @@ const ServicesMarquee = () => {
 
   useGSAP(
     () => {
-      const speed = 3;
+      const speed = 0.5;
       document.fonts.ready.then(() => {
         const loop = horizontalLoop(".marquee-services", {
           repeat: -1,

@@ -36,11 +36,11 @@ export const EXPERTIES: ExpertiseItem[] = [
     Icon: IconDevelopment,
     illustration: DevIllustration,
     skills: [
-      { li: "JavaScript / TypeScript" },
-      { li: "React & Next.js" },
-      { li: "Node.js & Express" },
-      { li: "Prisma & Databases" },
-      { li: "REST & GraphQL APIs" },
+      { li: "Personal Portfolios" },
+      { li: "Business Websites" },
+      { li: "Landing Pages" },
+      { li: "E-Commerce Stores" },
+      { li: "Web Applications" },
     ],
   },
   {
