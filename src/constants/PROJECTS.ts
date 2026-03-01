@@ -20,7 +20,7 @@ const PROJECTS: Project[] = [
     title: "Fronus Solar Energy",
     type: "Corporate Website",
     slug: "fronus-solar",
-    imageUrl: assetUrl("/videos/fronus.avif"),
+    imageUrl: assetUrl("/projects/fronus.avif"),
     year: "2024",
     description:
       "A premium corporate website for a solar energy leader, featuring immersive product showcases and sustainable energy solutions.",
@@ -31,7 +31,7 @@ const PROJECTS: Project[] = [
     title: "Mivator Pro",
     type: "SaaS Platform",
     slug: "mivator-pro",
-    imageUrl: assetUrl("/videos/mivatorproweb.avif"),
+    imageUrl: assetUrl("/projects/mivatorproweb.avif"),
     year: "2023",
     description:
       "A high-performance SaaS platform website with advanced animations and a seamless user experience for enterprise clients.",
@@ -42,7 +42,7 @@ const PROJECTS: Project[] = [
     title: "TravlApp",
     type: "Travel App",
     slug: "travlapp",
-    imageUrl: assetUrl("/videos/travlapp.avif"),
+    imageUrl: assetUrl("/projects/travlapp.avif"),
     year: "2024",
     description:
       "An eco-conscious digital presence for a renewable energy provider, highlighting sustainability through organic design and smooth transitions.",
@@ -53,7 +53,7 @@ const PROJECTS: Project[] = [
     title: "UX Creatives",
     type: "Agency Website",
     slug: "uxcreatives",
-    imageUrl: assetUrl("/videos/uxcreatives.avif"),
+    imageUrl: assetUrl("/projects/uxcreatives.avif"),
     year: "2024",
     description:
       "A comprehensive analytics dashboard with real-time data visualization, dark mode support, and intuitive data grids.",
@@ -64,7 +64,7 @@ const PROJECTS: Project[] = [
     title: "Calyptus",
     type: "Software Agency",
     slug: "calyptus",
-    imageUrl: assetUrl("/videos/calyptus.avif"),
+    imageUrl: assetUrl("/projects/calyptus.avif"),
     year: "2024",
     description:
       "A dynamic agency portfolio featuring 3D interactive elements and a modern, dark-themed aesthetic.",
@@ -75,7 +75,7 @@ const PROJECTS: Project[] = [
     title: "Logo Diffusion",
     type: "Software Agency",
     slug: "logodiffusion",
-    imageUrl: assetUrl("/videos/logodiffusion.avif"),
+    imageUrl: assetUrl("/projects/logodiffusion.avif"),
     year: "2024",
     description:
       "A dynamic agency portfolio featuring 3D interactive elements and a modern, dark-themed aesthetic.",

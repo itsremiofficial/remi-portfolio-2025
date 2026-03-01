@@ -921,7 +921,7 @@ const Header = ({ fontsLoaded }: { fontsLoaded: boolean }) => {
             </div>
 
             <div className="font-mono tracking-widest text-foreground/70 dark:text-background/50 text-xs md:pt-1 flex justify-between">
-              <div className="nav-links-heading">Version 1.13</div>
+              <div className="nav-links-heading"></div>
               <div className="nav-links-heading">Version 1.13</div>
             </div>
           </div>
