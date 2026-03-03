@@ -31,7 +31,7 @@ const HeroTitle = memo(
       Digital <br className="block lg:hidden" />
       <span className="text-foreground dark:text-background">Experiences</span>
     </h1>
-  )
+  ),
 );
 
 export default HeroTitle;

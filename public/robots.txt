@@ -1,0 +1,6 @@
+# robots.txt for remidevigner.pro
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://remidevigner.pro/sitemap.xml
