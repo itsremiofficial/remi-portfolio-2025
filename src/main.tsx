@@ -9,6 +9,7 @@ import Projects from "./pages/Projects.tsx";
 import { LenisProvider } from "./context/LenisContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import FluidCursor from "./components/ui/fluidCursor.tsx";
+import NoiseOverlay from "./components/NoiseOverlay.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -29,7 +30,17 @@ createRoot(document.getElementById("root")!).render(
         className="lenis-smooth"
       >
         <BrowserRouter>
-          <div className="grain" />
+          {/* <div className="grain" /> */}
+          <NoiseOverlay
+            enabled={true} // equivalent to fy()
+            patternSize={300}
+            patternScaleX={1}
+            patternScaleY={1}
+            patternRefreshInterval={3}
+            patternAlpha={18}
+            style={{ zIndex: 50 }} // optional
+            className="mix-blend-overlay opacity-40" // optional (if using Tailwind)
+          />
           <Routes>
             <Route path="/" element={<App />} />
             <Route path="/projects" element={<Projects />} />
