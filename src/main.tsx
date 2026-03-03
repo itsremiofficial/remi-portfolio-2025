@@ -32,14 +32,13 @@ createRoot(document.getElementById("root")!).render(
         <BrowserRouter>
           {/* <div className="grain" /> */}
           <NoiseOverlay
-            enabled={true} // equivalent to fy()
+            enabled={true}
             patternSize={300}
             patternScaleX={1}
             patternScaleY={1}
             patternRefreshInterval={3}
-            patternAlpha={18}
-            style={{ zIndex: 50 }} // optional
-            className="mix-blend-overlay opacity-40" // optional (if using Tailwind)
+            patternAlpha={14}
+            // className="mix-blend-overlay"
           />
           <Routes>
             <Route path="/" element={<App />} />

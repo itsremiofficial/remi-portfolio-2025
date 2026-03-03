@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef } from "react";
+import { cn } from "../utils";
 
 export type NoiseOverlayProps = {
   /** Size (px) of the noise tile that gets repeated across the screen */
@@ -137,16 +138,13 @@ export default function NoiseOverlay({
   return (
     <canvas
       ref={canvasRef}
-      className={className}
+      className={cn(
+        className,
+        "fixed inset-0 w-screen h-screen pointer-events-none z-[9999]",
+      )}
       aria-hidden="true"
       // default overlay styling; override via `style` or `className`
       style={{
-        position: "fixed",
-        inset: 0,
-        width: "100%",
-        height: "100%",
-        pointerEvents: "none",
-        zIndex: 9999,
         ...style,
       }}
     />
