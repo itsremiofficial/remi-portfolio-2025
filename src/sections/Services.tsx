@@ -335,14 +335,14 @@ const Services = () => {
         >
           What
         </h2>
-        <h3
+        <span
           ref={canIDoHeadingRef}
           className="font-grandbold leading-none dark:text-background text-foreground text-[clamp(1rem,calc(0.981rem+4.5vw),6rem)]"
           style={{ transformStyle: "preserve-3d" }}
         >
           <div>Solutions</div>
           <div>I provide?</div>
-        </h3>
+        </span>
       </div>
 
       {/* Service Cards Container */}
@@ -375,7 +375,7 @@ const Services = () => {
               <BackSide>
                 <div className="p-6 sm:p-8 md:p-8 lg:p-10 flex flex-col justify-between space-y-2 sm:space-y-3 md:space-y-4 size-full relative bg-white dark:bg-background">
                   {/* Card Header */}
-                  <h4 className="inline-flex justify-between items-center gap-2">
+                  <div className="inline-flex justify-between items-center gap-2">
                     <div className="flex flex-col">
                       <span className="text-[clamp(2rem,4vw,5rem)] leading-[0.3] font-playground text-foreground relative z-10 mix-blend-darken">
                         {subtitle}
@@ -387,7 +387,7 @@ const Services = () => {
                     {Icon && (
                       <Icon className="size-8 sm:size-8 lg:size-12 text-accent flex-shrink-0" />
                     )}
-                  </h4>
+                  </div>
 
                   {/* Skills List */}
                   <ul className="skills-list flex flex-col h-full py-1 sm:py-2 md:py-[0.5vw]">
@@ -402,12 +402,12 @@ const Services = () => {
                   </ul>
 
                   {/* Card Footer */}
-                  <h4 className="text-[clamp(0.625rem,2vw,0.875rem)] sm:text-[clamp(0.75rem,1.5vw,1rem)] md:text-[clamp(0.875rem,1.3vw,1.25rem)] font-robo uppercase text-balance text-foreground/70 rotate-y-180 self-end flex justify-between items-baseline w-full gap-2">
+                  <div className="text-[clamp(0.625rem,2vw,0.875rem)] sm:text-[clamp(0.75rem,1.5vw,1rem)] md:text-[clamp(0.875rem,1.3vw,1.25rem)] font-robo uppercase text-balance text-foreground/70 rotate-y-180 self-end flex justify-between items-baseline w-full gap-2">
                     <span className="truncate">{title}</span>
                     {Icon && (
                       <Icon className="size-4 sm:size-5 md:size-6 text-foreground/70 flex-shrink-0" />
                     )}
-                  </h4>
+                  </div>
                 </div>
               </BackSide>
             </ServiceCard>

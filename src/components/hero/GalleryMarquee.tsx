@@ -44,9 +44,9 @@ const GalleryMarquee = memo(() => {
           </div>
         </div>
         <div className="space-y-1">
-          <h3 className="text-sm w-max md:text-xl font-medium text-foreground dark:text-background">
+          <span className="text-sm w-max md:text-xl font-medium text-foreground dark:text-background">
             Selected Work
-          </h3>
+          </span>
           <p className="text-balance w-48 text-foreground/70 dark:text-background/70 text-xs">
             Recent projects showcasing creativity, quality, and innovation.
           </p>

@@ -1,0 +1,58 @@
+RewriteEngine On
+RewriteCond %{HTTP_HOST} remidevigner\.pro [NC]
+RewriteCond %{SERVER_PORT} 80
+RewriteRule ^(.*)$ https://remidevigner.pro/$1 [R,L]
+
+
+RewriteCond %{HTTP_HOST} ^www\.remidevigner\.pro$
+RewriteRule ^/?$ "https\:\/\/remidevigner\.pro\/" [R=301,L]
+
+
+# SPA Fallback: serve index.html for any route that isn't a real file
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ /index.html [L]
+
+
+ErrorDocument 403 /404.html
+ErrorDocument 404 /404.html
+ErrorDocument 500 /404.html
+
+
+Header set Access-Control-Allow-Origin "https://remidevigner.pro"
+Header set Access-Control-Allow-Methods "POST, GET, OPTIONS"
+Header set Access-Control-Allow-Headers "Content-Type, Origin"
+
+# Compress HTML, CSS, JavaScript, Text, XML and fonts
+AddOutputFilterByType DEFLATE application/javascript
+AddOutputFilterByType DEFLATE application/rss+xml
+AddOutputFilterByType DEFLATE application/vnd.ms-fontobject
+AddOutputFilterByType DEFLATE application/x-font
+AddOutputFilterByType DEFLATE application/x-font-opentype
+AddOutputFilterByType DEFLATE application/x-font-otf
+AddOutputFilterByType DEFLATE application/x-font-truetype
+AddOutputFilterByType DEFLATE application/x-font-ttf
+AddOutputFilterByType DEFLATE application/x-javascript
+AddOutputFilterByType DEFLATE application/xhtml+xml
+AddOutputFilterByType DEFLATE application/xml
+AddOutputFilterByType DEFLATE font/opentype
+AddOutputFilterByType DEFLATE font/otf
+AddOutputFilterByType DEFLATE font/ttf
+AddOutputFilterByType DEFLATE image/svg+xml
+AddOutputFilterByType DEFLATE image/x-icon
+AddOutputFilterByType DEFLATE text/css
+
+# Remove browser bugs (only needed for really old browsers)
+BrowserMatch ^Mozilla/4 gzip-only-text/html
+BrowserMatch ^Mozilla/4\.0[678] no-gzip
+BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+Header append Vary User-Agent
+
+<FilesMatch "\.(gif|jpg|jpeg|avif|webp|png|swf|css|js)$">
+Header set Cache-Control "max-age=604800, public"
+</FilesMatch>
+
+
+<FilesMatch "\.(html|htm)$">
+Header set Cache-Control "max-age=3600, public, must-revalidate"
+</FilesMatch>
+

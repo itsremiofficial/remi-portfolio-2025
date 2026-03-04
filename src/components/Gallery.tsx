@@ -43,7 +43,7 @@ const Gallery = ({
   const galleryRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLUListElement>(null);
   const [activeIndex, setActiveIndex] = useState<number>(
-    GALLERY_CONFIG.DEFAULT_ACTIVE_INDEX
+    GALLERY_CONFIG.DEFAULT_ACTIVE_INDEX,
   );
   const [userHasInteracted, setUserHasInteracted] = useState<boolean>(false);
   const [isInView, setIsInView] = useState<boolean>(false); // New state for intersection
@@ -52,7 +52,7 @@ const Gallery = ({
   // Generate unique gallery ID
   const galleryId = useMemo(
     () => `gallery-${Math.random().toString(36).substring(2, 9)}`,
-    []
+    [],
   );
 
   const videos = useMemo<VideoItem[]>(() => [...VIDEO_SOURCES], []);
@@ -72,7 +72,7 @@ const Gallery = ({
       if (distance < -total / 2) distance += total;
       return distance;
     },
-    []
+    [],
   );
 
   // Setup global document interaction listener
@@ -96,7 +96,7 @@ const Gallery = ({
 
       // Cleanup listeners after first interaction
       events.forEach((event) =>
-        document.removeEventListener(event, handleUserInteraction)
+        document.removeEventListener(event, handleUserInteraction),
       );
     };
 
@@ -108,14 +108,14 @@ const Gallery = ({
     ];
 
     events.forEach((event) =>
-      document.addEventListener(event, handleUserInteraction, { once: true })
+      document.addEventListener(event, handleUserInteraction, { once: true }),
     );
 
     interactionListenerRef.current = true;
 
     return () => {
       events.forEach((event) =>
-        document.removeEventListener(event, handleUserInteraction)
+        document.removeEventListener(event, handleUserInteraction),
       );
     };
   }, []);
@@ -135,7 +135,7 @@ const Gallery = ({
         root: null, // viewport
         rootMargin: "0px",
         threshold: 0.1, // 10% visible
-      }
+      },
     );
 
     observer.observe(element);
@@ -264,11 +264,10 @@ const Gallery = ({
             className={cn(
               "list-none p-0 m-0 w-28 h-16 md:w-40 md:h-24 absolute flex items-center justify-center squircle rounded-2xl overflow-hidden cursor-pointer transition-shadow duration-300",
               index === activeIndex &&
-                "dark:shadow-[0_0_50px_rgba(0,0,0,0.9)] shadow-[0_0_15px_rgba(0,0,0,0.2)]"
+                "dark:shadow-[0_0_50px_rgba(0,0,0,0.9)] shadow-[0_0_15px_rgba(0,0,0,0.2)]",
             )}
             onClick={() => handleCardClick(index)}
             aria-label={`${title} - Video ${index + 1}`}
-            role="button"
             tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {

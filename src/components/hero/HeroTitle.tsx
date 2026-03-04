@@ -22,7 +22,11 @@ const HeroTitle = memo(
       </span>{" "}
       <br />
       <span className="text-foreground dark:text-background">Into</span>
-      <div className="inline-flex px-4 lg:px-10">
+      <div
+        className="inline-flex px-4 lg:px-10"
+        aria-hidden="true"
+        role="presentation"
+      >
         <AsteriskCircleAnimated active={active} />
       </div>
       <br className="block lg:hidden" />

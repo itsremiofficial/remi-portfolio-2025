@@ -205,6 +205,7 @@ const ContactIcon = memo(
     return (
       <a
         href={`mailto:${personalDetails.email}`}
+        aria-label={`Send an email to ${personalDetails.email}`}
         className={cn(
           "flex items-center justify-center rounded-xl",
           "md:px-8 md:py-4",

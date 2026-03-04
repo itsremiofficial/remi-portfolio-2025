@@ -58,6 +58,7 @@ export const Footer = () => {
               target="_blank"
               rel="noopener noreferrer"
               className="size-16 relative rounded-2xl"
+              aria-label={`Visit ${platform.social}`}
             >
               <AnimatedTooltip
                 id={index + 1}
