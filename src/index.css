@@ -1,6 +1,6 @@
 @font-face {
   font-family: "Robo";
-  src: url("/fonts/RobotoFlex.woff2") format("woff2");
+  src: url("/fonts/RobotoFlex.ttf") format("truetype");
   font-display: swap;
   font-style: normal;
   font-optical-sizing: auto;
