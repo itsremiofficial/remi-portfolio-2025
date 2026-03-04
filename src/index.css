@@ -133,29 +133,6 @@ body {
   @apply antialiased  bg-background dark:bg-foreground transition-colors duration-300 ease-in-out font-robo;
 }
 
-.grain {
-  height: 100%;
-  left: 0;
-  overflow: hidden;
-  pointer-events: none;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 9999;
-  /* color: #0000006c; */
-}
-.grain:after {
-  animation: grain 10s steps(10) infinite;
-  background-image: url(../grain.webp);
-  content: "";
-  height: 400vh;
-  left: -200vw;
-  position: fixed;
-  top: -200vh;
-  width: 400vw;
-  opacity: 0.4;
-}
-
 /* Theme transition overlay animation */
 .theme-transition-overlay {
   position: fixed;

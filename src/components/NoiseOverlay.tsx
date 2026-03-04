@@ -21,7 +21,7 @@ export type NoiseOverlayProps = {
 };
 
 /**
- * Full-viewport animated noise/grain overlay.
+ * Full-viewport animated noise overlay.
  *
  * Renders a fixed-position <canvas> and paints it with a repeating noise tile.
  */

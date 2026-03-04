@@ -30,7 +30,6 @@ createRoot(document.getElementById("root")!).render(
         className="lenis-smooth"
       >
         <BrowserRouter>
-          {/* <div className="grain" /> */}
           <NoiseOverlay
             enabled={true}
             patternSize={300}

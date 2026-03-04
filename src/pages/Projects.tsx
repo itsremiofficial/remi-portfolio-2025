@@ -90,7 +90,6 @@ const Projects = () => {
   return (
     <>
       <MacCursorAuto />
-      <div className="grain" />
       <Header fontsLoaded={true} />
 
       <div
