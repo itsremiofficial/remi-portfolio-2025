@@ -17,7 +17,7 @@ export interface Project {
 const PROJECTS: Project[] = [
   {
     id: "1",
-    title: "Fronus Solar Energy",
+    title: "Fronus",
     type: "Corporate Website",
     slug: "fronus-solar",
     imageUrl: assetUrl("/projects/fronus.avif"),
@@ -28,7 +28,7 @@ const PROJECTS: Project[] = [
   },
   {
     id: "2",
-    title: "Mivator Pro",
+    title: "Mivator",
     type: "SaaS Platform",
     slug: "mivator-pro",
     imageUrl: assetUrl("/projects/mivatorproweb.avif"),

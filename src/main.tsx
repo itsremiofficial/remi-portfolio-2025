@@ -10,10 +10,21 @@ import { LenisProvider } from "./context/LenisContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import FluidCursor from "./components/ui/fluidCursor.tsx";
 import NoiseOverlay from "./components/NoiseOverlay.tsx";
+import MacCursorAuto from "./components/ui/MacCursorAuto.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider>
+      <MacCursorAuto />
+      <NoiseOverlay
+        enabled={true}
+        patternSize={300}
+        patternScaleX={1}
+        patternScaleY={1}
+        patternRefreshInterval={3}
+        patternAlpha={14}
+        // className="mix-blend-overlay"
+      />
       <LenisProvider
         options={{
           duration: 3,
@@ -30,15 +41,6 @@ createRoot(document.getElementById("root")!).render(
         className="lenis-smooth"
       >
         <BrowserRouter>
-          <NoiseOverlay
-            enabled={true}
-            patternSize={300}
-            patternScaleX={1}
-            patternScaleY={1}
-            patternRefreshInterval={3}
-            patternAlpha={14}
-            // className="mix-blend-overlay"
-          />
           <Routes>
             <Route path="/" element={<App />} />
             <Route path="/projects" element={<Projects />} />

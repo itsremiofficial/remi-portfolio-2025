@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
-import gsap from "gsap";
 
 // ===== CONSTANTS =====
 const DISTORTION_CONFIG = {
@@ -75,83 +74,120 @@ const fragmentShader = `
 // ===== SHADER MATERIAL COMPONENT =====
 interface ShaderPlaneProps {
   imageUrl: string;
-  isHovered: boolean;
 }
 
-const ShaderPlane = ({ imageUrl, isHovered }: ShaderPlaneProps) => {
+const ShaderPlane = ({ imageUrl }: ShaderPlaneProps) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
   const { viewport } = useThree();
-  const mouseRef = useRef({ x: 0.5, y: 0.5 });
-  const hoverRef = useRef({ value: 0 });
+
+  // Scroll velocity tracking — targets set by scroll handler, smoothed in frame loop
+  const scrollRef = useRef({
+    lastScrollY: 0,
+    targetVelocity: 0,
+    targetStrength: 0,
+    currentVelocity: 0,
+    currentStrength: 0,
+  });
 
   // Load texture
   const texture = useTexture(imageUrl);
 
-  // Shader uniforms
+  // Ensure texture uses proper settings
+  useEffect(() => {
+    if (texture) {
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.needsUpdate = true;
+    }
+  }, [texture]);
+
+  // Shader uniforms — must match what the vertex & fragment shaders expect
   const uniforms = useRef({
     uTexture: { value: texture },
-    uHover: { value: 0 },
+    uTextureSize: {
+      value: new THREE.Vector2(
+        texture.image?.width || 1,
+        texture.image?.height || 1,
+      ),
+    },
+    uQuadSize: { value: new THREE.Vector2(1, 1) },
     uTime: { value: 0 },
-    uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+    uScrollVelocity: { value: 0 },
+    uVelocityStrength: { value: 0 },
   });
 
-  // Handle hover state changes
+  // Keep texture ref up to date
   useEffect(() => {
-    gsap.to(hoverRef.current, {
-      value: isHovered ? 1 : 0,
-      duration: DISTORTION_CONFIG.TRANSITION_DURATION,
-      ease: DISTORTION_CONFIG.EASE,
-      onUpdate: () => {
-        if (uniforms.current.uHover) {
-          uniforms.current.uHover.value = hoverRef.current.value;
-        }
-      },
-    });
-  }, [isHovered]);
+    uniforms.current.uTexture.value = texture;
+    if (texture.image) {
+      uniforms.current.uTextureSize.value.set(
+        texture.image.width,
+        texture.image.height,
+      );
+    }
+  }, [texture]);
 
-  // Handle mouse movement
+  // Update quad size when viewport changes
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!meshRef.current) return;
+    uniforms.current.uQuadSize.value.set(viewport.width, viewport.height);
+  }, [viewport.width, viewport.height]);
 
-      const rect = (e.target as HTMLElement)?.getBoundingClientRect();
-      if (rect) {
-        const x = (e.clientX - rect.left) / rect.width;
-        const y = 1.0 - (e.clientY - rect.top) / rect.height;
+  // Track scroll velocity — just set targets, smoothing happens in useFrame
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      const delta = currentY - scrollRef.current.lastScrollY;
+      scrollRef.current.lastScrollY = currentY;
 
-        gsap.to(mouseRef.current, {
-          x,
-          y,
-          duration: 0.3,
-          ease: "power2.out",
-          onUpdate: () => {
-            if (uniforms.current.uMouse) {
-              uniforms.current.uMouse.value.set(
-                mouseRef.current.x,
-                mouseRef.current.y
-              );
-            }
-          },
-        });
-      }
+      // Set target velocity (direction, -1..1)
+      scrollRef.current.targetVelocity = THREE.MathUtils.clamp(
+        delta / 50,
+        -1,
+        1,
+      );
+      // Set target strength (magnitude, 0..1)
+      scrollRef.current.targetStrength = THREE.MathUtils.clamp(
+        Math.abs(delta) / 30,
+        0,
+        1,
+      );
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Animation loop
+  // Animation loop — smooth lerp toward targets, decay targets toward 0
   useFrame(({ clock }) => {
-    if (uniforms.current.uTime) {
-      uniforms.current.uTime.value =
-        clock.getElapsedTime() * DISTORTION_CONFIG.SPEED;
-    }
+    uniforms.current.uTime.value =
+      clock.getElapsedTime() * DISTORTION_CONFIG.SPEED;
+
+    const sr = scrollRef.current;
+
+    // Decay targets toward 0 (simulates scroll stopping)
+    sr.targetStrength *= 0.96;
+    sr.targetVelocity *= 0.96;
+
+    // Smoothly interpolate current values toward targets
+    sr.currentVelocity = THREE.MathUtils.lerp(
+      sr.currentVelocity,
+      sr.targetVelocity,
+      0.08,
+    );
+    sr.currentStrength = THREE.MathUtils.lerp(
+      sr.currentStrength,
+      sr.targetStrength,
+      0.08,
+    );
+
+    uniforms.current.uScrollVelocity.value = sr.currentVelocity;
+    uniforms.current.uVelocityStrength.value = sr.currentStrength;
   });
 
   return (
-    <mesh ref={meshRef} scale={[viewport.width, viewport.height, 1]}>
-      <planeGeometry args={[1, 1, 32, 32]} />
+    <mesh ref={meshRef}>
+      <planeGeometry args={[2, 2, 1, 1]} />
       <shaderMaterial
         ref={materialRef}
         uniforms={uniforms.current}
@@ -166,21 +202,16 @@ const ShaderPlane = ({ imageUrl, isHovered }: ShaderPlaneProps) => {
 // ===== MAIN COMPONENT =====
 interface ImageDistortionProps {
   imageUrl: string;
-  isHovered: boolean;
   className?: string;
 }
 
-const ImageDistortion = ({
-  imageUrl,
-  isHovered,
-  className,
-}: ImageDistortionProps) => {
+const ImageDistortion = ({ imageUrl, className }: ImageDistortionProps) => {
   return (
     <div className={className}>
       <Canvas
         camera={{ position: [0, 0, 1], fov: 75 }}
         dpr={[1, 2]}
-        frameloop="demand" // Only render when needed (saves resources)
+        frameloop="always"
         gl={{
           alpha: true,
           antialias: true,
@@ -188,7 +219,7 @@ const ImageDistortion = ({
           preserveDrawingBuffer: false,
         }}
       >
-        <ShaderPlane imageUrl={imageUrl} isHovered={isHovered} />
+        <ShaderPlane imageUrl={imageUrl} />
       </Canvas>
     </div>
   );

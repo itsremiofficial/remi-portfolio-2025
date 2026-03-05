@@ -4,7 +4,6 @@ import Header from "./layout/Header";
 import Hero from "./sections/Hero";
 import WelcomeMarquee from "./components/WelcomeMarquee";
 import About from "./sections/About";
-import MacCursorAuto from "./components/ui/MacCursorAuto";
 import {
   CustomEase,
   DrawSVGPlugin,
@@ -230,8 +229,6 @@ const App = () => {
 
   return (
     <>
-      <MacCursorAuto />
-
       {/* PreLoader layer - always rendered but fades out */}
       <PreLoader onComplete={handlePreloaderComplete} />
 
